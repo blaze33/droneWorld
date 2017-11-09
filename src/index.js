@@ -68,6 +68,47 @@ window.app = app
 // sphere.addTo(app);
 
 // Plane
+const textureLoader = new THREE.TextureLoader().setCrossOrigin("anonymous")
+
+var terrainMaterial = new THREE.ShaderMaterial( {
+
+  uniforms: {
+
+    heightmap: {type: 't', value: textureLoader.load("https://s3.amazonaws.com/elevation-tiles-prod/terrarium/11/330/791.png")}
+
+  },
+
+  vertexShader: `
+uniform sampler2D heightmap;
+
+varying float height;
+varying vec2 vUV;
+
+void main() 
+{ 
+  vUV = uv;
+  vec4 heightData = texture2D( heightmap, uv );
+  
+  height = (heightData.r * 255.0 * 256.0 + heightData.g * 255.0 + heightData.b * 255.0 / 256.) - 32768.0 - 300.0;
+  
+  // move the position along the normal
+    vec3 newPosition = position + normal * height / 50.0;
+  
+  gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
+}
+  `,
+
+  fragmentShader: `
+void main() 
+{
+  gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+}  
+`,
+
+  wireframe: true
+
+} );
+
 const plane = new WHS.Plane({
   geometry: {
     width: 100,
@@ -77,7 +118,7 @@ const plane = new WHS.Plane({
     buffer: true
   },
 
-  material: new THREE.MeshPhongMaterial({color: 0x447F8B, wireframe: true}),
+  material: terrainMaterial,
 
   rotation: {
     x: -Math.PI / 2
@@ -114,32 +155,30 @@ const planeGeometry = plane.native.geometry
 //     ) / ((Math.abs(p.x) + Math.abs(p.y) + 20) / 20)
 //   }
 // })
-let imagedata
-window.data = imagedata
-new THREE.TextureLoader()
-  .setCrossOrigin("anonymous")
-  .load(
-    "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/11/330/791.png",
-    texture => { imagedata = getImageData( texture.image ); updateTerrain()}
-  );
-const getHeight = (x, y) => {
-  const color = getPixel(imagedata, x, y)
-  return (color.r * 256 + color.g + color.b / 256) - 32768
-}
-const updateTerrain = () => {
-  planeGeometry.vertices.forEach(p => {
-    p.set(
-      p.x,
-      p.y,
-      (
-        getHeight((p.x + 50) * 256 / 100, (p.y + 50) * 256 / 100) - 300
-      ) / 50
-    )
-  })
-  planeGeometry.verticesNeedUpdate = true
-  console.log(planeGeometry.verticesNeedUpdate)
-  planeGeometry.verticesNeedUpdate = true
-}
+// let imagedata
+// window.data = imagedata
+// textureLoader.load(
+//     "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/11/330/791.png",
+//     texture => { imagedata = getImageData( texture.image ); updateTerrain()}
+//   );
+// const getHeight = (x, y) => {
+//   const color = getPixel(imagedata, x, y)
+//   return (color.r * 256 + color.g + color.b / 256) - 32768
+// }
+// const updateTerrain = () => {
+//   planeGeometry.vertices.forEach(p => {
+//     p.set(
+//       p.x,
+//       p.y,
+//       (
+//         getHeight((p.x + 50) * 256 / 100, (p.y + 50) * 256 / 100) - 300
+//       ) / 50
+//     )
+//   })
+//   planeGeometry.verticesNeedUpdate = true
+//   console.log(planeGeometry.verticesNeedUpdate)
+//   planeGeometry.verticesNeedUpdate = true
+// }
 
 plane.addTo(app);
 
