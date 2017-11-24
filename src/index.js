@@ -1,16 +1,24 @@
 import './index.css'
 import * as THREE from 'three';
 import * as WHS from 'whs'
+import DatGUIModule from 'whs/modules/DatGUIModule'
 import Alea from 'alea'
 // import './modules/terrain.js'
+import DragControls from './modules/DragControls'
 import FlyControls from './modules/FlyControls'
 import SimplexNoise from './modules/simplexNoise'
+import StatsModule from './modules/StatsModule'
 import keyboardJS from 'keyboardjs'
+import {buildTile} from './terrain/index'
+import vertexShader from './terrain/shaders/terrain.vert'
+import fragmentShader from './terrain/shaders/terrain.frag'
 
+const container = document.getElementById('root')
 const cameraModule = new WHS.DefineModule(
   'camera',
   new WHS.PerspectiveCamera({ // Apply a camera.
-    position: new THREE.Vector3(0, 10, 50)
+    position: new THREE.Vector3(0, 0, 300),
+    far: 1e6,
   })
 )
 const fogModule = new WHS.FogModule({
@@ -22,7 +30,7 @@ const fogModule = new WHS.FogModule({
 
 const flyModule = new WHS.ControlsModule.from(new FlyControls(cameraModule.data.native))
 const orbitModule = new WHS.OrbitControlsModule()
-let controlsModule = orbitModule
+let controlsModule = flyModule
 
 window.WHS = WHS
 window.THREE = THREE
@@ -31,7 +39,7 @@ window.SimplexNoise = SimplexNoise
 
 const app = new WHS.App([
   new WHS.ElementModule({
-    container: document.getElementById('root')
+    container
   }),
   new WHS.SceneModule(),
   cameraModule,
@@ -41,146 +49,129 @@ const app = new WHS.App([
     renderer: {
       antialias: true,
       shadowmap: {
-        type: THREE.PCFSoftShadowMap
+        type: THREE.PCFSoftShadowMap,
+        enable: true
       }
     }
   }, {shadow: true}),
   // fogModule,
   controlsModule,
+  new StatsModule(0),
+  new DatGUIModule(),
   new WHS.ResizeModule()
 ]);
 window.app = app
-// Sphere
-// const sphere = new WHS.Sphere({ // Create sphere comonent.
-//   geometry: {
-//     radius: 5,
-//     widthSegments: 32,
-//     heightSegments: 32
-//   },
-
-//   material: new THREE.MeshPhongMaterial({
-//     color: 0xF2F2F2
-//   }),
-
-//   position: new THREE.Vector3(0, 5, 0)
-// });
-
-// sphere.addTo(app);
-
+const gui = app.manager.modules["gui/dat.gui"].gui
+window.gui = gui
 // Plane
-const textureLoader = new THREE.TextureLoader().setCrossOrigin("anonymous")
 
-var terrainMaterial = new THREE.ShaderMaterial( {
+// const drone = new WHS.Sphere({
+//   geometry: {radius: 5},
+//   position: {x:0, y:0, z: 30},
+//   material: new THREE.MeshBasicMaterial({
+//     color: 0xffffff
+//   }),
+// })
+// drone.addTo(app)
+// window.drone = drone
+// const dragControls = new DragControls([drone.native], cameraModule.data.native, container)
+// dragControls.addEventListener( 'dragstart', event => {
+//   toggleControls(controlsModule, false)
+// });
+// dragControls.addEventListener( 'dragend', event => {
+//   toggleControls(controlsModule, true)
+// });
+// const dragModule = new WHS.ControlsModule.from(dragControls)
 
-  uniforms: {
 
-    heightmap: {type: 't', value: textureLoader.load("https://s3.amazonaws.com/elevation-tiles-prod/terrarium/11/330/791.png")}
+let lastCameraPosition = new THREE.Vector3(0, 0, 0)
+let tiles = {}
+let currentKeysArray = []
+window.tiles = tiles
+// const terrainTarget = drone
+const terrainTarget = app.get('camera')
+const tileBuilder = new WHS.Loop(() => {
+  const cameraPosition = terrainTarget.position
+  if (cameraPosition.distanceTo(lastCameraPosition) > 10) {
+    console.log(cameraPosition)
+    lastCameraPosition = cameraPosition.clone()
+    const x0 = Math.floor((cameraPosition.x + 50) / 100) + 330
+    const y0 = Math.floor((-cameraPosition.y + 50) / 100) + 790
+    let z0 = 11
+    let visibleKeysArray = [
+      // [x0, y0, z0],
+      // [x0 + 1, y0, z0],
+      // [x0, y0 + 1, z0],
+      // [x0 + 1, y0 + 1, z0],
+    ]
+    z0 = 10
+    const x0_11 = Math.floor(x0 / 2)
+    const y0_11 = Math.floor(y0 / 2)
+    visibleKeysArray = visibleKeysArray.concat([
+      [x0_11 - 1, y0_11 - 1, z0],
+      [x0_11 - 1, y0_11, z0],
+      [x0_11 - 1, y0_11 + 1, z0],
+      [x0_11, y0_11 - 1, z0],
+      [x0_11, y0_11, z0],
+      [x0_11, y0_11 + 1, z0],
+      [x0_11 + 1, y0_11 - 1, z0],
+      [x0_11 + 1, y0_11, z0],
+      [x0_11 + 1, y0_11 + 1, z0],
+    ])
 
-  },
+    let camera = terrainTarget.native
+    // camera.updateMatrix(); // make sure camera's local matrix is updated
+    // camera.updateMatrixWorld(); // make sure camera's world matrix is updated
+    // camera.matrixWorldInverse.getInverse( camera.matrixWorld );
+    var frustum = new THREE.Frustum();
+    frustum.setFromMatrix( new THREE.Matrix4().multiply( camera.projectionMatrix, camera.matrixWorldInverse ) );
+    console.log( frustum );
 
-  vertexShader: `
-uniform sampler2D heightmap;
 
-varying float height;
-varying vec2 vUV;
+    const visibleKeysString = visibleKeysArray.map(k => k.toString())
+    const currentKeysString = currentKeysArray.map(k => k.toString())
+    const newKeys = visibleKeysString.filter(x => currentKeysString.indexOf(x) < 0)
+    const oldKeys = currentKeysString.filter(x => visibleKeysString.indexOf(x) < 0)
 
-void main() 
-{ 
-  vUV = uv;
-  vec4 heightData = texture2D( heightmap, uv );
-  
-  height = (heightData.r * 255.0 * 256.0 + heightData.g * 255.0 + heightData.b * 255.0 / 256.) - 32768.0 - 300.0;
-  
-  // move the position along the normal
-    vec3 newPosition = position + normal * height / 50.0;
-  
-  gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
-}
-  `,
+    if (oldKeys) {console.log('deleting', oldKeys)}
+    if (newKeys) {console.log('adding', newKeys)}
 
-  fragmentShader: `
-void main() 
-{
-  gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-}  
-`,
+    oldKeys.forEach(x => {
+      tiles[x].geometry.dispose()
+      tiles[x].geometry = null
+      tiles[x].material.dispose()
+      tiles[x].material = null
+      app.get('scene').remove(tiles[x])
+      app.remove(tiles[x])
+      delete tiles[x]
+    })
+    newKeys.forEach(k => {
+      const xyz = k.split(',')
+      let options = {}
+      if (xyz[2] === '10') {options = {wireframe: false}}
+      tiles[k] = buildTile(app, xyz[2], xyz[0], xyz[1], options)
+      tiles[k].addTo(app)
+    })
+    currentKeysArray = visibleKeysArray.slice(0)
 
-  wireframe: true
-
-} );
-
-const plane = new WHS.Plane({
-  geometry: {
-    width: 100,
-    height: 100,
-    wSegments: 256,
-    hSegments: 256,
-    buffer: true
-  },
-
-  material: terrainMaterial,
-
-  rotation: {
-    x: -Math.PI / 2
   }
 })
+app.addLoop(tileBuilder)
+tileBuilder.start()
 
-function getImageData( image ) {
-    var canvas = document.createElement( 'canvas' );
-    canvas.width = image.width;
-    canvas.height = image.height;
-
-    var context = canvas.getContext( '2d' );
-    context.drawImage( image, 0, 0 );
-
-    return context.getImageData( 0, 0, image.width, image.height );
-}
-
-function getPixel( imagedata, x, y ) {
-    var position = ( x + imagedata.width * y ) * 4, data = imagedata.data;
-    return { r: data[ position ], g: data[ position + 1 ], b: data[ position + 2 ], a: data[ position + 3 ] };
-}
+const gridHelper = new THREE.GridHelper( 1000, 10 )
+gridHelper.geometry.rotateX(Math.PI / 2)
+app.get('scene').add( gridHelper)
+app.get('scene').add(new THREE.CameraHelper(app.get('camera').native))
 
 
-const noise = new SimplexNoise(new Alea(333))
-const planeGeometry = plane.native.geometry
-// planeGeometry.vertices = planeGeometry.vertices.map(p => {
-//   return {
-//     x: p.x,
-//     y: p.y,
-//     z: (
-//       noise.noise2D(p.x / 50, p.y / 50) * 20 +
-//       noise.noise2D(p.x / 20, p.y / 20) / 2 +
-//       noise.noise2D(p.x / 5, p.y / 5)
-//     ) / ((Math.abs(p.x) + Math.abs(p.y) + 20) / 20)
-//   }
-// })
-// let imagedata
-// window.data = imagedata
-// textureLoader.load(
-//     "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/11/330/791.png",
-//     texture => { imagedata = getImageData( texture.image ); updateTerrain()}
-//   );
-// const getHeight = (x, y) => {
-//   const color = getPixel(imagedata, x, y)
-//   return (color.r * 256 + color.g + color.b / 256) - 32768
-// }
-// const updateTerrain = () => {
-//   planeGeometry.vertices.forEach(p => {
-//     p.set(
-//       p.x,
-//       p.y,
-//       (
-//         getHeight((p.x + 50) * 256 / 100, (p.y + 50) * 256 / 100) - 300
-//       ) / 50
-//     )
-//   })
-//   planeGeometry.verticesNeedUpdate = true
-//   console.log(planeGeometry.verticesNeedUpdate)
-//   planeGeometry.verticesNeedUpdate = true
-// }
-
-plane.addTo(app);
+// const rotateDrone = new WHS.Loop((clock) => {
+//   const r = 100
+//   const t = clock.getElapsedTime()
+//   drone.position = {x: r * Math.cos(t), y: r * Math.sin(t), z: 30}
+// });
+// app.addLoop(rotateDrone)
+// // rotateDrone.start()
 
 // Lights
 new WHS.PointLight({
@@ -202,7 +193,7 @@ new WHS.AmbientLight({
   }
 }).addTo(app);
 
-new WHS.HemisphereLight({
+new WHS.HemisphereLight({ 
   skyColor: 0xff0000,
   groundColor: 0x0000ff,
   intensity: 0.2
@@ -211,13 +202,23 @@ new WHS.HemisphereLight({
 // Start the app
 app.start();
 
+const toggleControls = (module, state) => {
+  state = state !== undefined ? state : module.controls.enabled
+  module.controls.enabled = state
+  module.updateLoop.enabled = state
+}
+
 keyboardJS.bind('p', e => {
   app.disposeModule(controlsModule)
   console.log("disposed", controlsModule)
+  toggleControls(controlsModule, false)
   controlsModule = controlsModule === orbitModule ? flyModule : orbitModule
   app.applyModule(controlsModule)
+  toggleControls(controlsModule, true)
   console.log("apply", controlsModule)
 })
 // keyboardJS.watch()
 
-
+keyboardJS.bind('c', e => {
+  console.log(app.get('camera').position)
+})

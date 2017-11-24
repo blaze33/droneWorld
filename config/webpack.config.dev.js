@@ -142,7 +142,7 @@ module.exports = {
           },
           // Process JS with Babel.
           {
-            test: /\.(js|jsx)$/,
+            test: /\.jsx?$/,
             include: paths.appSrc,
             loader: require.resolve('babel-loader'),
             options: {
@@ -152,6 +152,10 @@ module.exports = {
               // directory for faster rebuilds.
               cacheDirectory: true,
             },
+          },
+          {
+            test: /\.(glsl|vert|frag)$/,
+            loader: 'webpack-glsl-loader'
           },
           // "postcss" loader applies autoprefixer to our CSS.
           // "css" loader resolves paths in CSS and adds assets as dependencies.

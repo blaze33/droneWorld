@@ -30,7 +30,7 @@
  *
  */
 // (function() {
-'use strict';
+// 'use strict';
 
 var F2 = 0.5 * (Math.sqrt(3.0) - 1.0);
 var G2 = (3.0 - Math.sqrt(3.0)) / 6.0;
