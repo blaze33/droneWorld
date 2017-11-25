@@ -10,14 +10,12 @@ import SimplexNoise from './modules/simplexNoise'
 import StatsModule from './modules/StatsModule'
 import keyboardJS from 'keyboardjs'
 import {buildTile} from './terrain/index'
-import vertexShader from './terrain/shaders/terrain.vert'
-import fragmentShader from './terrain/shaders/terrain.frag'
 
 const container = document.getElementById('root')
 const cameraModule = new WHS.DefineModule(
   'camera',
   new WHS.PerspectiveCamera({ // Apply a camera.
-    position: new THREE.Vector3(0, 0, 300),
+    position: new THREE.Vector3(0, -100, 50),
     far: 1e6,
   })
 )
@@ -63,25 +61,29 @@ const app = new WHS.App([
 window.app = app
 const gui = app.manager.modules["gui/dat.gui"].gui
 window.gui = gui
+
+console.log(app.get('camera'))
+app.get('camera').native.up = new THREE.Vector3(0, 0, 1)
+app.get('camera').native.lookAt({x: 0, y: 0, z: 0})
 // Plane
 
-// const drone = new WHS.Sphere({
-//   geometry: {radius: 5},
-//   position: {x:0, y:0, z: 30},
-//   material: new THREE.MeshBasicMaterial({
-//     color: 0xffffff
-//   }),
-// })
-// drone.addTo(app)
-// window.drone = drone
-// const dragControls = new DragControls([drone.native], cameraModule.data.native, container)
-// dragControls.addEventListener( 'dragstart', event => {
-//   toggleControls(controlsModule, false)
-// });
-// dragControls.addEventListener( 'dragend', event => {
-//   toggleControls(controlsModule, true)
-// });
-// const dragModule = new WHS.ControlsModule.from(dragControls)
+const drone = new WHS.Sphere({
+  geometry: {radius: 5},
+  position: {x:0, y:0, z: 30},
+  material: new THREE.MeshBasicMaterial({
+    color: 0xffffff
+  }),
+})
+drone.addTo(app)
+window.drone = drone
+const dragControls = new DragControls([drone.native], cameraModule.data.native, container)
+dragControls.addEventListener( 'dragstart', event => {
+  toggleControls(controlsModule, false)
+});
+dragControls.addEventListener( 'dragend', event => {
+  toggleControls(controlsModule, true)
+});
+const dragModule = new WHS.ControlsModule.from(dragControls)
 
 
 let lastCameraPosition = new THREE.Vector3(0, 0, 0)
@@ -95,38 +97,55 @@ const tileBuilder = new WHS.Loop(() => {
   if (cameraPosition.distanceTo(lastCameraPosition) > 10) {
     console.log(cameraPosition)
     lastCameraPosition = cameraPosition.clone()
-    const x0 = Math.floor((cameraPosition.x + 50) / 100) + 330
-    const y0 = Math.floor((-cameraPosition.y + 50) / 100) + 790
+    const x0 = Math.floor((cameraPosition.x + 50) / 800) + 330
+    const y0 = Math.floor((-cameraPosition.y + 50) / 800) + 790
+    console.log(x0, y0)
     let z0 = 11
     let visibleKeysArray = [
-      // [x0, y0, z0],
-      // [x0 + 1, y0, z0],
-      // [x0, y0 + 1, z0],
-      // [x0 + 1, y0 + 1, z0],
+        // [z0, x0, y0, 0, 0, 800],
+        [z0, x0 - 1, y0, 0, 0, 800],
+        [z0, x0 + 1, y0, 0, 0, 800],
+        [z0, x0 - 1, y0 - 1, 0, 0, 800],
+        [z0, x0 + 1, y0 + 1, 0, 0, 800],
+        [z0, x0 - 1, y0 + 1, 0, 0, 800],
+        [z0, x0 + 1, y0 - 1, 0, 0, 800],
+        [z0, x0, y0 - 1, 0, 0, 400],
+        [z0, x0, y0 - 1, 0, 1, 400],
+        [z0, x0, y0 - 1, 1, 0, 400],
+        [z0, x0, y0 - 1, 1, 1, 400],
+        [z0, x0, y0 + 1, 0, 0, 400],
+        [z0, x0, y0 + 1, 0, 1, 400],
+        [z0, x0, y0 + 1, 1, 0, 400],
+        [z0, x0, y0 + 1, 1, 1, 400],
     ]
-    z0 = 10
-    const x0_11 = Math.floor(x0 / 2)
-    const y0_11 = Math.floor(y0 / 2)
-    visibleKeysArray = visibleKeysArray.concat([
-      [x0_11 - 1, y0_11 - 1, z0],
-      [x0_11 - 1, y0_11, z0],
-      [x0_11 - 1, y0_11 + 1, z0],
-      [x0_11, y0_11 - 1, z0],
-      [x0_11, y0_11, z0],
-      [x0_11, y0_11 + 1, z0],
-      [x0_11 + 1, y0_11 - 1, z0],
-      [x0_11 + 1, y0_11, z0],
-      [x0_11 + 1, y0_11 + 1, z0],
-    ])
+    const size = 32
+    for (let i=0; i < 8; i++) {
+      for (let j=0; j < 8; j++) {
+        visibleKeysArray.push([z0, x0, y0, i, j, 100])
+      }
+    }
+    // z0 = 10
+    // const x0_11 = Math.floor(x0 / 2)
+    // const y0_11 = Math.floor(y0 / 2)
+    // visibleKeysArray = visibleKeysArray.concat([
+    //   [z0, x0_11 - 1, y0_11 - 1],
+    //   [z0, x0_11 - 1, y0_11],
+    //   [z0, x0_11 - 1, y0_11 + 1],
+    //   [z0, x0_11, y0_11 - 1],
+    //   // [z0, x0_11, y0_11],
+    //   [z0, x0_11, y0_11 + 1],
+    //   [z0, x0_11 + 1, y0_11 - 1],
+    //   [z0, x0_11 + 1, y0_11],
+    //   [z0, x0_11 + 1, y0_11 + 1],
+    // ])
 
     let camera = terrainTarget.native
     // camera.updateMatrix(); // make sure camera's local matrix is updated
     // camera.updateMatrixWorld(); // make sure camera's world matrix is updated
     // camera.matrixWorldInverse.getInverse( camera.matrixWorld );
     var frustum = new THREE.Frustum();
-    frustum.setFromMatrix( new THREE.Matrix4().multiply( camera.projectionMatrix, camera.matrixWorldInverse ) );
+    frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
     console.log( frustum );
-
 
     const visibleKeysString = visibleKeysArray.map(k => k.toString())
     const currentKeysString = currentKeysArray.map(k => k.toString())
@@ -146,10 +165,11 @@ const tileBuilder = new WHS.Loop(() => {
       delete tiles[x]
     })
     newKeys.forEach(k => {
-      const xyz = k.split(',')
+      const zxyijs = k.split(',').map(x => parseInt(x))
       let options = {}
-      if (xyz[2] === '10') {options = {wireframe: false}}
-      tiles[k] = buildTile(app, xyz[2], xyz[0], xyz[1], options)
+      if (zxyijs[0] === '10') {options = {wireframe: true}}
+      // if (true) {options = {wireframe: true}}
+      tiles[k] = buildTile(...zxyijs, 32, options)
       tiles[k].addTo(app)
     })
     currentKeysArray = visibleKeysArray.slice(0)
@@ -162,7 +182,10 @@ tileBuilder.start()
 const gridHelper = new THREE.GridHelper( 1000, 10 )
 gridHelper.geometry.rotateX(Math.PI / 2)
 app.get('scene').add( gridHelper)
-app.get('scene').add(new THREE.CameraHelper(app.get('camera').native))
+const camera2 = new WHS.PerspectiveCamera().copy(app.get('camera'))
+camera2.position.copy(drone.position)
+console.log(camera2)
+app.get('scene').add(new THREE.CameraHelper(camera2.native))
 
 
 // const rotateDrone = new WHS.Loop((clock) => {

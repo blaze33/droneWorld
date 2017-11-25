@@ -1,7 +1,8 @@
-import {TextureLoader, ShaderMaterial, Vector3} from 'three'
+import {TextureLoader, ShaderMaterial, Vector2, Vector3, MeshPhongMaterial} from 'three'
 import {Plane} from 'whs'
 import vertexShader from './shaders/terrain.vert'
 import fragmentShader from './shaders/terrain.frag'
+import whiteShader from './shaders/white.frag'
 
 const textureLoader = new TextureLoader().setCrossOrigin("anonymous")
 const tilesElevationURL = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium'
@@ -12,25 +13,16 @@ const heightMapTexture = (z, x, y) => {
   return textureLoader.load(tileURL)
 }
 
-const spectralTex = {
-  type: 't',
-  value: textureLoader.load("https://raw.githubusercontent.com/d3/d3-scale-chromatic/master/img/Spectral.png")
-}
+const spectralTexture = textureLoader.load(
+  "https://raw.githubusercontent.com/d3/d3-scale-chromatic/master/img/Spectral.png"
+)
 
-const heightMapUniform = (z, x, y) => {
-  return {
-    heightmap: {
-      type: 't',
-      value: heightMapTexture(z, x, y)
-    }
-  }
-}
-
-const terrainMaterial = (z, x, y, options) => {
+const terrainMaterial = (z, x, y, options, uniforms) => {
   return new ShaderMaterial({
     uniforms: {
-      ...heightMapUniform(z, x, y),
-      spectral: spectralTex
+      heightmap: {value: heightMapTexture(z, x, y)},
+      spectral: {value: spectralTexture},
+      ...uniforms
     },
     vertexShader,
     fragmentShader,
@@ -41,43 +33,51 @@ const terrainMaterial = (z, x, y, options) => {
   });
 }
 
-const buildTile = (app, z, x, y, terrainOptions) => {
-  const tileSize = 100 * (12 - z)
-  let position
-  if (z === '11') {
-    position = new Vector3(
-      (x - 330) * tileSize - tileSize / 2,
-      -(y - 790) * tileSize + tileSize / 2,
-      0
-    )
-  } else if (z === '10') {
-    position = new Vector3(
-      (x - 330 / 2) * tileSize,
-      -(y - 790 / 2) * tileSize,
-      0
-    )
-  }
-  return new Plane({
+// const wireMaterial = (z, x, y, options) => {
+//   return new ShaderMaterial({
+//     uniforms: {
+//       ...heightMapUniform(z, x, y),
+//       spectral: spectralTexture
+//     },
+//     vertexShader,
+//     fragmentShader: whiteShader,
+//     extensions: {
+//       derivatives: true,
+//     },
+//     wireframe: true,
+//     ...options,
+//   });
+// }
+
+const tilePosition = (z, x, y, i, j, size) => {
+  let position = new Vector3(
+    (x - 330) * 800 + i * size - 400 + size / 2,
+    -(y - 790) * 800 + j * size - 400 + size / 2,
+    0
+  )
+  return position
+}
+
+const buildTile = (z, x, y, i, j, size, segments, terrainOptions) => {
+  const position = tilePosition(z, x, y, i, j, size)
+  const zxyTex = [z, x, y]
+  const plane = new Plane({
     geometry: {
-      width: tileSize,
-      height: tileSize,
-      wSegments: 100,
-      hSegments: 100,
+      width: size,
+      height: size,
+      wSegments: segments,
+      hSegments: segments,
       buffer: true
     },
-
-    material: terrainMaterial(z, x, y, terrainOptions),
-
-    // rotation: {
-    //   x: -Math.PI / 2
-    // },
     position,
   })
+  const material = terrainMaterial(...zxyTex, terrainOptions, {ijs: {value: new Vector3(i, j, size)}})
+  plane.material = material
+  return plane
 }
 
 export {
     heightMapTexture,
-    heightMapUniform,
-    spectralTex,
+    spectralTexture,
     buildTile,
 }

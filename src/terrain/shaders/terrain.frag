@@ -4,7 +4,6 @@ uniform float bFlat;
 uniform sampler2D spectral;
 varying vec3 vNormal;
 varying vec3 pos;
-varying vec2 vUV;
 varying float height;
 const vec3 lightPos   = vec3(100,100,50);
 const vec3 specColor  = vec3(1.0, 1.0, 1.0);
