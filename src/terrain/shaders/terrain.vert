@@ -1,6 +1,7 @@
 
 uniform sampler2D heightmap;
 uniform vec3 ijs;
+uniform float tileSize;
 
 varying float height;
 varying vec3 vNormal;
@@ -14,11 +15,11 @@ float getHeight(vec2 uv) {
 
 void main() 
 { 
-  vec2 vUV = uv * ijs.z / 800.0 + ijs.xy * ijs.z / 800.0;
+  vec2 vUV = (uv + ijs.xy) * ijs.z / tileSize;
   height = getHeight(vUV);
 
   // move the position along the normal
-  vec3 newPosition = position + floor(normal * height / 50.0);
+  vec3 newPosition = position + floor(normal * height / 20.0);
   
   vec4 mpos = modelViewMatrix * vec4( newPosition, 1.0 );
   gl_Position = projectionMatrix * mpos;

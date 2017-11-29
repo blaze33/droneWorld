@@ -29,6 +29,7 @@ const terrainMaterial = (z, x, y, options, uniforms) => {
     extensions: {
       derivatives: true,
     },
+    // wireframe: true,
     ...options,
   });
 }
@@ -51,8 +52,8 @@ const terrainMaterial = (z, x, y, options, uniforms) => {
 
 const tilePosition = (z, x, y, i, j, size) => {
   let position = new Vector3(
-    (x - 330) * 800 + i * size - 400 + size / 2,
-    -(y - 790) * 800 + j * size - 400 + size / 2,
+    (x - 330 /4) * 800 + i * size + size / 2,
+    -(y - 790/4) * 800 + j * size - 800 + size / 2,
     0
   )
   return position
@@ -71,7 +72,10 @@ const buildTile = (z, x, y, i, j, size, segments, terrainOptions) => {
     },
     position,
   })
-  const material = terrainMaterial(...zxyTex, terrainOptions, {ijs: {value: new Vector3(i, j, size)}})
+  const material = terrainMaterial(...zxyTex, terrainOptions, {
+    ijs: {value: new Vector3(i, j, size)},
+    tileSize: {value: 800}
+  })
   plane.material = material
   return plane
 }

@@ -86,6 +86,38 @@ dragControls.addEventListener( 'dragend', event => {
 const dragModule = new WHS.ControlsModule.from(dragControls)
 
 
+const xToTile = x => {
+  return Math.floor((x + 50) / 800 + 330 / 4)
+}
+
+const yToTile = y => {
+  return Math.floor((-y + 50) / 800 + 790 / 4)
+}
+
+const tileToX = x0 => (x0 - 330 / 4) * 800
+const tileToY = y0 => (y0 - 790 / 4) * 800
+
+
+const distanceToCamera = key => {
+  const xy = new THREE.Vector3(
+    tileToX(key[1]) + (key[3] + 0.5) * key[5],
+    tileToY(key[2]) + (key[4] + 0.5) * key[5],
+    0
+  )
+  const cameraPosition = app.get('camera').position
+  return 32
+  return Math.min(
+    Math.floor(32 * 200 / xy.distanceTo(cameraPosition) * key[5] / 100),
+    32
+  )
+}
+
+const calibrate = key => {
+  const segments = 32
+  return [...key, distanceToCamera(key)]
+}
+
+
 let lastCameraPosition = new THREE.Vector3(0, 0, 0)
 let tiles = {}
 let currentKeysArray = []
@@ -97,10 +129,10 @@ const tileBuilder = new WHS.Loop(() => {
   if (cameraPosition.distanceTo(lastCameraPosition) > 10) {
     console.log(cameraPosition)
     lastCameraPosition = cameraPosition.clone()
-    const x0 = Math.floor((cameraPosition.x + 50) / 800) + 330
-    const y0 = Math.floor((-cameraPosition.y + 50) / 800) + 790
+    const x0 = xToTile(cameraPosition.x)
+    const y0 = yToTile(cameraPosition.y)
     console.log(x0, y0)
-    let z0 = 11
+    let z0 = 9
     let visibleKeysArray = [
         // [z0, x0, y0, 0, 0, 800],
         [z0, x0 - 1, y0, 0, 0, 800],
@@ -109,16 +141,15 @@ const tileBuilder = new WHS.Loop(() => {
         [z0, x0 + 1, y0 + 1, 0, 0, 800],
         [z0, x0 - 1, y0 + 1, 0, 0, 800],
         [z0, x0 + 1, y0 - 1, 0, 0, 800],
-        [z0, x0, y0 - 1, 0, 0, 400],
-        [z0, x0, y0 - 1, 0, 1, 400],
-        [z0, x0, y0 - 1, 1, 0, 400],
-        [z0, x0, y0 - 1, 1, 1, 400],
-        [z0, x0, y0 + 1, 0, 0, 400],
-        [z0, x0, y0 + 1, 0, 1, 400],
-        [z0, x0, y0 + 1, 1, 0, 400],
-        [z0, x0, y0 + 1, 1, 1, 400],
+        [z0, x0, y0 - 1, 0, 0, 800],
+        // [z0, x0, y0 - 1, 0, 1, 400],
+        // [z0, x0, y0 - 1, 1, 0, 400],
+        // [z0, x0, y0 - 1, 1, 1, 400],
+        [z0, x0, y0 + 1, 0, 0, 800],
+        // [z0, x0, y0 + 1, 0, 1, 400],
+        // [z0, x0, y0 + 1, 1, 0, 400],
+        // [z0, x0, y0 + 1, 1, 1, 400],
     ]
-    const size = 32
     for (let i=0; i < 8; i++) {
       for (let j=0; j < 8; j++) {
         visibleKeysArray.push([z0, x0, y0, i, j, 100])
@@ -147,6 +178,8 @@ const tileBuilder = new WHS.Loop(() => {
     frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
     console.log( frustum );
 
+    visibleKeysArray = visibleKeysArray.map(key => calibrate(key))
+
     const visibleKeysString = visibleKeysArray.map(k => k.toString())
     const currentKeysString = currentKeysArray.map(k => k.toString())
     const newKeys = visibleKeysString.filter(x => currentKeysString.indexOf(x) < 0)
@@ -160,16 +193,15 @@ const tileBuilder = new WHS.Loop(() => {
       tiles[x].geometry = null
       tiles[x].material.dispose()
       tiles[x].material = null
-      app.get('scene').remove(tiles[x])
       app.remove(tiles[x])
+      app.children = app.children.filter(child => child !== tiles[x])
+      app.get('scene').remove(tiles[x])
       delete tiles[x]
     })
     newKeys.forEach(k => {
       const zxyijs = k.split(',').map(x => parseInt(x))
       let options = {}
-      if (zxyijs[0] === '10') {options = {wireframe: true}}
-      // if (true) {options = {wireframe: true}}
-      tiles[k] = buildTile(...zxyijs, 32, options)
+      tiles[k] = buildTile(...zxyijs, options)
       tiles[k].addTo(app)
     })
     currentKeysArray = visibleKeysArray.slice(0)
