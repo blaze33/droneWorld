@@ -31,7 +31,7 @@ void main() {
     specular = pow(specAngle, 16.0);
   }
 
-  vec4 color = texture2D(spectral, vec2(abs(height)/2048.0, 0.5)) + vec4(specular * specColor, 1.0);
+  vec4 color = texture2D(spectral, vec2(abs(height)/8000.0, 0.5)) + vec4(specular * specColor, 1.0);
   float zero = smoothstep(-2.0, -1.0, height) - smoothstep(1.0, 2.0, height);
   gl_FragColor = mix(color, vec4(0), zero);
   // gl_FragColor = texture2D(spectral, vec2((height+300.0)/888.0, 0.5)) + vec4(specular * specColor, 1.0);

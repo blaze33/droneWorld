@@ -9,13 +9,13 @@ import FlyControls from './modules/FlyControls'
 import SimplexNoise from './modules/simplexNoise'
 import StatsModule from './modules/StatsModule'
 import keyboardJS from 'keyboardjs'
-import {buildTile} from './terrain/index'
+import {buildTile, buildPlane, spectralMaterial, heightmap} from './terrain'
 
 const container = document.getElementById('root')
 const cameraModule = new WHS.DefineModule(
   'camera',
   new WHS.PerspectiveCamera({ // Apply a camera.
-    position: new THREE.Vector3(0, -100, 50),
+    position: new THREE.Vector3(0, -10, 150),
     far: 1e6,
   })
 )
@@ -120,65 +120,102 @@ const calibrate = key => {
 
 let lastCameraPosition = new THREE.Vector3(0, 0, 0)
 let tiles = {}
+let pngs = {}
 let currentKeysArray = []
 window.tiles = tiles
+window.pngs = pngs
+
+// const plane = new WHS.Plane({
+//     geometry: {
+//       width: 800,
+//       height: 800,
+//       wSegments: 127,
+//       hSegments: 127,
+//       buffer: true
+//     },
+//     position: new THREE.Vector3(0, 0, 0),
+//     material: spectralMaterial(),
+//   })
+const tileSize = 800
+const material = spectralMaterial()
+
 // const terrainTarget = drone
 const terrainTarget = app.get('camera')
-const tileBuilder = new WHS.Loop(() => {
+window.camera = terrainTarget
+
+
+const tileBuilder = new WHS.Loop((clock) => {
+  // if (clock.getElapsedTime() < 1) {console.log(clock)}
   const cameraPosition = terrainTarget.position
   if (cameraPosition.distanceTo(lastCameraPosition) > 10) {
     console.log(cameraPosition)
     lastCameraPosition = cameraPosition.clone()
-    const x0 = xToTile(cameraPosition.x)
-    const y0 = yToTile(cameraPosition.y)
-    console.log(x0, y0)
-    let z0 = 9
+
+    var vector = new THREE.Vector3();
+    const camVec = terrainTarget.native.getWorldDirection( vector );
+    console.log(camVec)
+    let targetPosition = cameraPosition.clone()
+
+    targetPosition = targetPosition.add(camVec.multiplyScalar(400 * Math.max(1, cameraPosition.z / 400)))
+    drone.position.set(targetPosition.x, targetPosition.y, 0)
+
+
+    const z0 = 10
+    const zoomDelta = Math.min(8, Math.floor(Math.sqrt(cameraPosition.z) / 28))
+    const zoom = z0 - zoomDelta
+    const currentTileSize = 800 * Math.pow(2, zoomDelta)
+
+    const x0 = Math.round(targetPosition.x / currentTileSize)
+    const y0 = -Math.round(targetPosition.y / currentTileSize)
+    const segments0 = targetPosition.z > 3000 ? 127 : 255
+    const segments1 = targetPosition.z > 3000 ? 63 : 127
+    const segments2 = 31
+
     let visibleKeysArray = [
-        // [z0, x0, y0, 0, 0, 800],
-        [z0, x0 - 1, y0, 0, 0, 800],
-        [z0, x0 + 1, y0, 0, 0, 800],
-        [z0, x0 - 1, y0 - 1, 0, 0, 800],
-        [z0, x0 + 1, y0 + 1, 0, 0, 800],
-        [z0, x0 - 1, y0 + 1, 0, 0, 800],
-        [z0, x0 + 1, y0 - 1, 0, 0, 800],
-        [z0, x0, y0 - 1, 0, 0, 800],
-        // [z0, x0, y0 - 1, 0, 1, 400],
-        // [z0, x0, y0 - 1, 1, 0, 400],
-        // [z0, x0, y0 - 1, 1, 1, 400],
-        [z0, x0, y0 + 1, 0, 0, 800],
-        // [z0, x0, y0 + 1, 0, 1, 400],
-        // [z0, x0, y0 + 1, 1, 0, 400],
-        // [z0, x0, y0 + 1, 1, 1, 400],
+        [zoom, x0, y0, segments0, 0, currentTileSize],
+        [zoom, x0 - 1, y0, segments1, 0, currentTileSize],
+        [zoom, x0 + 1, y0, segments1, 0, currentTileSize],
+        [zoom, x0 - 1, y0 - 1, segments1, 0, currentTileSize],
+        [zoom, x0, y0 - 1, segments1, 0, currentTileSize],
+        [zoom, x0 + 1, y0 - 1, segments1, 0, currentTileSize],
+        [zoom, x0 - 1, y0 + 1, segments1, 0, currentTileSize],
+        [zoom, x0, y0 + 1, segments1, 0, currentTileSize],
+        [zoom, x0 + 1, y0 + 1, segments1, 0, currentTileSize],
     ]
-    for (let i=0; i < 8; i++) {
-      for (let j=0; j < 8; j++) {
-        visibleKeysArray.push([z0, x0, y0, i, j, 100])
-      }
-    }
-    // z0 = 10
-    // const x0_11 = Math.floor(x0 / 2)
-    // const y0_11 = Math.floor(y0 / 2)
-    // visibleKeysArray = visibleKeysArray.concat([
-    //   [z0, x0_11 - 1, y0_11 - 1],
-    //   [z0, x0_11 - 1, y0_11],
-    //   [z0, x0_11 - 1, y0_11 + 1],
-    //   [z0, x0_11, y0_11 - 1],
-    //   // [z0, x0_11, y0_11],
-    //   [z0, x0_11, y0_11 + 1],
-    //   [z0, x0_11 + 1, y0_11 - 1],
-    //   [z0, x0_11 + 1, y0_11],
-    //   [z0, x0_11 + 1, y0_11 + 1],
-    // ])
+    // for (let i=0; i < 8; i++) {
+    //   for (let j=0; j < 8; j++) {
+      // const i = 0
+      // const j = 0
+      //   visibleKeysArray.push([z0 + 1, 2 * x0, 2* y0, i, j, 400])
+      //   visibleKeysArray.push([z0 + 1, 2 * x0 + 1, 2* y0, i, j, 400])
+      //   visibleKeysArray.push([z0 + 1, 2 * x0, 2* y0 + 1, i, j, 400])
+      //   visibleKeysArray.push([z0 + 1, 2 * x0 + 1, 2* y0 + 1, i, j, 400])
+    //   }
+    // }
+    // // z0 = 10
+    // // const x0_11 = Math.floor(x0 / 2)
+    // // const y0_11 = Math.floor(y0 / 2)
+    // // visibleKeysArray = visibleKeysArray.concat([
+    // //   [z0, x0_11 - 1, y0_11 - 1],
+    // //   [z0, x0_11 - 1, y0_11],
+    // //   [z0, x0_11 - 1, y0_11 + 1],
+    // //   [z0, x0_11, y0_11 - 1],
+    // //   // [z0, x0_11, y0_11],
+    // //   [z0, x0_11, y0_11 + 1],
+    // //   [z0, x0_11 + 1, y0_11 - 1],
+    // //   [z0, x0_11 + 1, y0_11],
+    // //   [z0, x0_11 + 1, y0_11 + 1],
+    // // ])
 
-    let camera = terrainTarget.native
-    // camera.updateMatrix(); // make sure camera's local matrix is updated
-    // camera.updateMatrixWorld(); // make sure camera's world matrix is updated
-    // camera.matrixWorldInverse.getInverse( camera.matrixWorld );
-    var frustum = new THREE.Frustum();
-    frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
-    console.log( frustum );
+    // let camera = terrainTarget.native
+    // // camera.updateMatrix(); // make sure camera's local matrix is updated
+    // // camera.updateMatrixWorld(); // make sure camera's world matrix is updated
+    // // camera.matrixWorldInverse.getInverse( camera.matrixWorld );
+    // var frustum = new THREE.Frustum();
+    // frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+    // console.log( frustum );
 
-    visibleKeysArray = visibleKeysArray.map(key => calibrate(key))
+    // visibleKeysArray = visibleKeysArray.map(key => calibrate(key))
 
     const visibleKeysString = visibleKeysArray.map(k => k.toString())
     const currentKeysString = currentKeysArray.map(k => k.toString())
@@ -195,15 +232,19 @@ const tileBuilder = new WHS.Loop(() => {
       tiles[x].material = null
       app.remove(tiles[x])
       app.children = app.children.filter(child => child !== tiles[x])
-      app.get('scene').remove(tiles[x])
+      app.get('scene').remove(tiles[x]) 
       delete tiles[x]
     })
     newKeys.forEach(k => {
       const zxyijs = k.split(',').map(x => parseInt(x))
-      let options = {}
-      tiles[k] = buildTile(...zxyijs, options)
-      tiles[k].addTo(app)
+      tiles[k] = buildPlane(...zxyijs)
+      app.get('scene').add(tiles[k])
+
+      // const options = {}
+      // tiles[k] = buildTile(...zxyijs, 32, options)
+      // tiles[k].addTo(app)
     })
+
     currentKeysArray = visibleKeysArray.slice(0)
 
   }
@@ -213,11 +254,12 @@ tileBuilder.start()
 
 const gridHelper = new THREE.GridHelper( 1000, 10 )
 gridHelper.geometry.rotateX(Math.PI / 2)
+gridHelper.position.z = 100
 app.get('scene').add( gridHelper)
-const camera2 = new WHS.PerspectiveCamera().copy(app.get('camera'))
-camera2.position.copy(drone.position)
-console.log(camera2)
-app.get('scene').add(new THREE.CameraHelper(camera2.native))
+// const camera2 = new WHS.PerspectiveCamera().copy(app.get('camera'))
+// camera2.position.copy(drone.position)
+// console.log(camera2)
+// app.get('scene').add(new THREE.CameraHelper(camera2.native))
 
 
 // const rotateDrone = new WHS.Loop((clock) => {

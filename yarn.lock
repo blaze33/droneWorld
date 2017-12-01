@@ -4635,6 +4635,10 @@ package-json@^2.0.0:
     registry-url "^3.0.3"
     semver "^5.1.0"
 
+pako@^1.0.5:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.6.tgz#0101211baa70c4bca4a0f63f2206e97b7dfaf258"
+
 pako@~0.2.0:
   version "0.2.9"
   resolved "https://registry.yarnpkg.com/pako/-/pako-0.2.9.tgz#f3f7522f4ef782348da8161bad9ecfd51bf83a75"
@@ -6349,6 +6353,12 @@ update-notifier@^1.0.3:
     lazy-req "^1.1.0"
     semver-diff "^2.0.0"
     xdg-basedir "^2.0.0"
+
+upng-js@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/upng-js/-/upng-js-2.0.0.tgz#947b7bd26df602e2b5307d0e995481c38b345fcc"
+  dependencies:
+    pako "^1.0.5"
 
 upper-case@^1.1.1:
   version "1.1.3"
