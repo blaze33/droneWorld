@@ -15,7 +15,7 @@ const container = document.getElementById('root')
 const cameraModule = new WHS.DefineModule(
   'camera',
   new WHS.PerspectiveCamera({ // Apply a camera.
-    position: new THREE.Vector3(0, -10, 150),
+    position: new THREE.Vector3(0, -500, 450),
     far: 1e6,
   })
 )
@@ -28,7 +28,7 @@ const fogModule = new WHS.FogModule({
 
 const flyModule = new WHS.ControlsModule.from(new FlyControls(cameraModule.data.native))
 const orbitModule = new WHS.OrbitControlsModule()
-let controlsModule = flyModule
+let controlsModule = orbitModule
 
 window.WHS = WHS
 window.THREE = THREE
@@ -153,7 +153,6 @@ const tileBuilder = new WHS.Loop((clock) => {
 
     var vector = new THREE.Vector3();
     const camVec = terrainTarget.native.getWorldDirection( vector );
-    console.log(camVec)
     let targetPosition = cameraPosition.clone()
 
     targetPosition = targetPosition.add(camVec.multiplyScalar(400 * Math.max(1, cameraPosition.z / 400)))
@@ -167,20 +166,42 @@ const tileBuilder = new WHS.Loop((clock) => {
 
     const x0 = Math.round(targetPosition.x / currentTileSize)
     const y0 = -Math.round(targetPosition.y / currentTileSize)
-    const segments0 = targetPosition.z > 3000 ? 127 : 255
-    const segments1 = targetPosition.z > 3000 ? 63 : 127
-    const segments2 = 31
+    console.log(targetPosition)
+    const segments0 = cameraPosition.z > 2000 ? 127 : 255
+    const segments1 = cameraPosition.z > 2000 ? 63 : 127
+    const segments2 = 15
 
     let visibleKeysArray = [
-        [zoom, x0, y0, segments0, 0, currentTileSize],
+        [zoom, x0,     y0, segments0, 0, currentTileSize],
         [zoom, x0 - 1, y0, segments1, 0, currentTileSize],
         [zoom, x0 + 1, y0, segments1, 0, currentTileSize],
         [zoom, x0 - 1, y0 - 1, segments1, 0, currentTileSize],
-        [zoom, x0, y0 - 1, segments1, 0, currentTileSize],
+        [zoom, x0,     y0 - 1, segments1, 0, currentTileSize],
         [zoom, x0 + 1, y0 - 1, segments1, 0, currentTileSize],
         [zoom, x0 - 1, y0 + 1, segments1, 0, currentTileSize],
-        [zoom, x0, y0 + 1, segments1, 0, currentTileSize],
+        [zoom, x0,     y0 + 1, segments1, 0, currentTileSize],
         [zoom, x0 + 1, y0 + 1, segments1, 0, currentTileSize],
+
+        [zoom, x0 + 2, y0 - 2, segments2, 0, currentTileSize],
+        [zoom, x0 + 2, y0 - 1, segments2, 0, currentTileSize],
+        [zoom, x0 + 2, y0    , segments2, 0, currentTileSize],
+        [zoom, x0 + 2, y0 + 1, segments2, 0, currentTileSize],
+        [zoom, x0 + 2, y0 + 2, segments2, 0, currentTileSize],
+
+        [zoom, x0 - 2, y0 - 2, segments2, 0, currentTileSize],
+        [zoom, x0 - 2, y0 - 1, segments2, 0, currentTileSize],
+        [zoom, x0 - 2, y0    , segments2, 0, currentTileSize],
+        [zoom, x0 - 2, y0 + 1, segments2, 0, currentTileSize],
+        [zoom, x0 - 2, y0 + 2, segments2, 0, currentTileSize],
+
+        [zoom, x0 - 1, y0 + 2, segments2, 0, currentTileSize],
+        [zoom, x0    , y0 + 2, segments2, 0, currentTileSize],
+        [zoom, x0 + 1, y0 + 2, segments2, 0, currentTileSize],
+
+        [zoom, x0 - 1, y0 - 2, segments2, 0, currentTileSize],
+        [zoom, x0    , y0 - 2, segments2, 0, currentTileSize],
+        [zoom, x0 + 1, y0 - 2, segments2, 0, currentTileSize],
+
     ]
     // for (let i=0; i < 8; i++) {
     //   for (let j=0; j < 8; j++) {
