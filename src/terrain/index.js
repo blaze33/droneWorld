@@ -1,11 +1,24 @@
-import {TextureLoader, ShaderMaterial, Vector2, Vector3, MeshPhongMaterial, PlaneBufferGeometry, Mesh} from 'three'
+import {
+  TextureLoader,
+  ShaderMaterial,
+  Vector2,
+  Vector3,
+  MeshPhongMaterial,
+  PlaneBufferGeometry,
+  Mesh,
+  BufferAttribute,
+  BufferGeometry,
+  VertexNormalsHelper,
+} from 'three'
 import {Plane} from 'whs'
-import {PNG} from 'pngjs'
 import UPNG from 'upng-js'
+import {scene} from '../index'
+import SimplifyModifier from '../modules/meshSimplify'
 import vertexShader from './shaders/terrain.vert'
 import fragmentShader from './shaders/terrain.frag'
 import whiteShader from './shaders/white.frag'
 import identityShader from './shaders/white.vert'
+import Worker from './terrain.worker.js';
 
 const textureLoader = new TextureLoader().setCrossOrigin("anonymous")
 const tilesElevationURL = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium'
@@ -48,8 +61,8 @@ const spectralMaterial = (options, uniforms) => {
     extensions: {
       derivatives: true,
     },
-    // wireframe: true,
-    ...options,
+    // wireframe: false,
+    // ...options,
   })
 }
 const spectralMaterialInstance = spectralMaterial()
@@ -113,8 +126,17 @@ const pngToHeight = (array) => {
   }
   return heightmap
 }
-console.log(UPNG)
+const offsetCoords = (z, x, y) => {
+  const maxTile = Math.pow(2, z)
+  const offset = offsetAtZ(z)
+  const fetchedX = Math.floor(x + offset.x)
+  const fetchedY = Math.floor(y + offset.y)
+  x = Math.abs(fetchedX % maxTile)
+  y = Math.abs(fetchedY % maxTile)
+  return [z, x, y]
+}
 const heightmap = (z, x, y) => {
+  [z, x, y] = offsetCoords(z, x, y)
   const tileURL = `${tilesElevationURL}/${z}/${x}/${y}.png`
   return window.fetch(tileURL)
     .then(res => res.arrayBuffer())
@@ -144,29 +166,43 @@ const offsetAtZ = (z) => {
   }
 }
 
-const buildPlane = (z, x, y, segments, j, size) => {
-  const geometry = new PlaneBufferGeometry( size, size, segments, segments);
+const buildTileFromWorker = event => {
+  const geometry = new BufferGeometry();
+  const positions = new Float32Array(event.data.positions)
+  const index = new Uint16Array(event.data.indices)
+  geometry.addAttribute('position', new BufferAttribute(positions, 3))
+  geometry.setIndex(new BufferAttribute(index, 1))
+  geometry.computeVertexNormals()
   const plane = new Mesh( geometry, spectralMaterialInstance );
-  plane.geometry.attributes.position.dynamic = true
 
-  const offset = offsetAtZ(z)
-  plane.translateX(x * size - (offset.x%1 - 0.5) * size + (chamonix.x-0.5)%1*800)
-  plane.translateY(-y * size + (offset.y%1 - 0.5) * size - (chamonix.y-0.5)%1*800)
+  plane.key = event.data.key
+  scene.add(plane)
+  // var helper = new VertexNormalsHelper( plane, 2, 0x00ff00, 1 );
+  // scene.add(helper)
+}
 
-  const fetchedX = Math.floor(x + offset.x)
-  const fetchedY = Math.floor(y + offset.y)
-  if (x==0 && y==0) {console.log("offset", z, offset)}
-  plane.png = heightmap(z, fetchedX, fetchedY).then(parsedPng => {
-    plane.png = parsedPng
-    setHeightmap(plane, plane.png.heightmap, 0.1, 0)
-  });
-  return plane
+let workerPool = []
+const workerPoolSize = navigator.hardwareConcurrency - 1 || 3
+for (let i=0;i<workerPoolSize;i++) {
+  const worker = new Worker()
+  worker.onmessage = buildTileFromWorker
+  workerPool.push(worker)
+}
+let currentWorker = 0
+workerPool.postMessage = args => {
+  const worker = workerPool[currentWorker]
+  worker.postMessage(args)
+  currentWorker = currentWorker === workerPoolSize - 1 ? 0 : currentWorker + 1
+}
+
+const buildPlane = (z, x, y, segments, j, size) => {
+  workerPool.postMessage([z, x, y, segments, j, size]);
 }
 
 const setHeightmap = (plane, heightmap, scale, offset) => {
   if (!plane.geometry) {return}
   const nPosition = plane.geometry.parameters.heightSegments + 1
-  const nHeightmap = Math.sqrt(plane.png.heightmap.length)
+  const nHeightmap = Math.sqrt(heightmap.length)
   const ratio = nHeightmap / nPosition
   let x, y
   for (let i=0;i<plane.geometry.attributes.position.count;i++) {
@@ -174,9 +210,56 @@ const setHeightmap = (plane, heightmap, scale, offset) => {
     y = i % nPosition
     plane.geometry.attributes.position.setZ(i, heightmap[x * ratio * nHeightmap + Math.floor(y * ratio) - offset] * scale)
   }
+  plane.geometry.computeVertexNormals()
+  // tessellateTile(plane)
+  // const tessellator = new SimplifyModifier()
+  // console.log(tessellator)
+  // // plane.geometry.dispose()
+  // plane.geometry = tessellator.modify(plane.geometry)
   plane.geometry.attributes.position.needsUpdate = true
+  // plane.geometry.needUpdate = true
+}
+
+const tessellateTile = (plane) => {
+  const normals = plane.geometry.attributes.normal.array
+  const n = Math.sqrt(plane.geometry.attributes.normal.count)
+  let angles = new Float32Array(n * n)
+  const idx = (i, j) => (i * n + j) * 3 
+  for (let i=0;i<n;i++) {
+    for (let j=0;j<n;j++) {
+      const index = idx(i, j)
+      const normal = new Vector3(normals[index], normals[index + 1], normals[index + 2])
+      const neighbours = [
+        new Vector3(normals[idx(i - 1, j - 1)], normals[idx(i - 1, j - 1) + 1], normals[idx(i - 1, j - 1) + 2]),
+        new Vector3(normals[idx(i - 1, j)], normals[idx(i - 1, j) + 1], normals[idx(i - 1, j) + 2]),
+        new Vector3(normals[idx(i - 1, j + 1)], normals[idx(i - 1, j + 1) + 1], normals[idx(i - 1, j + 1) + 2]),
+        new Vector3(normals[idx(i, j - 1)], normals[idx(i, j - 1) + 1], normals[idx(i, j - 1) + 2]),
+        new Vector3(normals[idx(i, j + 1)], normals[idx(i, j + 1) + 1], normals[idx(i, j + 1) + 2]),
+        new Vector3(normals[idx(i + 1, j - 1)], normals[idx(i + 1, j - 1) + 1], normals[idx(i + 1, j - 1) + 2]),
+        new Vector3(normals[idx(i + 1, j)], normals[idx(i + 1, j) + 1], normals[idx(i + 1, j) + 2]),
+        new Vector3(normals[idx(i + 1, j + 1)], normals[idx(i + 1, j + 1) + 1], normals[idx(i + 1, j + 1) + 2]),
+      ]
+      const angularity = neighbours.reduce((angle, vector) => Math.abs(angle + normal.angleTo(vector)), 0)
+      angles[i * n + j] = angularity
+    }
+  }
+  const angle = new BufferAttribute(angles, 1)
+  plane.geometry.addAttribute('angle', angle)
+  const nonIndexedGeometry = plane.geometry.toNonIndexed()
+  console.log(nonIndexedGeometry)
+  const geometry = new BufferGeometry()
+  const curvatureFilter = (element, idx) => nonIndexedGeometry.attributes.angle.array[idx] > 1
+  const curvatureFilter3 = (element, idx) => nonIndexedGeometry.attributes.angle.array[~~(idx / 3)] > 1
+  const vertices = new Float32Array(
+    nonIndexedGeometry.attributes.position.array.filter(curvatureFilter3)
+  )
+  geometry.addAttribute('position', new BufferAttribute(vertices, 3));
+  geometry.addAttribute('angle', new BufferAttribute(nonIndexedGeometry.attributes.angle.array.filter(curvatureFilter), 1));
+  plane.geometry.dispose()
+  plane.geometry = geometry
   plane.geometry.computeVertexNormals()
 }
+
 
 export {
     heightMapTexture,

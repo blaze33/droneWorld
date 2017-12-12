@@ -162,7 +162,7 @@ const tileBuilder = new WHS.Loop((clock) => {
     const z0 = 10
     const zoomDelta = Math.min(8, Math.floor(Math.sqrt(cameraPosition.z) / 28))
     const zoom = z0 - zoomDelta
-    const currentTileSize = 800 * Math.pow(2, zoomDelta)
+    const currentTileSize = tileSize * Math.pow(2, zoomDelta)
 
     const x0 = Math.round(targetPosition.x / currentTileSize)
     const y0 = -Math.round(targetPosition.y / currentTileSize)
@@ -201,32 +201,7 @@ const tileBuilder = new WHS.Loop((clock) => {
         [zoom, x0 - 1, y0 - 2, segments2, 0, currentTileSize],
         [zoom, x0    , y0 - 2, segments2, 0, currentTileSize],
         [zoom, x0 + 1, y0 - 2, segments2, 0, currentTileSize],
-
     ]
-    // for (let i=0; i < 8; i++) {
-    //   for (let j=0; j < 8; j++) {
-      // const i = 0
-      // const j = 0
-      //   visibleKeysArray.push([z0 + 1, 2 * x0, 2* y0, i, j, 400])
-      //   visibleKeysArray.push([z0 + 1, 2 * x0 + 1, 2* y0, i, j, 400])
-      //   visibleKeysArray.push([z0 + 1, 2 * x0, 2* y0 + 1, i, j, 400])
-      //   visibleKeysArray.push([z0 + 1, 2 * x0 + 1, 2* y0 + 1, i, j, 400])
-    //   }
-    // }
-    // // z0 = 10
-    // // const x0_11 = Math.floor(x0 / 2)
-    // // const y0_11 = Math.floor(y0 / 2)
-    // // visibleKeysArray = visibleKeysArray.concat([
-    // //   [z0, x0_11 - 1, y0_11 - 1],
-    // //   [z0, x0_11 - 1, y0_11],
-    // //   [z0, x0_11 - 1, y0_11 + 1],
-    // //   [z0, x0_11, y0_11 - 1],
-    // //   // [z0, x0_11, y0_11],
-    // //   [z0, x0_11, y0_11 + 1],
-    // //   [z0, x0_11 + 1, y0_11 - 1],
-    // //   [z0, x0_11 + 1, y0_11],
-    // //   [z0, x0_11 + 1, y0_11 + 1],
-    // // ])
 
     // let camera = terrainTarget.native
     // // camera.updateMatrix(); // make sure camera's local matrix is updated
@@ -243,28 +218,25 @@ const tileBuilder = new WHS.Loop((clock) => {
     const newKeys = visibleKeysString.filter(x => currentKeysString.indexOf(x) < 0)
     const oldKeys = currentKeysString.filter(x => visibleKeysString.indexOf(x) < 0)
 
-    if (oldKeys) {console.log('deleting', oldKeys)}
-    if (newKeys) {console.log('adding', newKeys)}
+    if (oldKeys) {console.log('deleting', oldKeys.sort())}
+    if (newKeys) {console.log('adding', newKeys.sort())}
 
-    oldKeys.forEach(x => {
-      tiles[x].geometry.dispose()
-      tiles[x].geometry = null
-      tiles[x].material.dispose()
-      tiles[x].material = null
-      app.remove(tiles[x])
-      app.children = app.children.filter(child => child !== tiles[x])
-      app.get('scene').remove(tiles[x]) 
-      delete tiles[x]
+    newKeys.map(newKey => {
+      const zxyijs = newKey.split(',').map(x => parseInt(x))
+      const plane = buildPlane(...zxyijs)
     })
-    newKeys.forEach(k => {
-      const zxyijs = k.split(',').map(x => parseInt(x))
-      tiles[k] = buildPlane(...zxyijs)
-      app.get('scene').add(tiles[k])
-
-      // const options = {}
-      // tiles[k] = buildTile(...zxyijs, 32, options)
-      // tiles[k].addTo(app)
-    })
+    const deleteTile = (tile) => {
+      app.get('scene').remove(tile)
+      tile.geometry.dispose()
+      tile.geometry = null
+      tile.material.dispose()
+      tile.material = null
+    }
+    app.get('scene').children.filter(
+      child => child.key && visibleKeysString.indexOf(child.key) < 0
+    ).map(
+      tile => deleteTile(tile)
+    )
 
     currentKeysArray = visibleKeysArray.slice(0)
 
@@ -340,3 +312,7 @@ keyboardJS.bind('p', e => {
 keyboardJS.bind('c', e => {
   console.log(app.get('camera').position)
 })
+
+const scene = app.get('scene')
+
+export {scene}

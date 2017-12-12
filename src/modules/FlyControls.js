@@ -13,7 +13,7 @@ export default function FlyControls ( object, domElement ) {
 
     // API
 
-    this.movementSpeed = 25.0;
+    this.movementSpeed = 50.0;
     this.rollSpeed = 1;
 
     this.dragToLook = true;

@@ -140,6 +140,14 @@ module.exports = {
               name: 'static/media/[name].[hash:8].[ext]',
             },
           },
+          // Web Workers
+          {
+            test: /\.worker\.js$/,
+            use: [
+              {loader: 'worker-loader'},
+              {loader: 'babel-loader'}
+            ]
+          },
           // Process JS with Babel.
           {
             test: /\.jsx?$/,
