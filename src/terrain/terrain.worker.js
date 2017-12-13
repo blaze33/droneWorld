@@ -6,6 +6,7 @@ import {
 } from 'three'
 import UPNG from 'upng-js'
 import SimplifyModifier from '../modules/meshSimplify'
+import {crackFix} from './crackFix'
 
 const tilesElevationURL = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium'
 
@@ -47,11 +48,32 @@ const setHeightmap = (geometry, heightmap, scale, offset, key) => {
   const nHeightmap = Math.sqrt(heightmap.length)
   const ratio = nHeightmap / nPosition
   let x, y
-  for (let i=0;i<geometry.attributes.position.count;i++) {
-    x = Math.floor(i / nPosition)
-    y = i % nPosition
-    geometry.attributes.position.setZ(i, heightmap[Math.floor(x * ratio * nHeightmap + y * ratio - offset)] * scale)
+  // for (let i=0;i<geometry.attributes.position.count;i++) {
+  //   x = Math.floor(i / nPosition)
+  //   y = i % nPosition
+  //   geometry.attributes.position.setZ(i, heightmap[Math.floor(x * ratio * nHeightmap + y * ratio - offset)] * scale + offset)
+  // }
+  console.log(heightmap)
+  for (let i=1;i<nPosition-1;i++) {
+    for (let j=1;j<nPosition-1;j++) {
+      x = (i - 1) / (nPosition - 2)
+      y = (j - 1) / (nPosition - 2)
+      geometry.attributes.position.setZ(
+        i * nPosition + j,
+        heightmap[Math.floor(Math.floor(x * nHeightmap) * nHeightmap + y * nHeightmap)] * scale + offset
+      )
+    }
   }
+
+  // center geometry along xY for correct XY scaling in crackFix
+  const z0 = geometry.attributes.position.array[2]
+  geometry.center()
+  const z1 = geometry.attributes.position.array[2]
+  const deltaZ = z0- z1
+  geometry.translate(0, 0, deltaZ)
+
+  crackFix(geometry)
+
   // geometry.computeVertexNormals()
   // tessellateTile(plane)
   // const tessellator = new SimplifyModifier()
@@ -60,8 +82,16 @@ const setHeightmap = (geometry, heightmap, scale, offset, key) => {
   // geometry.needUpdate = true
   const positions = geometry.attributes.position.array.buffer
   const indices = geometry.index.array.buffer
-  postMessage({key, positions, indices}, [positions, indices])
+  postMessage({
+    key,
+    positions, indices,
+    bpe: {
+      positions: geometry.attributes.position.array.BYTES_PER_ELEMENT,
+      indices: geometry.index.array.BYTES_PER_ELEMENT,
+    },
+  }, [positions, indices])
 }
+
 // cf. http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#ECMAScript_.28JavaScript.2FActionScript.2C_etc..29
 const long2tile = (lon,zoom) => {
   return (lon+180)/360*Math.pow(2,zoom)
@@ -82,13 +112,7 @@ const offsetAtZ = (z) => {
 
 const buildPlane = (z, x, y, segments, j, size, key) => {
   const geometry = new PlaneBufferGeometry( size, size, segments, segments);
-
-  const offset = offsetAtZ(z)
-  geometry.translate(
-    x * size - (offset.x%1 - 0.5) * size + (chamonix.x-0.5)%1*800,
-    -y * size + (offset.y%1 - 0.5) * size - (chamonix.y-0.5)%1*800,
-    0
-  )
+  // const geometry = new PlaneBufferGeometry( size, size, 4, 4);
 
   heightmap(z, x, y).then(parsedPng => {
     setHeightmap(geometry, parsedPng.heightmap, 0.1, 0, key)

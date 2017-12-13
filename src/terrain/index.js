@@ -61,7 +61,7 @@ const spectralMaterial = (options, uniforms) => {
     extensions: {
       derivatives: true,
     },
-    // wireframe: false,
+    wireframe: false,
     // ...options,
   })
 }
@@ -166,16 +166,35 @@ const offsetAtZ = (z) => {
   }
 }
 
+const setTilePosition = (geometry, key) => {
+  const zxyijs = key.split(',').map(x => parseInt(x))
+  const z = zxyijs[0]
+  const x = zxyijs[1]
+  const y = zxyijs[2]
+  const size = zxyijs[5]
+  const offset = offsetAtZ(z)
+  geometry.position.set(
+    x * size - (offset.x%1 - 0.5) * size + (chamonix.x-0.5)%1*800,
+    -y * size + (offset.y%1 - 0.5) * size - (chamonix.y-0.5)%1*800,
+    0
+  )
+}
+
 const buildTileFromWorker = event => {
   const geometry = new BufferGeometry();
   const positions = new Float32Array(event.data.positions)
-  const index = new Uint16Array(event.data.indices)
+  const indexArrayClass = {
+    2: Uint16Array,
+    4: Uint32Array
+  }[event.data.bpe.indices]
+  const index = new indexArrayClass(event.data.indices)
   geometry.addAttribute('position', new BufferAttribute(positions, 3))
   geometry.setIndex(new BufferAttribute(index, 1))
   geometry.computeVertexNormals()
   const plane = new Mesh( geometry, spectralMaterialInstance );
 
   plane.key = event.data.key
+  setTilePosition(plane, event.data.key)
   scene.add(plane)
   // var helper = new VertexNormalsHelper( plane, 2, 0x00ff00, 1 );
   // scene.add(helper)
