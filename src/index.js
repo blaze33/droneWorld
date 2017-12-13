@@ -169,7 +169,7 @@ const tileBuilder = new WHS.Loop((clock) => {
     console.log(targetPosition)
     const segments0 = cameraPosition.z > 2000 ? 127 : 255
     const segments1 = cameraPosition.z > 2000 ? 63 : 127
-    const segments2 = 15
+    const segments2 = 31
 
     let visibleKeysArray = [
         [zoom, x0,     y0, segments0, 0, currentTileSize],
@@ -235,7 +235,12 @@ const tileBuilder = new WHS.Loop((clock) => {
     app.get('scene').children.filter(
       child => child.key && visibleKeysString.indexOf(child.key) < 0
     ).map(
-      tile => deleteTile(tile)
+      tile => {
+        if (!tile.markedForDeletion) {
+          new Promise((resolve) => window.setTimeout(() => deleteTile(tile), 750))
+          tile.markedForDeletion = true
+        }
+      }
     )
 
     currentKeysArray = visibleKeysArray.slice(0)
