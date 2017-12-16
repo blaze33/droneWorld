@@ -42,36 +42,49 @@ const heightmap = (z, x, y) => {
       return png
     })
 }
+
+const DEMfromHeightmap = (heightmap) => {
+  const DEM = new Uint8Array(heightmap.length * 3)
+  const [minHeight, maxHeight] = heightmap.reduce((minmax, height) => [
+    height < minmax[0] ? height : minmax[0],
+    height > minmax[1] ? height : minmax[1],
+  ], [heightmap[0], heightmap[0]])
+  const heightRange = maxHeight - minHeight
+  // const normalizedHeightmap = heightmap.map(height => Math.floor((height - minHeight) / heightRange * 255))
+  const normalizedHeightmap = heightmap.map(height => Math.abs(Math.floor(height / 8900 * 255)))
+  normalizedHeightmap.forEach((height, index) => {
+    DEM[index * 3] = height
+    DEM[index * 3 + 1] = height
+    DEM[index * 3 + 2] = height
+  })
+  return DEM
+}
+
 const setHeightmap = (geometry, heightmap, scale, offset, key) => {
   if (!geometry) {return}
-  const nPosition = geometry.parameters.heightSegments + 1
+  const nPosition = Math.sqrt(geometry.attributes.position.count)
   const nHeightmap = Math.sqrt(heightmap.length)
-  const ratio = nHeightmap / nPosition
+  const ratio = nHeightmap / (nPosition)
   let x, y
-  // for (let i=0;i<geometry.attributes.position.count;i++) {
-  //   x = Math.floor(i / nPosition)
-  //   y = i % nPosition
-  //   geometry.attributes.position.setZ(i, heightmap[Math.floor(x * ratio * nHeightmap + y * ratio - offset)] * scale + offset)
-  // }
-  console.log(heightmap)
-  for (let i=1;i<nPosition-1;i++) {
-    for (let j=1;j<nPosition-1;j++) {
-      x = (i - 1) / (nPosition - 2)
-      y = (j - 1) / (nPosition - 2)
-      geometry.attributes.position.setZ(
-        i * nPosition + j,
-        heightmap[Math.floor(Math.floor(x * nHeightmap) * nHeightmap + y * nHeightmap)] * scale + offset
-      )
-    }
+  for (let i=nPosition;i<geometry.attributes.position.count - nPosition;i++) {
+    if (
+      i % (nPosition) === 0 ||
+      i % (nPosition) === nPosition - 1
+      ) continue
+    x = Math.floor(i / (nPosition))
+    y = i % (nPosition)
+    geometry.attributes.position.setZ(
+      i,
+      heightmap[Math.round(Math.round(x * ratio) * nHeightmap + y * ratio)] * scale + offset
+    )
   }
 
-  // center geometry along xY for correct XY scaling in crackFix
+    // center geometry along xY for correct XY scaling in crackFix
   const z0 = geometry.attributes.position.array[2]
   geometry.center()
   const z1 = geometry.attributes.position.array[2]
   const deltaZ = z0- z1
   geometry.translate(0, 0, deltaZ)
-
   crackFix(geometry)
 
   // geometry.computeVertexNormals()
@@ -81,15 +94,18 @@ const setHeightmap = (geometry, heightmap, scale, offset, key) => {
   // geometry.attributes.position.needsUpdate = true
   // geometry.needUpdate = true
   const positions = geometry.attributes.position.array.buffer
+  const normals = geometry.attributes.normal.array.buffer
   const indices = geometry.index.array.buffer
+  const dem = DEMfromHeightmap(heightmap).buffer
   postMessage({
     key,
-    positions, indices,
+    positions, normals, indices, dem,
     bpe: {
       positions: geometry.attributes.position.array.BYTES_PER_ELEMENT,
+      normals: geometry.attributes.normal.array.BYTES_PER_ELEMENT,
       indices: geometry.index.array.BYTES_PER_ELEMENT,
     },
-  }, [positions, indices])
+  }, [positions, normals, indices, dem])
 }
 
 // cf. http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#ECMAScript_.28JavaScript.2FActionScript.2C_etc..29
@@ -111,7 +127,7 @@ const offsetAtZ = (z) => {
 }
 
 const buildPlane = (z, x, y, segments, j, size, key) => {
-  const geometry = new PlaneBufferGeometry( size, size, segments, segments);
+  const geometry = new PlaneBufferGeometry( size, size, segments + 2, segments + 2);
   // const geometry = new PlaneBufferGeometry( size, size, 4, 4);
 
   heightmap(z, x, y).then(parsedPng => {

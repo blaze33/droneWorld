@@ -16,6 +16,7 @@
     "chalk": "2.3.0",
     "css-loader": "0.28.7",
     "dotenv": "4.0.0",
+    "es6-tween": "^5.0.5",
     "eslint": "4.11.0",
     "eslint-config-react-app": "^2.0.1",
     "eslint-loader": "1.9.0",

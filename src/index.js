@@ -3,6 +3,8 @@ import * as THREE from 'three';
 import * as WHS from 'whs'
 import DatGUIModule from 'whs/modules/DatGUIModule'
 import Alea from 'alea'
+import { Easing, Tween, autoPlay } from 'es6-tween'
+
 // import './modules/terrain.js'
 import DragControls from './modules/DragControls'
 import FlyControls from './modules/FlyControls'
@@ -25,6 +27,7 @@ const fogModule = new WHS.FogModule({
   near: 20,
   far: 200
 }, 'exp2');
+window.THREE = THREE
 
 const flyModule = new WHS.ControlsModule.from(new FlyControls(cameraModule.data.native))
 const orbitModule = new WHS.OrbitControlsModule()
@@ -148,7 +151,6 @@ const tileBuilder = new WHS.Loop((clock) => {
   // if (clock.getElapsedTime() < 1) {console.log(clock)}
   const cameraPosition = terrainTarget.position
   if (cameraPosition.distanceTo(lastCameraPosition) > 10) {
-    console.log(cameraPosition)
     lastCameraPosition = cameraPosition.clone()
 
     var vector = new THREE.Vector3();
@@ -157,50 +159,70 @@ const tileBuilder = new WHS.Loop((clock) => {
 
     targetPosition = targetPosition.add(camVec.multiplyScalar(400 * Math.max(1, cameraPosition.z / 400)))
     drone.position.set(targetPosition.x, targetPosition.y, 0)
+    // if (app.manager.modules.controls.controls.target) {
+    //   app.manager.modules.controls.controls.target.setZ(0)
+    // }
 
 
     const z0 = 10
-    const zoomDelta = Math.min(8, Math.floor(Math.sqrt(cameraPosition.z) / 28))
+    const zoomDelta = Math.min(7, Math.floor(Math.sqrt(cameraPosition.z) / 28))
+    // const zoomDelta = 0
     const zoom = z0 - zoomDelta
     const currentTileSize = tileSize * Math.pow(2, zoomDelta)
 
     const x0 = Math.round(targetPosition.x / currentTileSize)
     const y0 = -Math.round(targetPosition.y / currentTileSize)
-    console.log(targetPosition)
+
     const segments0 = cameraPosition.z > 2000 ? 127 : 255
-    const segments1 = cameraPosition.z > 2000 ? 63 : 127
-    const segments2 = 31
+    const segments1 = cameraPosition.z > 2000 ? 31 : 63
+    // const segments0 = 32
+    // const segments1 = 15
+    const segments2 = 15
 
     let visibleKeysArray = [
-        [zoom, x0,     y0, segments0, 0, currentTileSize],
-        [zoom, x0 - 1, y0, segments1, 0, currentTileSize],
-        [zoom, x0 + 1, y0, segments1, 0, currentTileSize],
+        [zoom, x0,     y0    , segments0, 0, currentTileSize],
+        [zoom, x0,     y0 + 1, segments0, 0, currentTileSize],
+        [zoom, x0 + 1, y0    , segments0, 0, currentTileSize],
+        [zoom, x0 + 1, y0 + 1, segments0, 0, currentTileSize],
+
         [zoom, x0 - 1, y0 - 1, segments1, 0, currentTileSize],
-        [zoom, x0,     y0 - 1, segments1, 0, currentTileSize],
-        [zoom, x0 + 1, y0 - 1, segments1, 0, currentTileSize],
+        [zoom, x0 - 1, y0 - 0, segments1, 0, currentTileSize],
         [zoom, x0 - 1, y0 + 1, segments1, 0, currentTileSize],
-        [zoom, x0,     y0 + 1, segments1, 0, currentTileSize],
-        [zoom, x0 + 1, y0 + 1, segments1, 0, currentTileSize],
+        [zoom, x0 - 1, y0 + 2, segments1, 0, currentTileSize],
 
-        [zoom, x0 + 2, y0 - 2, segments2, 0, currentTileSize],
-        [zoom, x0 + 2, y0 - 1, segments2, 0, currentTileSize],
-        [zoom, x0 + 2, y0    , segments2, 0, currentTileSize],
-        [zoom, x0 + 2, y0 + 1, segments2, 0, currentTileSize],
-        [zoom, x0 + 2, y0 + 2, segments2, 0, currentTileSize],
+        [zoom, x0 + 2, y0 - 1, segments1, 0, currentTileSize],
+        [zoom, x0 + 2, y0 - 0, segments1, 0, currentTileSize],
+        [zoom, x0 + 2, y0 + 1, segments1, 0, currentTileSize],
+        [zoom, x0 + 2, y0 + 2, segments1, 0, currentTileSize],
 
-        [zoom, x0 - 2, y0 - 2, segments2, 0, currentTileSize],
-        [zoom, x0 - 2, y0 - 1, segments2, 0, currentTileSize],
-        [zoom, x0 - 2, y0    , segments2, 0, currentTileSize],
-        [zoom, x0 - 2, y0 + 1, segments2, 0, currentTileSize],
-        [zoom, x0 - 2, y0 + 2, segments2, 0, currentTileSize],
+        [zoom, x0    , y0 - 1, segments1, 0, currentTileSize],
+        [zoom, x0    , y0 + 2, segments1, 0, currentTileSize],
+        [zoom, x0 + 1, y0 - 1, segments1, 0, currentTileSize],
+        [zoom, x0 + 1, y0 + 2, segments1, 0, currentTileSize],
 
-        [zoom, x0 - 1, y0 + 2, segments2, 0, currentTileSize],
-        [zoom, x0    , y0 + 2, segments2, 0, currentTileSize],
-        [zoom, x0 + 1, y0 + 2, segments2, 0, currentTileSize],
+        // [zoom, x0 - 2, y0 - 2, segments2, 0, currentTileSize],
+        // [zoom, x0 - 2, y0 - 1, segments2, 0, currentTileSize],
+        // [zoom, x0 - 2, y0 - 0, segments2, 0, currentTileSize],
+        // [zoom, x0 - 2, y0 + 1, segments2, 0, currentTileSize],
+        // [zoom, x0 - 2, y0 + 2, segments2, 0, currentTileSize],
+        // [zoom, x0 - 2, y0 + 3, segments2, 0, currentTileSize],
 
-        [zoom, x0 - 1, y0 - 2, segments2, 0, currentTileSize],
-        [zoom, x0    , y0 - 2, segments2, 0, currentTileSize],
-        [zoom, x0 + 1, y0 - 2, segments2, 0, currentTileSize],
+        // [zoom, x0 + 3, y0 - 2, segments2, 0, currentTileSize],
+        // [zoom, x0 + 3, y0 - 1, segments2, 0, currentTileSize],
+        // [zoom, x0 + 3, y0 - 0, segments2, 0, currentTileSize],
+        // [zoom, x0 + 3, y0 + 1, segments2, 0, currentTileSize],
+        // [zoom, x0 + 3, y0 + 2, segments2, 0, currentTileSize],
+        // [zoom, x0 + 3, y0 + 3, segments2, 0, currentTileSize],
+
+        // [zoom, x0 - 1, y0 - 2, segments2, 0, currentTileSize],
+        // [zoom, x0 - 1, y0 + 3, segments2, 0, currentTileSize],
+        // [zoom, x0    , y0 - 2, segments2, 0, currentTileSize],
+        // [zoom, x0    , y0 + 3, segments2, 0, currentTileSize],
+        // [zoom, x0 + 1, y0 - 2, segments2, 0, currentTileSize],
+        // [zoom, x0 + 1, y0 + 3, segments2, 0, currentTileSize],
+        // [zoom, x0 + 2, y0 - 2, segments2, 0, currentTileSize],
+        // [zoom, x0 + 2, y0 + 3, segments2, 0, currentTileSize],
+
     ]
 
     // let camera = terrainTarget.native
@@ -218,8 +240,8 @@ const tileBuilder = new WHS.Loop((clock) => {
     const newKeys = visibleKeysString.filter(x => currentKeysString.indexOf(x) < 0)
     const oldKeys = currentKeysString.filter(x => visibleKeysString.indexOf(x) < 0)
 
-    if (oldKeys) {console.log('deleting', oldKeys.sort())}
-    if (newKeys) {console.log('adding', newKeys.sort())}
+    // if (oldKeys) {console.log('deleting', oldKeys.sort())}
+    // if (newKeys) {console.log('adding', newKeys.sort())}
 
     newKeys.map(newKey => {
       const zxyijs = newKey.split(',').map(x => parseInt(x))
@@ -229,6 +251,7 @@ const tileBuilder = new WHS.Loop((clock) => {
       app.get('scene').remove(tile)
       tile.geometry.dispose()
       tile.geometry = null
+      tile.material.uniforms.heightmap.value.dispose()
       tile.material.dispose()
       tile.material = null
     }
@@ -250,10 +273,10 @@ const tileBuilder = new WHS.Loop((clock) => {
 app.addLoop(tileBuilder)
 tileBuilder.start()
 
-const gridHelper = new THREE.GridHelper( 1000, 10 )
-gridHelper.geometry.rotateX(Math.PI / 2)
-gridHelper.position.z = 100
-app.get('scene').add( gridHelper)
+// const gridHelper = new THREE.GridHelper( 1000, 10 )
+// gridHelper.geometry.rotateX(Math.PI / 2)
+// gridHelper.position.z = 100
+// app.get('scene').add( gridHelper)
 // const camera2 = new WHS.PerspectiveCamera().copy(app.get('camera'))
 // camera2.position.copy(drone.position)
 // console.log(camera2)
@@ -308,6 +331,19 @@ keyboardJS.bind('p', e => {
   console.log("disposed", controlsModule)
   toggleControls(controlsModule, false)
   controlsModule = controlsModule === orbitModule ? flyModule : orbitModule
+  if (controlsModule === orbitModule) {
+    console.log(controlsModule)
+    let cam = drone.position.clone()
+    const target = orbitModule.controls.target
+    let tween = new Tween({x: target.x, y: target.y, z: target.z})
+      .to({ x: cam.x, y: cam.y + 1000, z: 0 }, 1000)
+      .on('update', ({x, y, z}) => {
+        orbitModule.controls.target.set(x, y, z)
+        orbitModule.controls.update()
+      })
+      .start();
+    console.log(tween)
+  }
   app.applyModule(controlsModule)
   toggleControls(controlsModule, true)
   console.log("apply", controlsModule)
@@ -318,6 +354,13 @@ keyboardJS.bind('c', e => {
   console.log(app.get('camera').position)
 })
 
+keyboardJS.bind('r', e => {
+  const autoRotate = app.manager.modules.controls.controls.autoRotate
+  app.manager.modules.controls.controls.autoRotate = !autoRotate
+})
+
 const scene = app.get('scene')
+
+autoPlay(true)
 
 export {scene}

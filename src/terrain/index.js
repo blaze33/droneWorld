@@ -9,11 +9,14 @@ import {
   BufferAttribute,
   BufferGeometry,
   VertexNormalsHelper,
+  DataTexture,
+  RGBFormat,
+  LinearFilter,
 } from 'three'
 import {Plane} from 'whs'
 import UPNG from 'upng-js'
 import {scene} from '../index'
-import SimplifyModifier from '../modules/meshSimplify'
+// import SimplifyModifier from '../modules/meshSimplify'
 import vertexShader from './shaders/terrain.vert'
 import fragmentShader from './shaders/terrain.frag'
 import whiteShader from './shaders/white.frag'
@@ -165,7 +168,7 @@ const offsetAtZ = (z) => {
     y: chamonix.y / Math.pow(2, 10 - z),
   }
 }
-
+window.chamonix = chamonix
 const setTilePosition = (geometry, key) => {
   const zxyijs = key.split(',').map(x => parseInt(x))
   const z = zxyijs[0]
@@ -174,8 +177,8 @@ const setTilePosition = (geometry, key) => {
   const size = zxyijs[5]
   const offset = offsetAtZ(z)
   geometry.position.set(
-    x * size - (offset.x%1 - 0.5) * size + (chamonix.x-0.5)%1*800,
-    -y * size + (offset.y%1 - 0.5) * size - (chamonix.y-0.5)%1*800,
+    x * size - (offset.x%1 - 0.5) * size - (1-chamonix.x%1) * 800,
+    -y * size + (offset.y%1 - 0.5) * size + (1-chamonix.y%1) * 800,
     0
   )
 }
@@ -183,17 +186,33 @@ const setTilePosition = (geometry, key) => {
 const buildTileFromWorker = event => {
   const geometry = new BufferGeometry();
   const positions = new Float32Array(event.data.positions)
+  const normals = new Float32Array(event.data.normals)
   const indexArrayClass = {
     2: Uint16Array,
     4: Uint32Array
   }[event.data.bpe.indices]
   const index = new indexArrayClass(event.data.indices)
+  const dem = new Uint8Array(event.data.dem)
+  let uv = new Float32Array(positions.length / 3 * 2)
+  const n = Math.sqrt(positions.length / 3)
+  uv = uv.map((_, index) => index % 2 ? Math.floor((index / 2) / n) /n : (index / 2) % n /  n)
   geometry.addAttribute('position', new BufferAttribute(positions, 3))
+  geometry.addAttribute('normal', new BufferAttribute(normals, 3))
+  geometry.addAttribute('uv', new BufferAttribute(uv, 2))
   geometry.setIndex(new BufferAttribute(index, 1))
-  geometry.computeVertexNormals()
-  const plane = new Mesh( geometry, spectralMaterialInstance );
+  // geometry.computeVertexNormals()
+
+  const heightTexture = new DataTexture(dem, 256, 256, RGBFormat)
+  heightTexture.anisotropy = 1
+  heightTexture.minFilter = LinearFilter
+  heightTexture.magFilter = LinearFilter
+  heightTexture.needsUpdate = true
+  const material = spectralMaterial({}, {heightmap: {value: heightTexture}})
+  const plane = new Mesh( geometry, material );
 
   plane.key = event.data.key
+  plane.castShadow = true; //default is false
+  plane.receiveShadow = true;
   setTilePosition(plane, event.data.key)
   scene.add(plane)
   // var helper = new VertexNormalsHelper( plane, 2, 0x00ff00, 1 );
