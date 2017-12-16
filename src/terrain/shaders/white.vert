@@ -38,7 +38,7 @@ void main() {
 
   mat3 normalMatrix = transpose(inverse(mat3(modelViewMatrix)));
   vNormal = normalize(normalMatrix * normal);
-
+  vNormal = normal;
 
   ang = angle;
   UV = uv;

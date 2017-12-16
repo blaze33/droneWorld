@@ -12,6 +12,7 @@ import {
   DataTexture,
   RGBFormat,
   LinearFilter,
+  RepeatWrapping,
 } from 'three'
 import {Plane} from 'whs'
 import UPNG from 'upng-js'
@@ -53,10 +54,27 @@ const terrainMaterial = (z, x, y, options, uniforms) => {
   });
 }
 
+const rockTexture = textureLoader.load(require('../textures/Rock_08_UV_H_CM_1.jpg'))
+const grassTexture = textureLoader.load(require('../textures/Grass_01_UV_H_CM_1.jpg'))
+const icyTexture = textureLoader.load(require('../textures/snow_scuffed_ground_1.jpg'))
+const snowTexture = textureLoader.load(require('../textures/Snow_01_UV_H_CM_1.jpg'))
+rockTexture.wrapS = RepeatWrapping
+rockTexture.wrapT = RepeatWrapping
+grassTexture.wrapS = RepeatWrapping
+grassTexture.wrapT = RepeatWrapping
+icyTexture.wrapS = RepeatWrapping
+icyTexture.wrapT = RepeatWrapping
+snowTexture.wrapS = RepeatWrapping
+snowTexture.wrapT = RepeatWrapping
+
 const spectralMaterial = (options, uniforms) => {
   return new ShaderMaterial({
     uniforms: {
       spectral: {value: spectralTexture},
+      rockTexture: {value: rockTexture},
+      grassTexture: {value: grassTexture},
+      icyTexture: {value: icyTexture},
+      snowTexture: {value: snowTexture},
       ...uniforms
     },
     vertexShader: identityShader,

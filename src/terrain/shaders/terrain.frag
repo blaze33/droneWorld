@@ -3,6 +3,10 @@ precision mediump float;
 uniform float bFlat;
 uniform sampler2D spectral;
 uniform sampler2D heightmap;
+uniform sampler2D rockTexture;
+uniform sampler2D grassTexture;
+uniform sampler2D icyTexture;
+uniform sampler2D snowTexture;
 varying vec3 vNormal;
 varying vec3 pos;
 varying float height;
@@ -39,20 +43,20 @@ void make_kernel(inout vec4 n[9], sampler2D tex, vec2 coord)
 
 
 void main() {
-  vec3 normal = mix(vNormal, normals(pos), bFlat);
-  // vec3 vNormal = faceNormals(pos);
-  // gl_FragColor = vec4(vNormal, 1.0);
+  // vec3 normal = mix(vNormal, normals(pos), bFlat);
+  // // vec3 vNormal = faceNormals(pos);
+  // // gl_FragColor = vec4(vNormal, 1.0);
 
-  // vec3 lightDir = normalize(lightPos - pos);
-  // float lambertian = max(dot(lightDir,normal), 0.0);
-  // float specular = 0.0;
+  // // vec3 lightDir = normalize(lightPos - pos);
+  // // float lambertian = max(dot(lightDir,normal), 0.0);
+  // // float specular = 0.0;
 
-  // if(lambertian > 0.0) {
-  //   vec3 viewDir = normalize(-pos);
-  //   vec3 halfDir = normalize(lightDir + viewDir);
-  //   float specAngle = max(dot(halfDir, normal), 0.0);
-  //   specular = pow(specAngle, 16.0);
-  // }
+  // // if(lambertian > 0.0) {
+  // //   vec3 viewDir = normalize(-pos);
+  // //   vec3 halfDir = normalize(lightDir + viewDir);
+  // //   float specAngle = max(dot(halfDir, normal), 0.0);
+  // //   specular = pow(specAngle, 16.0);
+  // // }
 
   vec4 n[9];
   make_kernel( n, heightmap, UV );
@@ -69,18 +73,31 @@ void main() {
 
   vec4 color = texture2D(spectral, vec2(abs(height/8000.0), 0.5)); // + vec4(specular * specColor, 1.0);
   vec4 colorOcean = normalize(vec4(91.0, 154.0, 205.0, 1.0)) ;//* (11000.0 + height)/11000.0;
+  float flatness = dot(vNormal, vec3(0.0, 0.0, 1.0));
+  vec4 colorTerrain = mix(
+    texture2D(rockTexture, UV * 20.0),
+    texture2D(grassTexture, UV * 20.0),
+    flatness
+  );
   float sobelValue = clamp(sobel.r, 0.0, 0.3);
   vec4 color2 = mix(color, vec4(1., 1., 1., 1.0), sobelValue);
+  vec4 colorTerrain2 = mix(
+    colorTerrain, vec4(1.0),
+    smoothstep(0.4, 0.5, sobelValue)
+  );
   vec4 colorOcean2 = mix(colorOcean, vec4(0), sobelValue);
   vec4 colorH = texture2D(heightmap, UV);
   vec4 colorNormal = vec4(vNormal, 0);
   float zero = smoothstep(-1.0, -.5, height) - smoothstep(.5, 1.0, height);
   float zeroOcean = 1.0 - smoothstep(0.0, 1.0, height);
-  vec4 colorTotal = mix(color2, colorOcean2, zeroOcean);
-  // gl_FragColor = mix(color2, vec4(0), zero);
-  // gl_FragColor = mix(colorTotal, vec4(0), zero); //* vec4(diffuse, 1.0);
+  vec4 colorTotal = mix(colorTerrain2, colorOcean2, zeroOcean);
+  // // gl_FragColor = mix(color2, vec4(0), zero);
+  // // gl_FragColor = mix(colorTotal, vec4(0), zero); //* vec4(diffuse, 1.0);
 
   gl_FragColor = mix(colorTotal / sqrt(2.0)* (colorTotal + vec4(diffuse, 1.0)), vec4(1.0),  depth);
+  
+  // gl_FragColor = texture2D(rockTexture, UV);
+  
 
   // gl_FragColor = colorTotal * (colorTotal);
   // gl_FragColor = texture2D(spectral, vec2((height+300.0)/888.0, 0.5)) + vec4(specular * specColor, 1.0);
