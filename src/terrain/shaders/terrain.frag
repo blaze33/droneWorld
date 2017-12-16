@@ -80,7 +80,7 @@ void main() {
   // gl_FragColor = mix(color2, vec4(0), zero);
   // gl_FragColor = mix(colorTotal, vec4(0), zero); //* vec4(diffuse, 1.0);
 
-  gl_FragColor = depth  * colorTotal / sqrt(2.0)* (colorTotal + vec4(diffuse, 1.0));
+  gl_FragColor = mix(colorTotal / sqrt(2.0)* (colorTotal + vec4(diffuse, 1.0)), vec4(1.0),  depth);
 
   // gl_FragColor = colorTotal * (colorTotal);
   // gl_FragColor = texture2D(spectral, vec2((height+300.0)/888.0, 0.5)) + vec4(specular * specColor, 1.0);

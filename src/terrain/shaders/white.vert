@@ -45,5 +45,5 @@ void main() {
   vViewPosition = mpos.xyz;
 
   // DEPTH
-  depth = clamp(1.00 - gl_Position.z / 100000.0, 0.3, 1.0);
+  depth = clamp(gl_Position.z / 2500.0, 0.0, 0.7);
 }
