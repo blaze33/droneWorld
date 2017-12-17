@@ -22,12 +22,7 @@ const cameraModule = new WHS.DefineModule(
     far: 1e6,
   })
 )
-const fogModule = new WHS.FogModule({
-  color: 0xffffff,
-  density: 0.03,
-  near: 20,
-  far: 200
-}, 'exp2');
+
 window.THREE = THREE
 
 const flyModule = new WHS.ControlsModule.from(new FlyControls(cameraModule.data.native))
@@ -56,7 +51,6 @@ const app = new WHS.App([
       }
     }
   }, {shadow: true}),
-  // fogModule,
   controlsModule,
   new StatsModule(0),
   new WHS.ResizeModule()
@@ -257,32 +251,6 @@ tileBuilder.start()
 // });
 // app.addLoop(rotateDrone)
 // // rotateDrone.start()
-
-// Lights
-new WHS.PointLight({
-  light: {
-    intensity: 1,
-    distance: 100
-  },
-
-  shadow: {
-    fov: 90
-  },
-
-  position: new THREE.Vector3(0, 10, 20)
-}).addTo(app);
-
-new WHS.AmbientLight({
-  light: {
-    intensity: 0.4
-  }
-}).addTo(app);
-
-new WHS.HemisphereLight({ 
-  skyColor: 0xff0000,
-  groundColor: 0x0000ff,
-  intensity: 0.2
-}).addTo(app);
 
 // Start the app
 app.start();
