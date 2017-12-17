@@ -77,7 +77,7 @@ void main() {
   vec4 colorTerrain = mix(
     texture2D(rockTexture, UV * 20.0),
     texture2D(grassTexture, UV * 20.0),
-    smoothstep(0.5, 0.6, flatness)
+    smoothstep(0.6, 0.7, flatness)
     // flatness
   );
   vec4 colorSnow = mix(

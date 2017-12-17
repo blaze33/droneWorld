@@ -85,6 +85,7 @@ const setHeightmap = (geometry, heightmap, scale, offset, key) => {
   const z1 = geometry.attributes.position.array[2]
   const deltaZ = z0- z1
   geometry.translate(0, 0, deltaZ)
+  geometry.scale(1, 1, 0.75)
   crackFix(geometry)
 
   // geometry.computeVertexNormals()
