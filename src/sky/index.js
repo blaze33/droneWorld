@@ -29,8 +29,8 @@ function initSky(scene, gui) {
       mieCoefficient: 0.005,
       mieDirectionalG: 0.8,
       luminance: 1,
-      inclination: 0.49, // elevation / inclination
-      azimuth: 0.25, // Facing front,
+      inclination: 0.47, // elevation / inclination
+      azimuth: 0.01, // Facing front,
       sun: ! true
   };
 
@@ -49,8 +49,8 @@ function initSky(scene, gui) {
       var phi = 2 * Math.PI * ( effectController.azimuth - 0.5 );
 
       sunSphere.position.x = distance * Math.cos( phi );
-      sunSphere.position.y = distance * Math.sin( phi ) * Math.sin( theta );
-      sunSphere.position.z = distance * Math.sin( phi ) * Math.cos( theta );
+      sunSphere.position.z = distance * Math.sin( phi ) * Math.sin( theta );
+      sunSphere.position.y = distance * Math.sin( phi ) * Math.cos( theta );
 
       sunSphere.visible = effectController.sun;
 
