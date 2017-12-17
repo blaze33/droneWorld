@@ -91,38 +91,6 @@ const dragModule = new WHS.ControlsModule.from(dragControls)
 
 initSky(app.get('scene'), gui)
 
-const xToTile = x => {
-  return Math.floor((x + 50) / 800 + 330 / 4)
-}
-
-const yToTile = y => {
-  return Math.floor((-y + 50) / 800 + 790 / 4)
-}
-
-const tileToX = x0 => (x0 - 330 / 4) * 800
-const tileToY = y0 => (y0 - 790 / 4) * 800
-
-
-const distanceToCamera = key => {
-  const xy = new THREE.Vector3(
-    tileToX(key[1]) + (key[3] + 0.5) * key[5],
-    tileToY(key[2]) + (key[4] + 0.5) * key[5],
-    0
-  )
-  const cameraPosition = app.get('camera').position
-  return 32
-  return Math.min(
-    Math.floor(32 * 200 / xy.distanceTo(cameraPosition) * key[5] / 100),
-    32
-  )
-}
-
-const calibrate = key => {
-  const segments = 32
-  return [...key, distanceToCamera(key)]
-}
-
-
 let lastCameraPosition = new THREE.Vector3(0, 0, 0)
 let tiles = {}
 let pngs = {}
@@ -234,8 +202,6 @@ const tileBuilder = new WHS.Loop((clock) => {
     // var frustum = new THREE.Frustum();
     // frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
     // console.log( frustum );
-
-    // visibleKeysArray = visibleKeysArray.map(key => calibrate(key))
 
     const visibleKeysString = visibleKeysArray.map(k => k.toString())
     const currentKeysString = currentKeysArray.map(k => k.toString())
