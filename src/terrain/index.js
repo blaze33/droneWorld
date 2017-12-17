@@ -55,13 +55,18 @@ const terrainMaterial = (z, x, y, options, uniforms) => {
 }
 
 const rockTexture = textureLoader.load(require('../textures/Rock_08_UV_H_CM_1.jpg'))
-const grassTexture = textureLoader.load(require('../textures/Grass_01_UV_H_CM_1.jpg'))
+// const rockTexture = textureLoader.load(require('../textures/rock_brown_1600.jpg'))
+const grassTexture = textureLoader.load(require('../textures/GrassGreenTexture0003.png'))
+// const grassTexture = textureLoader.load(require('../textures/rainforest512.jpg'))
+const grassTexture2 = textureLoader.load(require('../textures/Grass_01_UV_H_CM_1.jpg'))
 const icyTexture = textureLoader.load(require('../textures/snow_scuffed_ground_1.jpg'))
 const snowTexture = textureLoader.load(require('../textures/Snow_01_UV_H_CM_1.jpg'))
 rockTexture.wrapS = RepeatWrapping
 rockTexture.wrapT = RepeatWrapping
 grassTexture.wrapS = RepeatWrapping
 grassTexture.wrapT = RepeatWrapping
+grassTexture2.wrapS = RepeatWrapping
+grassTexture2.wrapT = RepeatWrapping
 icyTexture.wrapS = RepeatWrapping
 icyTexture.wrapT = RepeatWrapping
 snowTexture.wrapS = RepeatWrapping

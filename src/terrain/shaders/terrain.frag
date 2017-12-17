@@ -77,13 +77,23 @@ void main() {
   vec4 colorTerrain = mix(
     texture2D(rockTexture, UV * 20.0),
     texture2D(grassTexture, UV * 20.0),
-    flatness
+    smoothstep(0.5, 0.6, flatness)
+    // flatness
   );
+  vec4 colorSnow = mix(
+    texture2D(icyTexture, UV * 20.0),
+    texture2D(snowTexture, UV * 20.0),
+    smoothstep(0.5, 0.6, flatness)
+    // flatness
+  );
+  // vec colorTerrain4 = mix
+
   float sobelValue = clamp(sobel.r, 0.0, 0.3);
   vec4 color2 = mix(color, vec4(1., 1., 1., 1.0), sobelValue);
   vec4 colorTerrain2 = mix(
     colorTerrain, vec4(1.0),
-    smoothstep(0.4, 0.5, sobelValue)
+    sobelValue
+    // smoothstep(0.4, 0.5, sobelValue)
   );
   vec4 colorOcean2 = mix(colorOcean, vec4(0), sobelValue);
   vec4 colorH = texture2D(heightmap, UV);
