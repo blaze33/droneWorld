@@ -11,6 +11,7 @@ import DragControls from './modules/DragControls'
 import FlyControls from './modules/FlyControls'
 import SimplexNoise from './modules/simplexNoise'
 import StatsModule from './modules/StatsModule'
+import {WindowResize} from './modules/WindowResize'
 import {initSky} from './sky'
 
 import {tileBuilder} from './loops/tileBuilder'
@@ -54,7 +55,6 @@ const app = new WHS.App([
   }, {shadow: true}),
   controlsModule,
   new StatsModule(0),
-  new WHS.ResizeModule()
 ]);
 window.app = app
 const gui = new dat.GUI()
@@ -91,6 +91,7 @@ app.addLoop(tileBuilder)
 app.get('renderer').setPixelRatio(1)
 app.start();
 tileBuilder.start()
+WindowResize(app.get('renderer'), camera.native)
 
 const toggleControls = (module, state) => {
   state = state !== undefined ? state : module.controls.enabled
