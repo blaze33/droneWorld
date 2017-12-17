@@ -3,7 +3,7 @@ import {
 } from 'three'
 import {Loop} from 'whs'
 import {camera, scene, drone} from '../index'
-import {buildTile, buildPlane, spectralMaterial, heightmap} from '../terrain'
+import {buildPlane} from '../terrain'
 
 const tileSize = 800
 let lastCameraPosition = new Vector3(0, 0, 0)

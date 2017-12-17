@@ -88,6 +88,7 @@ initSky(app.get('scene'), gui)
 app.addLoop(tileBuilder)
 
 // Start the app
+app.get('renderer').setPixelRatio(1)
 app.start();
 tileBuilder.start()
 
@@ -119,7 +120,6 @@ keyboardJS.bind('p', e => {
   toggleControls(controlsModule, true)
   console.log("apply", controlsModule)
 })
-// keyboardJS.watch()
 
 keyboardJS.bind('c', e => {
   console.log(app.get('camera').position)
@@ -130,6 +130,7 @@ keyboardJS.bind('r', e => {
   app.manager.modules.controls.controls.autoRotate = !autoRotate
 })
 
+// tween js start
 autoPlay(true)
 
 export {scene, camera, drone}
