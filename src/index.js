@@ -10,6 +10,7 @@ import DragControls from './modules/DragControls'
 import FlyControls from './modules/FlyControls'
 import SimplexNoise from './modules/simplexNoise'
 import StatsModule from './modules/StatsModule'
+import {initSky} from './sky'
 import keyboardJS from 'keyboardjs'
 import {buildTile, buildPlane, spectralMaterial, heightmap} from './terrain'
 
@@ -88,6 +89,7 @@ dragControls.addEventListener( 'dragend', event => {
 });
 const dragModule = new WHS.ControlsModule.from(dragControls)
 
+initSky(app.get('scene'), gui)
 
 const xToTile = x => {
   return Math.floor((x + 50) / 800 + 330 / 4)
