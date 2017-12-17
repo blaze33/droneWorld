@@ -1,21 +1,14 @@
 import {
   TextureLoader,
   ShaderMaterial,
-  Vector2,
-  Vector3,
-  MeshPhongMaterial,
-  PlaneBufferGeometry,
   Mesh,
   BufferAttribute,
   BufferGeometry,
-  VertexNormalsHelper,
   DataTexture,
   RGBFormat,
   LinearFilter,
   RepeatWrapping,
 } from 'three'
-import {Plane} from 'whs'
-import UPNG from 'upng-js'
 import {scene} from '../index'
 // import SimplifyModifier from '../modules/meshSimplify'
 import vertexShader from './shaders/terrain.vert'
