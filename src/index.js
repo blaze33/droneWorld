@@ -1,7 +1,7 @@
 import './index.css'
 import * as THREE from 'three';
 import * as WHS from 'whs'
-import DatGUIModule from 'whs/modules/DatGUIModule'
+import dat from 'dat.gui/build/dat.gui.js'
 import Alea from 'alea'
 import { Easing, Tween, autoPlay } from 'es6-tween'
 
@@ -59,11 +59,10 @@ const app = new WHS.App([
   // fogModule,
   controlsModule,
   new StatsModule(0),
-  new DatGUIModule(),
   new WHS.ResizeModule()
 ]);
 window.app = app
-const gui = app.manager.modules["gui/dat.gui"].gui
+const gui = new dat.GUI()
 window.gui = gui
 
 console.log(app.get('camera'))
