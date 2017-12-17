@@ -157,7 +157,7 @@ const tileBuilder = new WHS.Loop((clock) => {
     const camVec = terrainTarget.native.getWorldDirection( vector );
     let targetPosition = cameraPosition.clone()
 
-    targetPosition = targetPosition.add(camVec.multiplyScalar(400 * Math.max(1, cameraPosition.z / 400)))
+    targetPosition = targetPosition.add(camVec.multiplyScalar(400 * Math.max(1, Math.abs(cameraPosition.z) / 400)))
     drone.position.set(targetPosition.x, targetPosition.y, 0)
     // if (app.manager.modules.controls.controls.target) {
     //   app.manager.modules.controls.controls.target.setZ(0)
@@ -165,7 +165,7 @@ const tileBuilder = new WHS.Loop((clock) => {
 
 
     const z0 = 10
-    const zoomDelta = Math.min(7, Math.floor(Math.sqrt(cameraPosition.z) / 28))
+    const zoomDelta = Math.min(7, Math.floor(Math.sqrt(Math.abs(cameraPosition.z)) / 28))
     // const zoomDelta = 0
     const zoom = z0 - zoomDelta
     const currentTileSize = tileSize * Math.pow(2, zoomDelta)
