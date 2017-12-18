@@ -29,11 +29,11 @@ var renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-// const orbitModule = new OrbitControls(camera, renderer.domElement)
-// let controlsModule = orbitModule
+const orbitModule = new OrbitControls(camera, renderer.domElement)
+let controlsModule = orbitModule
 
-const flyModule = new FlyControls(camera, renderer.domElement)
-let controlsModule = flyModule
+// const flyModule = new FlyControls(camera, renderer.domElement)
+// let controlsModule = flyModule
 
 window.THREE = THREE
 window.scene = scene
