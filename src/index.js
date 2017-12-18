@@ -1,135 +1,138 @@
 import './index.css'
 import * as THREE from 'three';
-import * as WHS from 'whs'
 import dat from 'dat.gui/build/dat.gui.js'
 import Alea from 'alea'
 import { Easing, Tween, autoPlay } from 'es6-tween'
 import keyboardJS from 'keyboardjs'
+import Stats from 'stats.js'
 
 // import './modules/terrain.js'
 import DragControls from './modules/DragControls'
 import FlyControls from './modules/FlyControls'
+import {OrbitControls} from './modules/OrbitControls'
 import SimplexNoise from './modules/simplexNoise'
-import StatsModule from './modules/StatsModule'
 import {WindowResize} from './modules/WindowResize'
 import {initSky} from './sky'
 
 import {tileBuilder} from './loops/tileBuilder'
 
-const container = document.getElementById('root')
-const cameraModule = new WHS.DefineModule(
-  'camera',
-  new WHS.PerspectiveCamera({ // Apply a camera.
-    position: new THREE.Vector3(0, -500, 450),
-    far: 1e6,
-  })
-)
-
 window.THREE = THREE
 
-const flyModule = new WHS.ControlsModule.from(new FlyControls(cameraModule.data.native))
-const orbitModule = new WHS.OrbitControlsModule()
-let controlsModule = orbitModule
+const scene = new THREE.Scene();
+let camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1e6);
+camera.up = new THREE.Vector3(0, 0, 1)
+camera.lookAt({x: 0, y: 0, z: 0})
+camera.updateProjectionMatrix()
 
-window.WHS = WHS
+var renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+
+const flyModule = new FlyControls(camera, renderer.domElement)
+let controlsModule = flyModule
+
+// const orbitModule = new OrbitControls(camera, renderer.domElement)
+// let controlsModule = orbitModule
+
 window.THREE = THREE
-window.cameraModule = cameraModule
-window.SimplexNoise = SimplexNoise
+window.scene = scene
+window.renderer = renderer
+window.camera = camera
+window.controls = controlsModule
 
-const app = new WHS.App([
-  new WHS.ElementModule({
-    container
-  }),
-  new WHS.SceneModule(),
-  cameraModule,
-  new WHS.RenderingModule({
-    bgColor: 0x162129,
-
-    renderer: {
-      antialias: true,
-      shadowmap: {
-        type: THREE.PCFSoftShadowMap,
-        enable: true
-      }
-    }
-  }, {shadow: true}),
-  controlsModule,
-  new StatsModule(0),
-]);
-window.app = app
 const gui = new dat.GUI()
 window.gui = gui
-const scene = app.get('scene')
-const camera = app.get('camera')
+// const scene = app.get('scene')
+// const camera = app.get('camera')
 
-app.get('camera').native.up = new THREE.Vector3(0, 0, 1)
-app.get('camera').native.lookAt({x: 0, y: 0, z: 0})
 
-const drone = new WHS.Sphere({
-  geometry: {radius: 5},
-  position: {x:0, y:0, z: 30},
-  material: new THREE.MeshBasicMaterial({
+const drone = new THREE.Mesh(
+  new THREE.SphereBufferGeometry(5, 5, 5),
+  new THREE.MeshBasicMaterial({
     color: 0xffffff
-  }),
-})
-drone.addTo(app)
+  })
+)
+scene.add(drone)
 window.drone = drone
-const dragControls = new DragControls([drone.native], cameraModule.data.native, container)
+const dragControls = new DragControls([drone], camera, renderer.domElement)
 dragControls.addEventListener( 'dragstart', event => {
   toggleControls(controlsModule, false)
 });
 dragControls.addEventListener( 'dragend', event => {
   toggleControls(controlsModule, true)
 });
-const dragModule = new WHS.ControlsModule.from(dragControls)
+// const dragModule = new WHS.ControlsModule.from(dragControls)
 
-initSky(app.get('scene'), gui)
+initSky(scene, gui)
 
-app.addLoop(tileBuilder)
+const loops = [
+  tileBuilder,
+]
 
 // Start the app
-app.get('renderer').setPixelRatio(1)
-app.start();
-tileBuilder.start()
-WindowResize(app.get('renderer'), camera.native)
+renderer.setPixelRatio(1)
+controlsModule.update()
 
-const toggleControls = (module, state) => {
-  state = state !== undefined ? state : module.controls.enabled
-  module.controls.enabled = state
-  module.updateLoop.enabled = state
+const stats = new Stats()
+document.body.appendChild(stats.dom)
+
+var mainLoop = (timestamp) => {
+  requestAnimationFrame(mainLoop)
+
+  stats.begin()
+
+  loops.forEach(loop => loop(timestamp))
+  controlsModule.update()
+
+  renderer.render(scene, camera);
+
+  stats.end()
+};
+
+mainLoop(0)
+
+WindowResize(renderer, camera)
+camera.position.set(1200, -1175, 190)
+
+const toggleControls = (controls, state) => {
+  state = state !== undefined ? state : controls.enabled
+  controls.enabled = state
 }
 
 keyboardJS.bind('p', e => {
-  app.disposeModule(controlsModule)
-  console.log("disposed", controlsModule)
-  toggleControls(controlsModule, false)
-  controlsModule = controlsModule === orbitModule ? flyModule : orbitModule
-  if (controlsModule === orbitModule) {
-    console.log(controlsModule)
-    let cam = drone.position.clone()
-    const target = orbitModule.controls.target
-    let tween = new Tween({x: target.x, y: target.y, z: target.z})
-      .to({ x: cam.x, y: cam.y + 1000, z: 0 }, 1000)
-      .on('update', ({x, y, z}) => {
-        orbitModule.controls.target.set(x, y, z)
-        orbitModule.controls.update()
-      })
-      .start();
-    console.log(tween)
-  }
-  app.applyModule(controlsModule)
-  toggleControls(controlsModule, true)
-  console.log("apply", controlsModule)
+  camera = camera.clone()
+  const newControlsClass = controlsModule.constructor.name === 'OrbitControls' ? FlyControls : OrbitControls
+  controlsModule.dispose()
+  controlsModule = new newControlsClass(camera, renderer.domElement)
+  controlsModule.update()
+  // console.log("disposed", controlsModule)
+  // toggleControls(controlsModule, false)
+  // controlsModule = controlsModule === orbitModule ? flyModule : orbitModule
+  // if (controlsModule === orbitModule) {
+  //   console.log(controlsModule)
+  //   let cam = drone.position.clone()
+  //   const target = orbitModule.target
+  //   let tween = new Tween({x: target.x, y: target.y, z: target.z})
+  //     .to({ x: cam.x, y: cam.y + 1000, z: 0 }, 1000)
+  //     .on('update', ({x, y, z}) => {
+  //       orbitModule.target.set(x, y, z)
+  //       orbitModule.update()
+  //     })
+  //     .start();
+  //   console.log(tween)
+  // }
+  // toggleControls(controlsModule, true)
+  // console.log("apply", controlsModule)
 })
 
 keyboardJS.bind('c', e => {
-  console.log(app.get('camera').position)
+  console.log(camera.position)
 })
 
-keyboardJS.bind('r', e => {
-  const autoRotate = app.manager.modules.controls.controls.autoRotate
-  app.manager.modules.controls.controls.autoRotate = !autoRotate
-})
+// keyboardJS.bind('r', e => {
+//   const autoRotate = app.manager.modules.controls.controls.autoRotate
+//   app.manager.modules.controls.controls.autoRotate = !autoRotate
+// })
 
 // tween js start
 autoPlay(true)

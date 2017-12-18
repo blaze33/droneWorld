@@ -1,7 +1,6 @@
 import {
   Vector3,
 } from 'three'
-import {Loop} from 'whs'
 import {camera, scene, drone} from '../index'
 import {buildPlane} from '../terrain'
 
@@ -13,13 +12,12 @@ let currentKeysArray = []
 window.tiles = tiles
 window.pngs = pngs
 
-const tileBuilder = new Loop((clock) => {
+const tileBuilder = (timestamp) => {
   const cameraPosition = camera.position
   if (cameraPosition.distanceTo(lastCameraPosition) > 10) {
     lastCameraPosition = cameraPosition.clone()
 
-    var vector = new Vector3();
-    const camVec = camera.native.getWorldDirection( vector );
+    const camVec = camera.getWorldDirection();
     let targetPosition = cameraPosition.clone()
 
     targetPosition = targetPosition.add(camVec.multiplyScalar(400 * Math.max(1, Math.abs(cameraPosition.z) / 400)))
@@ -97,14 +95,14 @@ const tileBuilder = new Loop((clock) => {
     const visibleKeysString = visibleKeysArray.map(k => k.toString())
     const currentKeysString = currentKeysArray.map(k => k.toString())
     const newKeys = visibleKeysString.filter(x => currentKeysString.indexOf(x) < 0)
-    const oldKeys = currentKeysString.filter(x => visibleKeysString.indexOf(x) < 0)
+    // const oldKeys = currentKeysString.filter(x => visibleKeysString.indexOf(x) < 0)
 
     // if (oldKeys) {console.log('deleting', oldKeys.sort())}
     // if (newKeys) {console.log('adding', newKeys.sort())}
 
-    newKeys.map(newKey => {
-      const zxyijs = newKey.split(',').map(x => parseInt(x))
-      const plane = buildPlane(...zxyijs)
+    newKeys.forEach(newKey => {
+      const zxyijs = newKey.split(',').map(x => parseInt(x, 10))
+      buildPlane(...zxyijs)
     })
     const deleteTile = (tile) => {
       scene.remove(tile)
@@ -128,6 +126,6 @@ const tileBuilder = new Loop((clock) => {
     currentKeysArray = visibleKeysArray.slice(0)
 
   }
-})
+}
 
 export {tileBuilder}

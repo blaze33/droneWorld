@@ -29,6 +29,7 @@ const offsetCoords = (z, x, y) => {
   const fetchedY = Math.floor(y + offset.y)
   x = Math.abs(fetchedX % maxTile)
   y = Math.abs(fetchedY % maxTile)
+  if (isNaN(z) || isNaN(x) || isNaN(y)) {throw `cannot fetch tile ${z}/${x}/${y}.png`}
   return [z, x, y]
 }
 const heightmap = (z, x, y) => {

@@ -105,7 +105,7 @@ const offsetAtZ = (z) => {
 }
 window.chamonix = chamonix
 const setTilePosition = (geometry, key) => {
-  const zxyijs = key.split(',').map(x => parseInt(x))
+  const zxyijs = key.split(',').map(x => parseInt(x, 10))
   const z = zxyijs[0]
   const x = zxyijs[1]
   const y = zxyijs[2]
