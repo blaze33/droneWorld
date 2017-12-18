@@ -20,19 +20,20 @@ window.THREE = THREE
 
 const scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1e6);
+
 camera.up = new THREE.Vector3(0, 0, 1)
-camera.lookAt({x: 0, y: 0, z: 0})
-camera.updateProjectionMatrix()
+camera.position.set(1200, -1175, 190)
+camera.lookAt(0, 0, 0)
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-const flyModule = new FlyControls(camera, renderer.domElement)
-let controlsModule = flyModule
-
 // const orbitModule = new OrbitControls(camera, renderer.domElement)
 // let controlsModule = orbitModule
+
+const flyModule = new FlyControls(camera, renderer.domElement)
+let controlsModule = flyModule
 
 window.THREE = THREE
 window.scene = scene
@@ -71,18 +72,21 @@ const loops = [
 
 // Start the app
 renderer.setPixelRatio(1)
-controlsModule.update()
+controlsModule.update(0)
 
 const stats = new Stats()
 document.body.appendChild(stats.dom)
 
+let lastTimestamp = 0
 var mainLoop = (timestamp) => {
   requestAnimationFrame(mainLoop)
+  let delta = timestamp - lastTimestamp
+  lastTimestamp = timestamp
 
   stats.begin()
 
   loops.forEach(loop => loop(timestamp))
-  controlsModule.update()
+  controlsModule.update(delta)
 
   renderer.render(scene, camera);
 
@@ -92,7 +96,6 @@ var mainLoop = (timestamp) => {
 mainLoop(0)
 
 WindowResize(renderer, camera)
-camera.position.set(1200, -1175, 190)
 
 const toggleControls = (controls, state) => {
   state = state !== undefined ? state : controls.enabled
