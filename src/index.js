@@ -106,26 +106,14 @@ keyboardJS.bind('p', e => {
   camera = camera.clone()
   const newControlsClass = controlsModule.constructor.name === 'OrbitControls' ? FlyControls : OrbitControls
   controlsModule.dispose()
-  controlsModule = new newControlsClass(camera, renderer.domElement)
-  controlsModule.update()
-  // console.log("disposed", controlsModule)
-  // toggleControls(controlsModule, false)
-  // controlsModule = controlsModule === orbitModule ? flyModule : orbitModule
-  // if (controlsModule === orbitModule) {
-  //   console.log(controlsModule)
-  //   let cam = drone.position.clone()
-  //   const target = orbitModule.target
-  //   let tween = new Tween({x: target.x, y: target.y, z: target.z})
-  //     .to({ x: cam.x, y: cam.y + 1000, z: 0 }, 1000)
-  //     .on('update', ({x, y, z}) => {
-  //       orbitModule.target.set(x, y, z)
-  //       orbitModule.update()
-  //     })
-  //     .start();
-  //   console.log(tween)
-  // }
-  // toggleControls(controlsModule, true)
-  // console.log("apply", controlsModule)
+  const newModule = new newControlsClass(camera, renderer.domElement)
+  controlsModule = newModule
+  controlsModule.update(0)
+
+  if (newControlsClass === OrbitControls) {
+    let cam = drone.position.clone()
+    newModule.target.set(cam.x, cam.y, cam.z)
+  }
 })
 
 keyboardJS.bind('c', e => {
