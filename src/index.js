@@ -120,10 +120,11 @@ keyboardJS.bind('c', e => {
   console.log(camera.position)
 })
 
-// keyboardJS.bind('r', e => {
-//   const autoRotate = app.manager.modules.controls.controls.autoRotate
-//   app.manager.modules.controls.controls.autoRotate = !autoRotate
-// })
+keyboardJS.bind('r', e => {
+  if (controlsModule.constructor.name === 'OrbitControls') {
+    controlsModule.autoRotate = !controlsModule.autoRotate
+  }
+})
 
 // tween js start
 autoPlay(true)
