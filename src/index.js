@@ -25,7 +25,10 @@ camera.up = new THREE.Vector3(0, 0, 1)
 camera.position.set(1200, -1175, 190)
 camera.lookAt(0, 0, 0)
 
-var renderer = new THREE.WebGLRenderer();
+var renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  alpha: true,
+});
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
@@ -64,7 +67,9 @@ dragControls.addEventListener( 'dragend', event => {
 });
 // const dragModule = new WHS.ControlsModule.from(dragControls)
 
-initSky(scene, gui)
+const sunPosition = new THREE.Vector3()
+window.sunPosition = sunPosition
+initSky(scene, gui, sunPosition)
 
 const loops = [
   tileBuilder,
@@ -129,4 +134,4 @@ keyboardJS.bind('r', e => {
 // tween js start
 autoPlay(true)
 
-export {scene, camera, drone}
+export {scene, camera, drone, sunPosition}

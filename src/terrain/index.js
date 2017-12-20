@@ -9,7 +9,7 @@ import {
   LinearFilter,
   RepeatWrapping,
 } from 'three'
-import {scene} from '../index'
+import {scene, sunPosition} from '../index'
 // import SimplifyModifier from '../modules/meshSimplify'
 import vertexShader from './shaders/terrain.vert'
 import fragmentShader from './shaders/terrain.frag'
@@ -73,6 +73,7 @@ const spectralMaterial = (options, uniforms) => {
       grassTexture: {value: grassTexture},
       icyTexture: {value: icyTexture},
       snowTexture: {value: snowTexture},
+      sunPosition: {value: sunPosition},
       ...uniforms
     },
     vertexShader: identityShader,

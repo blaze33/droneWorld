@@ -5,7 +5,7 @@ import {
 } from 'three'
 import {Sky} from '../modules/Sky'
 
-function initSky(scene, gui) {
+function initSky(scene, gui, sunPosition) {
 
   // Add Sky
   const sky = new Sky();
@@ -29,8 +29,8 @@ function initSky(scene, gui) {
       mieCoefficient: 0.005,
       mieDirectionalG: 0.8,
       luminance: 1,
-      inclination: 0.47, // elevation / inclination
-      azimuth: 0.01, // Facing front,
+      inclination: 0.32, // elevation / inclination
+      azimuth: 0.05, // Facing front,
       sun: ! true
   };
 
@@ -55,6 +55,7 @@ function initSky(scene, gui) {
       sunSphere.visible = effectController.sun;
 
       uniforms.sunPosition.value.copy( sunSphere.position );
+      sunPosition.copy(sunSphere.position)
 
       // renderer.render( scene, camera );
 

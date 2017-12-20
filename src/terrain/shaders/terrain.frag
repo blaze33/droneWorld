@@ -14,6 +14,7 @@ varying float ang;
 varying vec2 UV;
 varying vec3 vViewPosition;
 varying float depth;
+varying vec3 vSunPosition;
 const vec3 lightPos   = vec3(100,100,50);
 const vec3 specColor  = vec3(1.0, 1.0, 1.0);
 
@@ -64,8 +65,8 @@ void main() {
   vec4 sobel_edge_v = n[0] + (2.0*n[1]) + n[2] - (n[6] + (2.0*n[7]) + n[8]);
   vec4 sobel = sqrt((sobel_edge_h * sobel_edge_h) + (sobel_edge_v * sobel_edge_v));
 
-  vec3 lightDirection = vec3(3.0, 3.0, 1.0);
-  vec3 L = normalize(lightDirection);              //light direction
+  vec3 lightDirection = vec3(-3.0, 3.0, 1.0);
+  vec3 L = normalize(vSunPosition);              //light direction
   vec3 V = normalize(vViewPosition);            //eye direction
   vec3 N = vNormal; //surface normal
   vec3 diffuse = vec3(1.0) * orenNayarDiffuse(L, V, N, 1.0, 0.95);  
@@ -104,7 +105,10 @@ void main() {
   // // gl_FragColor = mix(color2, vec4(0), zero);
   // // gl_FragColor = mix(colorTotal, vec4(0), zero); //* vec4(diffuse, 1.0);
 
-  gl_FragColor = mix(colorTotal / sqrt(2.0)* (colorTotal + vec4(diffuse, 1.0)), vec4(0.0),  depth);
+  gl_FragColor = colorTotal / sqrt(2.0)* (colorTotal + vec4(diffuse, 1.0));
+
+  // with black fog
+  // gl_FragColor = mix(gl_FragColor, vec4(0.0, 0.0, 0.0, 0.1),  depth);
   
   // gl_FragColor = texture2D(rockTexture, UV);
   
