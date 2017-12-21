@@ -68,6 +68,17 @@ vec3 perturb(vec3 map, vec3 N, vec3 V, vec2 texcoord) {
   return normalize(TBN * map);
 }
 
+float phongSpecular(
+  vec3 lightDirection,
+  vec3 viewDirection,
+  vec3 surfaceNormal,
+  float shininess) {
+
+  //Calculate Phong power
+  vec3 R = -reflect(lightDirection, surfaceNormal);
+  return pow(max(0.0, dot(viewDirection, R)), shininess);
+}
+
 
 void main() {
   // vec3 normal = mix(vNormal, normals(pos), bFlat);
@@ -99,17 +110,18 @@ void main() {
   vec3 L = normalize(vSunPosition);              //light direction
   vec3 V = normalize(vViewPosition);            //eye direction
   vec3 N = normalize(vNormal);
-
   vec3 normal = perturb(normalMap, N, V, UV * 20.0);
-  N = normalize(normal);
-  vec3 diffuse = vec3(1.0) * orenNayarDiffuse(L, V, N, 1.0, 0.95);  
+
+  vec3 diffuse = vec3(1.0) * orenNayarDiffuse(L, V, normal, 1.0, 0.95);
+
+  float specular = 0.3 * phongSpecular(L, V, normal, 12.0);
 
 
   vec4 color = texture2D(spectral, vec2(abs(height/8000.0), 0.5)); // + vec4(specular * specColor, 1.0);
   vec4 colorOcean = normalize(vec4(91.0, 154.0, 205.0, 1.0)) ;//* (11000.0 + height)/11000.0;
   float flatness = dot(normal, vec3(0.0, 0.0, 1.0));
   vec4 colorTerrain = mix(
-    texture2D(rockTexture, UV * 20.0),
+    texture2D(rockTexture, UV * 20.0) * (vec4(diffuse, 1.0) + vec4(0.7)) + specular,
     texture2D(grassTexture, UV * 20.0),
     smoothstep(0.55, 0.75, flatness)
     // flatness
@@ -139,6 +151,8 @@ void main() {
   // // gl_FragColor = mix(colorTotal, vec4(0), zero); //* vec4(diffuse, 1.0);
 
   gl_FragColor = colorTotal / sqrt(2.0)* (colorTotal + vec4(diffuse, 1.0));
+  // gl_FragColor = vec4(normal, 1.0);
+  // gl_FragColor = vec4(diffuse, 1.0);
 
   // with black fog
   // gl_FragColor = mix(gl_FragColor, vec4(0.0, 0.0, 0.0, 1.0),  depth);
