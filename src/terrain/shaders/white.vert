@@ -9,6 +9,8 @@ varying vec3 vViewPosition;
 varying float depth;
 varying vec3 vSunPosition;
 
+@import three/src/renderers/shaders/ShaderChunk/shadowmap_pars_vertex;
+
 mat3 inverse(mat3 m) {
   float a00 = m[0][0], a01 = m[0][1], a02 = m[0][2];
   float a10 = m[1][0], a11 = m[1][1], a12 = m[1][2];
@@ -48,4 +50,7 @@ void main() {
   vSunPosition = sunPosition;
   // DEPTH
   depth = clamp(gl_Position.z / 2500.0, 0.0, 0.7);
+
+  vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+  @import three/src/renderers/shaders/ShaderChunk/shadowmap_vertex;
 }

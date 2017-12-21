@@ -1,6 +1,15 @@
-precision mediump float;
-// #pragma glslify: faceNormals = require('glsl-face-normal')
-uniform float bFlat;
+uniform vec3 color;
+uniform float opacity;
+@import three/src/renderers/shaders/ShaderChunk/common;
+@import three/src/renderers/shaders/ShaderChunk/packing;
+@import three/src/renderers/shaders/ShaderChunk/fog_pars_fragment;
+@import three/src/renderers/shaders/ShaderChunk/bsdfs;
+@import three/src/renderers/shaders/ShaderChunk/lights_pars;
+@import three/src/renderers/shaders/ShaderChunk/shadowmap_pars_fragment;
+@import three/src/renderers/shaders/ShaderChunk/shadowmask_pars_fragment;
+
+@import ./glsl-diffuse-oren-nayar;
+
 uniform sampler2D spectral;
 uniform sampler2D heightmap;
 uniform sampler2D rockTexture;
@@ -9,18 +18,17 @@ uniform sampler2D grassTexture;
 uniform sampler2D grassTextureNormal;
 uniform sampler2D icyTexture;
 uniform sampler2D snowTexture;
+
 varying vec3 vNormal;
 varying vec3 pos;
 varying float height;
-varying float ang;
 varying vec2 UV;
 varying vec3 vViewPosition;
 varying float depth;
 varying vec3 vSunPosition;
-const vec3 lightPos   = vec3(100,100,50);
-const vec3 specColor  = vec3(1.0, 1.0, 1.0);
 
-@import ./glsl-diffuse-oren-nayar;
+
+
 
 //http://www.thetenthplanet.de/archives/1180
 mat3 cotangentFrame(vec3 N, vec3 p, vec2 uv) {
@@ -101,7 +109,9 @@ void main() {
   float zeroOcean = 1.0 - smoothstep(0.0, 1.0, height);
   vec4 colorTotal = mix(colorTerrain2, colorOcean2, zeroOcean);
 
-  gl_FragColor = colorTotal / sqrt(2.0)* (colorTotal + vec4(diffuse, 1.0));
+  // gl_FragColor = colorTotal / sqrt(2.0)* (colorTotal + vec4(diffuse, 1.0));
+  colorTotal = colorTotal * (getShadowMask());
+  gl_FragColor = vec4(colorTotal.rgb, 1.0);
   // gl_FragColor = vec4(normal, 1.0);
   // gl_FragColor = vec4(diffuse, 1.0);
 

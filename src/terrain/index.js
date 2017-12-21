@@ -1,6 +1,7 @@
 import {
   TextureLoader,
   ShaderMaterial,
+  RawShaderMaterial,
   Mesh,
   BufferAttribute,
   BufferGeometry,
@@ -8,14 +9,19 @@ import {
   RGBFormat,
   LinearFilter,
   RepeatWrapping,
+  UniformsUtils,
+  UniformsLib,
+  ShadowMaterial,
 } from 'three'
-import {scene, sunPosition} from '../index'
+import {renderer, scene, sunPosition} from '../index'
 // import SimplifyModifier from '../modules/meshSimplify'
 import vertexShader from './shaders/terrain.vert'
 import fragmentShader from './shaders/terrain.frag'
+import shadowShader from './shaders/shadow.frag'
 import whiteShader from './shaders/white.frag'
 import identityShader from './shaders/white.vert'
 import Worker from './terrain.worker.js';
+import {Material} from './shaders/material'
 
 const textureLoader = new TextureLoader().setCrossOrigin("anonymous")
 const tilesElevationURL = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium'
@@ -40,7 +46,7 @@ const terrainMaterial = (z, x, y, options, uniforms) => {
     vertexShader,
     fragmentShader,
     extensions: {
-      derivatives: true,
+      derivatives: false,
     },
     wireframe: true,
     ...options,
@@ -65,8 +71,9 @@ icyTexture.wrapS = icyTexture.wrapT = RepeatWrapping
 snowTexture.wrapS = snowTexture.wrapT = RepeatWrapping
 
 const spectralMaterial = (options, uniforms) => {
-  return new ShaderMaterial({
+  const material = new ShaderMaterial({
     uniforms: {
+      ...UniformsLib.lights,
       spectral: {value: spectralTexture},
       rockTexture: {value: rockTexture},
       rockTextureNormal: {value: rockTextureNormal},
@@ -83,9 +90,11 @@ const spectralMaterial = (options, uniforms) => {
       derivatives: true,
     },
     wireframe: false,
+    lights: true,
     // transparent: true,
     // ...options,
   })
+  return material
 }
 const spectralMaterialInstance = spectralMaterial()
 
@@ -145,7 +154,7 @@ const buildTileFromWorker = event => {
   heightTexture.minFilter = LinearFilter
   heightTexture.magFilter = LinearFilter
   heightTexture.needsUpdate = true
-  const material = spectralMaterial({}, {heightmap: {value: heightTexture}})
+  const material = Material({}, {heightmap: {value: heightTexture}})
   const plane = new Mesh( geometry, material );
 
   plane.key = event.data.key
@@ -153,6 +162,7 @@ const buildTileFromWorker = event => {
   plane.receiveShadow = true;
   setTilePosition(plane, event.data.key)
   scene.add(plane)
+  renderer.shadowMap.needsUpdate = true
   // var helper = new VertexNormalsHelper( plane, 2, 0x00ff00, 1 );
   // scene.add(helper)
 }

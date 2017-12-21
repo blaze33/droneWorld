@@ -12,6 +12,7 @@ import FlyControls from './modules/FlyControls'
 import {OrbitControls} from './modules/OrbitControls'
 import SimplexNoise from './modules/simplexNoise'
 import {WindowResize} from './modules/WindowResize'
+import {ShadowMapViewer} from './modules/ShadowMapViewer'
 import {initSky} from './sky'
 
 import {tileBuilder} from './loops/tileBuilder'
@@ -29,6 +30,16 @@ var renderer = new THREE.WebGLRenderer({
   antialias: true,
   alpha: true,
 });
+
+renderer.gammaInput = true
+renderer.gammaOutput = true
+renderer.shadowMap.enabled = true
+renderer.shadowMap.bias = 0.0001
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
+renderer.shadowMap.autoUpdate = false
+renderer.physicallyCorrectLights = true
+renderer.toneMapping = THREE.Uncharted2ToneMapping
+
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
@@ -71,6 +82,39 @@ const sunPosition = new THREE.Vector3()
 window.sunPosition = sunPosition
 initSky(scene, gui, sunPosition)
 
+var dirLight = new THREE.DirectionalLight( 0xffffff, 1);
+dirLight.position.copy(sunPosition);
+dirLight.position.normalize()
+dirLight.position.multiplyScalar(2000.0)
+dirLight.up.set(0, 0, 1)
+dirLight.name = "sunlight";
+dirLight.needsUpdate = true
+window.dirLight = dirLight
+scene.add( dirLight );
+
+var helper = new THREE.DirectionalLightHelper( dirLight, 5000 );
+scene.add( helper );
+
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.width = dirLight.shadow.mapSize.height = 1024;
+
+var d = 1024;
+
+dirLight.shadow.camera.left = -d;
+dirLight.shadow.camera.right = d;
+dirLight.shadow.camera.top = d;
+dirLight.shadow.camera.bottom = -d;
+
+dirLight.shadow.camera.far = 5000;
+dirLight.shadow.bias = -0.0001;
+
+var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
+scene.add( light );
+var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+scene.add( light );
+
+// const shadowMapViewer = new ShadowMapViewer(dirLight)
+
 const loops = [
   tileBuilder,
 ]
@@ -94,6 +138,10 @@ var mainLoop = (timestamp) => {
   controlsModule.update(delta)
 
   renderer.render(scene, camera);
+
+  // if (dirLight.shadow && dirLight.shadow.map) {
+  //   shadowMapViewer.render(renderer)
+  // }
 
   stats.end()
 };
@@ -134,4 +182,4 @@ keyboardJS.bind('r', e => {
 // tween js start
 autoPlay(true)
 
-export {scene, camera, drone, sunPosition}
+export {renderer, scene, camera, drone, sunPosition}
