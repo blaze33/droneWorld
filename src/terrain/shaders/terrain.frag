@@ -22,29 +22,6 @@ const vec3 specColor  = vec3(1.0, 1.0, 1.0);
 
 @import ./glsl-diffuse-oren-nayar;
 
-vec3 normals(vec3 pos) {
-  vec3 fdx = dFdx(pos);
-  vec3 fdy = dFdy(pos);
-  return normalize(cross(fdx, fdy));
-}
-
-void make_kernel(inout vec4 n[9], sampler2D tex, vec2 coord)
-{
-  float w = 1.0 / 256.0;
-  float h = 1.0 / 256.0;
-
-  n[0] = texture2D(tex, coord + vec2( -w, -h));
-  n[1] = texture2D(tex, coord + vec2(0.0, -h));
-  n[2] = texture2D(tex, coord + vec2(  w, -h));
-  n[3] = texture2D(tex, coord + vec2( -w, 0.0));
-  n[4] = texture2D(tex, coord);
-  n[5] = texture2D(tex, coord + vec2(  w, 0.0));
-  n[6] = texture2D(tex, coord + vec2( -w, h));
-  n[7] = texture2D(tex, coord + vec2(0.0, h));
-  n[8] = texture2D(tex, coord + vec2(  w, h));
-}
-
-
 //http://www.thetenthplanet.de/archives/1180
 mat3 cotangentFrame(vec3 N, vec3 p, vec2 uv) {
   // get edge vectors of the pixel triangle
@@ -82,34 +59,12 @@ float phongSpecular(
 
 
 void main() {
-  // vec3 normal = mix(vNormal, normals(pos), bFlat);
-  // // vec3 vNormal = faceNormals(pos);
-  // // gl_FragColor = vec4(vNormal, 1.0);
-
-  // // vec3 lightDir = normalize(lightPos - pos);
-  // // float lambertian = max(dot(lightDir,normal), 0.0);
-  // // float specular = 0.0;
-
-  // // if(lambertian > 0.0) {
-  // //   vec3 viewDir = normalize(-pos);
-  // //   vec3 halfDir = normalize(lightDir + viewDir);
-  // //   float specAngle = max(dot(halfDir, normal), 0.0);
-  // //   specular = pow(specAngle, 16.0);
-  // // }
-
-  vec4 n[9];
-  make_kernel( n, heightmap, UV );
-  vec4 sobel_edge_h = n[2] + (2.0*n[5]) + n[8] - (n[0] + (2.0*n[3]) + n[6]);
-  vec4 sobel_edge_v = n[0] + (2.0*n[1]) + n[2] - (n[6] + (2.0*n[7]) + n[8]);
-  vec4 sobel = sqrt((sobel_edge_h * sobel_edge_h) + (sobel_edge_v * sobel_edge_v));
-
 
   vec3 normalRGB = texture2D(rockTextureNormal, UV * 20.0).rgb; //surface normal
   vec3 normalMap = normalRGB * 2.0 - 1.0;
   vec3 normalRGB2 = texture2D(grassTextureNormal, UV * 20.0).rgb; //surface normal
   vec3 normalMap2 = normalRGB2 * 2.0 - 1.0;
 
-  vec3 lightDirection = vec3(-3.0, 3.0, 1.0);
   vec3 L = normalize(vSunPosition);              //light direction
   vec3 V = normalize(vViewPosition);            //eye direction
   vec3 N = normalize(vNormal);
@@ -117,7 +72,7 @@ void main() {
   vec3 normal2 = perturb(normalMap2, N, V, UV * 20.0);
 
   vec3 diffuse = vec3(1.0) * orenNayarDiffuse(L, V, normal, 1.0, 0.95);
-  float specular = 0.3 * phongSpecular(L, V, normal, 12.0);
+  float specular = 0.2 * phongSpecular(L, V, normal, 12.0);
 
   vec3 diffuse2 = vec3(1.0) * orenNayarDiffuse(L, V, normal2, 1.0, 0.95);
   float specular2 = 0.1 * phongSpecular(L, V, normal2, 12.0);
@@ -127,7 +82,7 @@ void main() {
   float flatness = dot(normal, vec3(0.0, 0.0, 1.0));
   vec4 colorTerrain = mix(
     texture2D(rockTexture, UV * 20.0) * (vec4(diffuse, 1.0) + vec4(0.7)) + specular,
-    texture2D(grassTexture, UV * 20.0) * (vec4(diffuse2, 1.0) + vec4(0.8)) + specular2,
+    texture2D(grassTexture, UV * 20.0) * (vec4(diffuse2, 1.0) + vec4(0.7)) + specular2,
     smoothstep(0.55, 0.75, flatness)
     // flatness
   );
@@ -137,15 +92,9 @@ void main() {
     smoothstep(0.5, 0.6, flatness)
     // flatness
   );
-  // vec colorTerrain4 = mix
 
-  float sobelValue = clamp(sobel.r, 0.0, 0.3);
-  vec4 color2 = mix(color, vec4(1., 1., 1., 1.0), sobelValue);
-  vec4 colorTerrain2 = mix(
-    colorTerrain, vec4(1.0),
-    sobelValue
-  );
-  vec4 colorOcean2 = mix(colorOcean, vec4(0), sobelValue);
+  vec4 colorTerrain2 = colorTerrain;
+  vec4 colorOcean2 = mix(colorOcean, vec4(0), 0.0);
   vec4 colorH = texture2D(heightmap, UV);
   vec4 colorNormal = vec4(vNormal, 0);
   float zero = smoothstep(-1.0, -.5, height) - smoothstep(.5, 1.0, height);
