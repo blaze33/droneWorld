@@ -6,6 +6,7 @@ uniform sampler2D heightmap;
 uniform sampler2D rockTexture;
 uniform sampler2D rockTextureNormal;
 uniform sampler2D grassTexture;
+uniform sampler2D grassTextureNormal;
 uniform sampler2D icyTexture;
 uniform sampler2D snowTexture;
 varying vec3 vNormal;
@@ -105,24 +106,28 @@ void main() {
 
   vec3 normalRGB = texture2D(rockTextureNormal, UV * 20.0).rgb; //surface normal
   vec3 normalMap = normalRGB * 2.0 - 1.0;
+  vec3 normalRGB2 = texture2D(grassTextureNormal, UV * 20.0).rgb; //surface normal
+  vec3 normalMap2 = normalRGB2 * 2.0 - 1.0;
 
   vec3 lightDirection = vec3(-3.0, 3.0, 1.0);
   vec3 L = normalize(vSunPosition);              //light direction
   vec3 V = normalize(vViewPosition);            //eye direction
   vec3 N = normalize(vNormal);
   vec3 normal = perturb(normalMap, N, V, UV * 20.0);
+  vec3 normal2 = perturb(normalMap2, N, V, UV * 20.0);
 
   vec3 diffuse = vec3(1.0) * orenNayarDiffuse(L, V, normal, 1.0, 0.95);
-
   float specular = 0.3 * phongSpecular(L, V, normal, 12.0);
 
+  vec3 diffuse2 = vec3(1.0) * orenNayarDiffuse(L, V, normal2, 1.0, 0.95);
+  float specular2 = 0.1 * phongSpecular(L, V, normal2, 12.0);
 
   vec4 color = texture2D(spectral, vec2(abs(height/8000.0), 0.5)); // + vec4(specular * specColor, 1.0);
   vec4 colorOcean = normalize(vec4(91.0, 154.0, 205.0, 1.0)) ;//* (11000.0 + height)/11000.0;
   float flatness = dot(normal, vec3(0.0, 0.0, 1.0));
   vec4 colorTerrain = mix(
     texture2D(rockTexture, UV * 20.0) * (vec4(diffuse, 1.0) + vec4(0.7)) + specular,
-    texture2D(grassTexture, UV * 20.0),
+    texture2D(grassTexture, UV * 20.0) * (vec4(diffuse2, 1.0) + vec4(0.8)) + specular2,
     smoothstep(0.55, 0.75, flatness)
     // flatness
   );
@@ -139,7 +144,6 @@ void main() {
   vec4 colorTerrain2 = mix(
     colorTerrain, vec4(1.0),
     sobelValue
-    // smoothstep(0.4, 0.5, sobelValue)
   );
   vec4 colorOcean2 = mix(colorOcean, vec4(0), sobelValue);
   vec4 colorH = texture2D(heightmap, UV);
@@ -147,8 +151,6 @@ void main() {
   float zero = smoothstep(-1.0, -.5, height) - smoothstep(.5, 1.0, height);
   float zeroOcean = 1.0 - smoothstep(0.0, 1.0, height);
   vec4 colorTotal = mix(colorTerrain2, colorOcean2, zeroOcean);
-  // // gl_FragColor = mix(color2, vec4(0), zero);
-  // // gl_FragColor = mix(colorTotal, vec4(0), zero); //* vec4(diffuse, 1.0);
 
   gl_FragColor = colorTotal / sqrt(2.0)* (colorTotal + vec4(diffuse, 1.0));
   // gl_FragColor = vec4(normal, 1.0);
@@ -156,10 +158,5 @@ void main() {
 
   // with black fog
   // gl_FragColor = mix(gl_FragColor, vec4(0.0, 0.0, 0.0, 1.0),  depth);
-  
-  // gl_FragColor = texture2D(rockTexture, UV);
-  
 
-  // gl_FragColor = colorTotal * (colorTotal);
-  // gl_FragColor = texture2D(spectral, vec2((height+300.0)/888.0, 0.5)) + vec4(specular * specColor, 1.0);
 }

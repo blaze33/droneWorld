@@ -51,6 +51,7 @@ const rockTexture = textureLoader.load(require('../textures/Rock_08_UV_H_CM_1.jp
 const rockTextureNormal = textureLoader.load(require('../textures/Rock_08_UV_H_CM_1_normal.jpg'))
 // const rockTexture = textureLoader.load(require('../textures/rock_brown_1600.jpg'))
 const grassTexture = textureLoader.load(require('../textures/GrassGreenTexture0003.png'))
+const grassTextureNormal = textureLoader.load(require('../textures/GrassGreenTexture0003_normal.png'))
 // const grassTexture = textureLoader.load(require('../textures/rainforest512.jpg'))
 const grassTexture2 = textureLoader.load(require('../textures/Grass_01_UV_H_CM_1.jpg'))
 const icyTexture = textureLoader.load(require('../textures/snow_scuffed_ground_1.jpg'))
@@ -58,6 +59,7 @@ const snowTexture = textureLoader.load(require('../textures/Snow_01_UV_H_CM_1.jp
 rockTexture.wrapS = rockTexture.wrapT = RepeatWrapping
 rockTextureNormal.wrapS = rockTextureNormal.wrapT = RepeatWrapping
 grassTexture.wrapS = grassTexture.wrapT = RepeatWrapping
+grassTextureNormal.wrapS = grassTextureNormal.wrapT = RepeatWrapping
 grassTexture2.wrapS = grassTexture2.wrapT = RepeatWrapping
 icyTexture.wrapS = icyTexture.wrapT = RepeatWrapping
 snowTexture.wrapS = snowTexture.wrapT = RepeatWrapping
@@ -69,6 +71,7 @@ const spectralMaterial = (options, uniforms) => {
       rockTexture: {value: rockTexture},
       rockTextureNormal: {value: rockTextureNormal},
       grassTexture: {value: grassTexture},
+      grassTextureNormal: {value: grassTextureNormal},
       icyTexture: {value: icyTexture},
       snowTexture: {value: snowTexture},
       sunPosition: {value: sunPosition},
