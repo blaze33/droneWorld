@@ -78,7 +78,6 @@ void main() {
   float specular2 = 0.1 * phongSpecular(L, V, normal2, 12.0);
 
   vec4 color = texture2D(spectral, vec2(abs(height/8000.0), 0.5)); // + vec4(specular * specColor, 1.0);
-  vec4 colorOcean = normalize(vec4(91.0, 154.0, 205.0, 1.0)) ;//* (11000.0 + height)/11000.0;
   float flatness = dot(normal, vec3(0.0, 0.0, 1.0));
   vec4 colorTerrain = mix(
     texture2D(rockTexture, UV * 20.0) * (vec4(diffuse, 1.0) + vec4(0.7)) + specular,
@@ -94,9 +93,10 @@ void main() {
   );
 
   vec4 colorTerrain2 = colorTerrain;
-  vec4 colorOcean2 = mix(colorOcean, vec4(0), 0.0);
+  vec4 colorOcean = normalize(vec4(91.0 / 256.0, 154.0 / 256.0, 205.0 / 256.0, 1.0));
+  vec4 colorOcean2 = colorOcean * (vec4(diffuse, 1.0) + vec4(0.7));
   vec4 colorH = texture2D(heightmap, UV);
-  vec4 colorNormal = vec4(vNormal, 0);
+
   float zero = smoothstep(-1.0, -.5, height) - smoothstep(.5, 1.0, height);
   float zeroOcean = 1.0 - smoothstep(0.0, 1.0, height);
   vec4 colorTotal = mix(colorTerrain2, colorOcean2, zeroOcean);
