@@ -4,6 +4,7 @@ uniform float bFlat;
 uniform sampler2D spectral;
 uniform sampler2D heightmap;
 uniform sampler2D rockTexture;
+uniform sampler2D rockTextureNormal;
 uniform sampler2D grassTexture;
 uniform sampler2D icyTexture;
 uniform sampler2D snowTexture;
@@ -43,6 +44,31 @@ void make_kernel(inout vec4 n[9], sampler2D tex, vec2 coord)
 }
 
 
+//http://www.thetenthplanet.de/archives/1180
+mat3 cotangentFrame(vec3 N, vec3 p, vec2 uv) {
+  // get edge vectors of the pixel triangle
+  vec3 dp1 = dFdx(p);
+  vec3 dp2 = dFdy(p);
+  vec2 duv1 = dFdx(uv);
+  vec2 duv2 = dFdy(uv);
+
+  // solve the linear system
+  vec3 dp2perp = cross(dp2, N);
+  vec3 dp1perp = cross(N, dp1);
+  vec3 T = dp2perp * duv1.x + dp1perp * duv2.x;
+  vec3 B = dp2perp * duv1.y + dp1perp * duv2.y;
+
+  // construct a scale-invariant frame
+  float invmax = 1.0 / sqrt(max(dot(T,T), dot(B,B)));
+  return mat3(T * invmax, B * invmax, N);
+}
+
+vec3 perturb(vec3 map, vec3 N, vec3 V, vec2 texcoord) {
+  mat3 TBN = cotangentFrame(N, -V, texcoord);
+  return normalize(TBN * map);
+}
+
+
 void main() {
   // vec3 normal = mix(vNormal, normals(pos), bFlat);
   // // vec3 vNormal = faceNormals(pos);
@@ -65,20 +91,27 @@ void main() {
   vec4 sobel_edge_v = n[0] + (2.0*n[1]) + n[2] - (n[6] + (2.0*n[7]) + n[8]);
   vec4 sobel = sqrt((sobel_edge_h * sobel_edge_h) + (sobel_edge_v * sobel_edge_v));
 
+
+  vec3 normalRGB = texture2D(rockTextureNormal, UV * 20.0).rgb; //surface normal
+  vec3 normalMap = normalRGB * 2.0 - 1.0;
+
   vec3 lightDirection = vec3(-3.0, 3.0, 1.0);
   vec3 L = normalize(vSunPosition);              //light direction
   vec3 V = normalize(vViewPosition);            //eye direction
-  vec3 N = vNormal; //surface normal
+  vec3 N = normalize(vNormal);
+
+  vec3 normal = perturb(normalMap, N, V, UV * 20.0);
+  N = normalize(normal);
   vec3 diffuse = vec3(1.0) * orenNayarDiffuse(L, V, N, 1.0, 0.95);  
-  float c = 0.35 + max(0.0, dot(vNormal, lightDirection)) * 0.4;
+
 
   vec4 color = texture2D(spectral, vec2(abs(height/8000.0), 0.5)); // + vec4(specular * specColor, 1.0);
   vec4 colorOcean = normalize(vec4(91.0, 154.0, 205.0, 1.0)) ;//* (11000.0 + height)/11000.0;
-  float flatness = dot(vNormal, vec3(0.0, 0.0, 1.0));
+  float flatness = dot(normal, vec3(0.0, 0.0, 1.0));
   vec4 colorTerrain = mix(
     texture2D(rockTexture, UV * 20.0),
     texture2D(grassTexture, UV * 20.0),
-    smoothstep(0.6, 0.7, flatness)
+    smoothstep(0.55, 0.75, flatness)
     // flatness
   );
   vec4 colorSnow = mix(
@@ -108,7 +141,7 @@ void main() {
   gl_FragColor = colorTotal / sqrt(2.0)* (colorTotal + vec4(diffuse, 1.0));
 
   // with black fog
-  // gl_FragColor = mix(gl_FragColor, vec4(0.0, 0.0, 0.0, 0.1),  depth);
+  // gl_FragColor = mix(gl_FragColor, vec4(0.0, 0.0, 0.0, 1.0),  depth);
   
   // gl_FragColor = texture2D(rockTexture, UV);
   

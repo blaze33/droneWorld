@@ -38,8 +38,8 @@ void main() {
   gl_Position = projectionMatrix * mpos;
   pos = -mpos.xyz;
 
-  mat3 normalMatrix = transpose(inverse(mat3(modelViewMatrix)));
-  vNormal = normalize(normalMatrix * normal);
+  // mat3 normalMatrix = transpose(inverse(mat3(modelViewMatrix)));
+  // vNormal = normalize(normalMatrix * normal);
   vNormal = normal;
 
   ang = angle;
