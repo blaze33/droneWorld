@@ -81,6 +81,7 @@ const Material = (options, uniforms) => {
     },
     wireframe: false,
     lights: true,
+    fog: true,
     // transparent: true,
     // ...options,
   })
@@ -104,7 +105,6 @@ const Material = (options, uniforms) => {
   material.clearCoatRoughness = 0.0
   material.isMeshStandardMaterial = true
   material.isMeshPhysicalMaterial = true
-
   // repeat the texture 20 times
   material.uniforms.uvTransform.value = new Matrix3().multiplyScalar(20)
 

@@ -58,8 +58,8 @@ window.controls = controlsModule
 
 const gui = new dat.GUI()
 window.gui = gui
-// const scene = app.get('scene')
-// const camera = app.get('camera')
+
+scene.fog = new THREE.FogExp2(0x91abb5, 0.0005)
 
 
 const drone = new THREE.Mesh(
