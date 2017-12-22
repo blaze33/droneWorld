@@ -120,7 +120,6 @@ var mainLoop = (timestamp) => {
   let delta = timestamp - lastTimestamp
   lastTimestamp = timestamp
 
-  stats.begin()
   if (play) {
     loops.forEach(loop => loop(timestamp))
     controlsModule.update(delta)
@@ -135,7 +134,7 @@ var mainLoop = (timestamp) => {
     // }
   }
 
-  stats.end()
+  stats.update()
 };
 
 mainLoop(0)
