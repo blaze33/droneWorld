@@ -4,6 +4,7 @@ import {
   MeshBasicMaterial,
 } from 'three'
 import {Sky} from '../modules/Sky'
+import {dirLight} from '../lights'
 
 function initSky(scene, gui, sunPosition) {
 
@@ -57,11 +58,11 @@ function initSky(scene, gui, sunPosition) {
       uniforms.sunPosition.value.copy( sunSphere.position );
       sunPosition.copy(sunSphere.position)
 
-      // renderer.render( scene, camera );
+      dirLight.position.copy(sunPosition)
+      dirLight.position.normalize()
+      dirLight.position.multiplyScalar(2000.0)
 
   }
-
-  // var gui = new dat.GUI();
 
   gui.add( effectController, "turbidity", 1.0, 20.0, 0.1 ).onChange( guiChanged );
   gui.add( effectController, "rayleigh", 0.0, 4, 0.001 ).onChange( guiChanged );

@@ -14,8 +14,9 @@ import SimplexNoise from './modules/simplexNoise'
 import {WindowResize} from './modules/WindowResize'
 import {ShadowMapViewer} from './modules/ShadowMapViewer'
 import {initSky} from './sky'
-
+import {initLights} from './lights'
 import {tileBuilder} from './loops/tileBuilder'
+import {dirLight} from './lights'
 
 window.THREE = THREE
 
@@ -34,9 +35,9 @@ var renderer = new THREE.WebGLRenderer({
 renderer.gammaInput = true
 renderer.gammaOutput = true
 renderer.shadowMap.enabled = true
-renderer.shadowMap.bias = 0.0001
+renderer.shadowMap.bias = 0.001
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
-renderer.shadowMap.autoUpdate = false
+renderer.shadowMap.autoUpdate = true
 renderer.physicallyCorrectLights = true
 renderer.toneMapping = THREE.Uncharted2ToneMapping
 
@@ -82,37 +83,8 @@ const sunPosition = new THREE.Vector3()
 window.sunPosition = sunPosition
 initSky(scene, gui, sunPosition)
 
-var dirLight = new THREE.DirectionalLight( 0xffffff, 1);
-dirLight.position.copy(sunPosition);
-dirLight.position.normalize()
-dirLight.position.multiplyScalar(2000.0)
-dirLight.up.set(0, 0, 1)
-dirLight.name = "sunlight";
-dirLight.needsUpdate = true
-window.dirLight = dirLight
-scene.add( dirLight );
-
-var helper = new THREE.DirectionalLightHelper( dirLight, 5000 );
-scene.add( helper );
-
-dirLight.castShadow = true;
-dirLight.shadow.mapSize.width = dirLight.shadow.mapSize.height = 1024;
-
-var d = 1024;
-
-dirLight.shadow.camera.left = -d;
-dirLight.shadow.camera.right = d;
-dirLight.shadow.camera.top = d;
-dirLight.shadow.camera.bottom = -d;
-
-dirLight.shadow.camera.far = 5000;
-dirLight.shadow.bias = -0.0001;
-
-var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
-scene.add( light );
-var light = new THREE.AmbientLight( 0x404040 ); // soft white light
-scene.add( light );
-
+initLights(scene, sunPosition)
+dirLight.target = drone
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
 
 const loops = [
@@ -120,7 +92,7 @@ const loops = [
 ]
 
 // Start the app
-renderer.setPixelRatio(1)
+renderer.setPixelRatio(1.0)
 controlsModule.update(0)
 
 const stats = new Stats()

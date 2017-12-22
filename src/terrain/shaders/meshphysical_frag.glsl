@@ -80,13 +80,14 @@ void main() {
 	#include <clipping_planes_fragment>
 
 	vec4 grassColor = physicalColor(map, normalMap, roughness, metalness);
-	vec4 rockColor = physicalColor(rockTexture, rockTextureNormal, 0.5, 0.1);
+	vec4 rockColor = physicalColor(rockTexture, rockTextureNormal, 0.5, 0.15);
 	#include <normal_fragment>
 	float flatness = dot(vNormal2, vec3(0.0, 0.0, 1.0));
 	vec4 colorTerrain = mix(
 		rockColor,
+		// rockColor,
 		grassColor,
-		smoothstep(0.55, 0.75, flatness)
+		smoothstep(0.6, 0.7, flatness)
 	);
 	gl_FragColor = colorTerrain;
 
