@@ -1,6 +1,7 @@
 import {
   MeshDepthMaterial,
   UniformsUtils,
+  Vector2,
 } from 'three'
 import {
   EffectComposer,
@@ -10,13 +11,13 @@ import {
 } from './'
 
 const effectController  = {
-  shaderFocus: false,
+  shaderFocus: true,
 
   fstop: 2.2,
-  maxblur: 1.0,
+  maxblur: 4.0,
 
   showFocus: false,
-  focalDepth: 313,
+  focalDepth: 130,
   manualdof: false,
   vignetting: false,
   depthblur: false,
@@ -51,6 +52,7 @@ const initDoF = (scene, renderer, camera, gui) => {
   bokeh.uniforms = UniformsUtils.clone(BokehShader.uniforms)
   bokeh.vertexShader = BokehShader.vertexShader
   bokeh.fragmentShader = BokehShader.fragmentShader
+  bokeh.uniforms.focusCoords = {value: new Vector2(0.5, 0.2)}
   bokeh.uniforms.textureWidth = {value: window.innerWidth}
   bokeh.uniforms.textureHeight = {value: window.innerHeight}
   bokeh.defines = {
@@ -79,17 +81,17 @@ const initDoF = (scene, renderer, camera, gui) => {
 
     const folder = gui.addFolder('Depth of Field')
 
-    folder.add( effectController, "shaderFocus" ).onChange( matChanger );
-    folder.add( effectController, "focalDepth", 0.0, 2000.0 ).listen().onChange( matChanger );
+    // folder.add( effectController, "shaderFocus" ).onChange( matChanger );
+    // folder.add( effectController, "focalDepth", 0.0, 500.0 ).listen().onChange( matChanger );
 
-    folder.add( effectController, "fstop", 0.1, 22, 0.001 ).onChange( matChanger );
+    folder.add( effectController, "fstop", 0.1, 10, 0.001 ).onChange( matChanger );
     folder.add( effectController, "maxblur", 0.0, 5.0, 0.025 ).onChange( matChanger );
 
     folder.add( effectController, "showFocus" ).onChange( matChanger );
-    folder.add( effectController, "manualdof" ).onChange( matChanger );
+    // folder.add( effectController, "manualdof" ).onChange( matChanger );
     folder.add( effectController, "vignetting" ).onChange( matChanger );
 
-    folder.add( effectController, "depthblur" ).onChange( matChanger );
+    // folder.add( effectController, "depthblur" ).onChange( matChanger );
 
     folder.add( effectController, "threshold", 0, 1, 0.001 ).onChange( matChanger );
     folder.add( effectController, "gain", 0, 100, 0.001 ).onChange( matChanger );
@@ -98,11 +100,11 @@ const initDoF = (scene, renderer, camera, gui) => {
 
     folder.add( effectController, "focalLength", 16, 80, 0.001 ).onChange( matChanger );
 
-    folder.add( effectController, "noise" ).onChange( matChanger );
+    // folder.add( effectController, "noise" ).onChange( matChanger );
 
-    folder.add( effectController, "dithering", 0, 0.001, 0.0001 ).onChange( matChanger );
+    // folder.add( effectController, "dithering", 0, 0.001, 0.0001 ).onChange( matChanger );
 
-    folder.add( effectController, "pentagon" ).onChange( matChanger );
+    // folder.add( effectController, "pentagon" ).onChange( matChanger );
 
     matChanger()
   }
