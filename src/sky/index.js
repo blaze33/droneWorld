@@ -82,14 +82,15 @@ function initSky(scene, gui, sunPosition) {
 
   }
 
-  gui.add( effectController, "turbidity", 1.0, 20.0, 0.1 ).onChange( guiChanged );
-  gui.add( effectController, "rayleigh", 0.0, 4, 0.001 ).onChange( guiChanged );
-  gui.add( effectController, "mieCoefficient", 0.0, 0.1, 0.001 ).onChange( guiChanged );
-  gui.add( effectController, "mieDirectionalG", 0.0, 1, 0.001 ).onChange( guiChanged );
-  gui.add( effectController, "luminance", 0.0, 2 ).onChange( guiChanged );
-  gui.add( effectController, "inclination", 0, 1, 0.0001 ).onChange( guiChanged );
-  gui.add( effectController, "azimuth", 0, 1, 0.0001 ).onChange( guiChanged );
-  gui.add( effectController, "sun" ).onChange( guiChanged );
+  const folder = gui.addFolder('Sun and sky')
+  folder.add( effectController, "turbidity", 1.0, 20.0, 0.1 ).onChange( guiChanged );
+  folder.add( effectController, "rayleigh", 0.0, 4, 0.001 ).onChange( guiChanged );
+  folder.add( effectController, "mieCoefficient", 0.0, 0.1, 0.001 ).onChange( guiChanged );
+  folder.add( effectController, "mieDirectionalG", 0.0, 1, 0.001 ).onChange( guiChanged );
+  folder.add( effectController, "luminance", 0.0, 2 ).onChange( guiChanged );
+  folder.add( effectController, "inclination", 0, 1, 0.0001 ).onChange( guiChanged );
+  folder.add( effectController, "azimuth", 0, 1, 0.0001 ).onChange( guiChanged );
+  folder.add( effectController, "sun" ).onChange( guiChanged );
 
   guiChanged();
 
