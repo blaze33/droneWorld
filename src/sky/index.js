@@ -1,7 +1,9 @@
 import {
   Mesh,
   SphereBufferGeometry,
+  SphereGeometry,
   MeshBasicMaterial,
+  BackSide,
 } from 'three'
 import {Sky} from '../modules/Sky'
 import {dirLight} from '../lights'
@@ -21,6 +23,22 @@ function initSky(scene, gui, sunPosition) {
   sunSphere.position.y = - 700000;
   sunSphere.visible = false;
   scene.add( sunSphere );
+
+  var skyGeo = new SphereGeometry(1e5, 8, 8);
+  // flip faces so that overrideMaterial MeshDepthMatrial renders the skydome
+  // cf. https://stackoverflow.com/a/21485105/343834
+  for (let i = 0; i < skyGeo.faces.length; i++) {
+    const face = skyGeo.faces[i]
+    const temp = face.a
+    face.a = face.c
+    face.c = temp
+  }
+  var material = new MeshBasicMaterial({
+    opacity: 0
+  })
+  var skyDome = new Mesh(skyGeo, material);
+    skyDome.material.side = BackSide;
+    scene.add(skyDome);
 
   /// GUI
 
