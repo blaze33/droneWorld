@@ -17,14 +17,22 @@ import {initSky} from './sky'
 import {initLights} from './lights'
 import {tileBuilder} from './loops/tileBuilder'
 import {dirLight} from './lights'
+import {
+  EffectComposer,
+  RenderPass,
+  ShaderPass,
+  BokehShader,
+  initDoF
+} from './postprocessing'
 
 window.THREE = THREE
 
 const scene = new THREE.Scene();
-let camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1e6);
+let camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 50, 1e6);
+let cameraDepth = new THREE.PerspectiveCamera()
 
 camera.up = new THREE.Vector3(0, 0, 1)
-camera.position.set(1200, -1175, 190)
+camera.position.set(1200, -1175, 70)
 camera.lookAt(0, 0, 0)
 
 var renderer = new THREE.WebGLRenderer({
@@ -91,6 +99,9 @@ const loops = [
   tileBuilder,
 ]
 
+// postprocessing
+const dofEffect = initDoF(scene, renderer, camera, gui)
+
 // Start the app
 renderer.setPixelRatio(1.0)
 controlsModule.update(0)
@@ -98,6 +109,7 @@ controlsModule.update(0)
 const stats = new Stats()
 document.body.appendChild(stats.dom)
 
+let play = true
 let lastTimestamp = 0
 var mainLoop = (timestamp) => {
   requestAnimationFrame(mainLoop)
@@ -105,15 +117,19 @@ var mainLoop = (timestamp) => {
   lastTimestamp = timestamp
 
   stats.begin()
+  if (play) {
+    loops.forEach(loop => loop(timestamp))
+    controlsModule.update(delta)
 
-  loops.forEach(loop => loop(timestamp))
-  controlsModule.update(delta)
+    // renderer.render(scene, camera);
 
-  renderer.render(scene, camera);
+    dofEffect.renderDepth()
+    dofEffect.composer.render()
 
-  // if (dirLight.shadow && dirLight.shadow.map) {
-  //   shadowMapViewer.render(renderer)
-  // }
+    // if (dirLight.shadow && dirLight.shadow.map) {
+    //   shadowMapViewer.render(renderer)
+    // }
+  }
 
   stats.end()
 };
@@ -151,7 +167,9 @@ keyboardJS.bind('r', e => {
   }
 })
 
+keyboardJS.bind('space', e => play = !play)
+
 // tween js start
 autoPlay(true)
 
-export {renderer, scene, camera, drone, sunPosition}
+export {renderer, scene, camera, drone, sunPosition, gui}

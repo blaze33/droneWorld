@@ -6,6 +6,8 @@ import Pass from './Pass'
 import ShaderPass from './ShaderPass'
 import RenderPass from './RenderPass'
 
+import initDoF from './dof'
+
 export {
   BokehShader,
   CopyShader,
@@ -15,4 +17,6 @@ export {
   Pass,
   RenderPass,
   ShaderPass,
+
+  initDoF,
 }
