@@ -22,7 +22,8 @@ import {
   RenderPass,
   ShaderPass,
   BokehShader,
-  initDoF
+  initDoF,
+  lensFlare,
 } from './postprocessing'
 
 window.THREE = THREE
@@ -93,10 +94,13 @@ initSky(scene, gui, sunPosition)
 
 initLights(scene, sunPosition)
 dirLight.target = drone
+scene.add(lensFlare)
+
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
 
 const loops = [
   tileBuilder,
+  () => lensFlare.position.copy(sunPosition)
 ]
 
 // postprocessing

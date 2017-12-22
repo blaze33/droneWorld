@@ -7,6 +7,7 @@ import ShaderPass from './ShaderPass'
 import RenderPass from './RenderPass'
 
 import initDoF from './dof'
+import lensFlare from './lensflares'
 
 export {
   BokehShader,
@@ -19,4 +20,5 @@ export {
   ShaderPass,
 
   initDoF,
+  lensFlare,
 }
