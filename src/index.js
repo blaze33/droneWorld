@@ -86,6 +86,41 @@ window.controls = controlsModule
 const gui = new dat.GUI()
 window.gui = gui
 
+const rendererFolder = gui.addFolder('Level of detail')
+const RendererController = function () {
+  this.low = () => {
+    window.location.href = window.location.pathname + '?' +
+    queryString.stringify({
+      PBR: false,
+      shadows: false,
+      postprocessing: false,
+    })
+  }
+  this.lowShadow = () => {
+    window.location.href = window.location.pathname + '?' +
+    queryString.stringify({
+      PBR: false,
+      shadows: true,
+      postprocessing: false,
+    })
+  }
+  this.lowShadowDoF = () => {
+    window.location.href = window.location.pathname + '?' +
+    queryString.stringify({
+      PBR: false,
+      shadows: true,
+      postprocessing: true,
+    })
+  }
+  this.high = () => {
+    window.location.href = window.location.pathname
+  }
+}
+const rendererController = new RendererController()
+rendererFolder.add(rendererController, 'low')
+rendererFolder.add(rendererController, 'lowShadow')
+rendererFolder.add(rendererController, 'lowShadowDoF')
+rendererFolder.add(rendererController, 'high')
 scene.fog = new THREE.FogExp2(0x91abb5, 0.0005)
 
 
