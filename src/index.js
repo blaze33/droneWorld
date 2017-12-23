@@ -123,7 +123,7 @@ const loops = [
 ]
 
 // postprocessing
-const dofEffect = initDoF(scene, renderer, camera, gui)
+const dofEffect = options.postprocessing ? initDoF(scene, renderer, camera, gui) : null
 
 // Start the app
 renderer.setPixelRatio(1.0)
