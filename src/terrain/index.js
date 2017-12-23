@@ -73,7 +73,10 @@ snowTexture.wrapS = snowTexture.wrapT = RepeatWrapping
 const spectralMaterial = (options, uniforms) => {
   const material = new ShaderMaterial({
     uniforms: {
+      ...UniformsLib.common,
       ...UniformsLib.lights,
+      roughness: {value: 1},
+      metalness: {value: 0.5},
       // spectral: {value: spectralTexture},
       rockTexture: {value: rockTexture},
       rockTextureNormal: {value: rockTextureNormal},
@@ -94,6 +97,11 @@ const spectralMaterial = (options, uniforms) => {
     // transparent: true,
     // ...options,
   })
+  material.isShaderMaterial = false
+  material.isMeshStandardMaterial = true
+  material.opacity = 1.0
+  material.roughness = 1
+  material.metalness = 0
   return material
 }
 const spectralMaterialInstance = spectralMaterial()
@@ -154,8 +162,8 @@ const buildTileFromWorker = event => {
   // standard shader material
   // const material = spectralMaterial({}, {heightmap: {value: heightTexture}})
 
-  const plane = new Mesh( geometry, material );
-  // const plane = new Mesh( geometry, spectralMaterial() );
+  // const plane = new Mesh( geometry, material );
+  const plane = new Mesh( geometry, spectralMaterial() );
 
   plane.key = event.data.key
   plane.castShadow = true; //default is false

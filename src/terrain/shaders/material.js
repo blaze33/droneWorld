@@ -104,6 +104,10 @@ const Material = (options, uniforms) => {
   material.normalScale = new Vector2(5, 5)
   material.uniforms.reflectivity.value = 0.5
   material.clearCoatRoughness = 0.0
+
+  // needed for WebGLProgram to unroll loops
+  // cf. https://github.com/mrdoob/three.js/pull/12323
+  material.isShaderMaterial = false
   material.isMeshStandardMaterial = true
   material.isMeshPhysicalMaterial = true
   // repeat the texture 20 times
