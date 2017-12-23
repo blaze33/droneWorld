@@ -12,8 +12,13 @@
 // https://github.com/zz85 @blurspline
 
 // https://github.com/neurolabusc/Fast-Quadric-Mesh-Simplification-Pascal-/blob/master/meshify_simplify_quadric.pas
-import * as THREE from 'three'
 
+import {
+    Vector3,
+    BufferGeometry,
+    Geometry,
+    BufferAttribute,
+} from 'three'
 
 const SimplifyModifier = function SimplifyModifier() {
 
@@ -116,7 +121,7 @@ SimplifyModifier.prototype.modify =
     //  this.z = z;
     // };
 
-    var Vector3 = THREE.Vector3;
+    // var Vector3 = Vector3;
 
     function Vertex() {
         this.p = new Vector3();
@@ -646,9 +651,9 @@ SimplifyModifier.prototype.modify =
 
     return function simplifyModify(initGeometry) {
         let geometry = initGeometry
-        if ( initGeometry instanceof THREE.BufferGeometry && !initGeometry.vertices && !initGeometry.faces ) {
+        if ( initGeometry instanceof BufferGeometry && !initGeometry.vertices && !initGeometry.faces ) {
             console.log('converting BufferGeometry to Geometry');
-            geometry = new THREE.Geometry().fromBufferGeometry( initGeometry );
+            geometry = new Geometry().fromBufferGeometry( initGeometry );
             initGeometry.dispose()
         }
 
@@ -673,11 +678,11 @@ SimplifyModifier.prototype.modify =
 
 
         // TODO convert to buffer geometry.
-        const newGeo = new THREE.BufferGeometry();
+        const newGeo = new BufferGeometry();
         const newVertices = new Float32Array([].concat.apply([], vertices.map(v => v.p.toArray())))
         const index = new Uint16Array([].concat.apply([], triangles.map(t => t.v)))
-        newGeo.addAttribute('position', new THREE.BufferAttribute(newVertices, 3))
-        newGeo.setIndex(new THREE.BufferAttribute(index, 3))
+        newGeo.addAttribute('position', new BufferAttribute(newVertices, 3))
+        newGeo.setIndex(new BufferAttribute(index, 3))
         geometry.dispose()
         return newGeo
 

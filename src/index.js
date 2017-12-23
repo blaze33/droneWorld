@@ -1,5 +1,17 @@
 import './index.css'
-import * as THREE from 'three';
+import {
+  Scene,
+  PerspectiveCamera,
+  CubeCamera,
+  Vector3,
+  WebGLRenderer,
+  PCFSoftShadowMap,
+  Uncharted2ToneMapping,
+  FogExp2,
+  Mesh,
+  SphereBufferGeometry,
+  MeshBasicMaterial,
+} from 'three'
 import dat from 'dat.gui/build/dat.gui.js'
 import Alea from 'alea'
 import { Easing, Tween, autoPlay } from 'es6-tween'
@@ -29,8 +41,6 @@ import {
 import {material} from './terrain'
 
 
-window.THREE = THREE
-
 const queryStringOptions = queryString.parse(window.location.search)
 const options = {
   PBR: queryStringOptions.PBR === 'false' ? false : true,
@@ -43,18 +53,18 @@ if (options.PBR) {
 }
 console.log(options)
 
-const scene = new THREE.Scene();
-let camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 1, 1e6);
-var cubeCamera = new THREE.CubeCamera( 1, 1e6, 1024 );
+const scene = new Scene();
+let camera = new PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 1, 1e6);
+var cubeCamera = new CubeCamera( 1, 1e6, 1024 );
 
 window.cube = cubeCamera
 cubeCamera.up.set(0, 0, 1)
 
-camera.up = new THREE.Vector3(0, 0, 1)
+camera.up = new Vector3(0, 0, 1)
 camera.position.set(1200, -1175, 70)
 camera.lookAt(0, 0, 0)
 
-var renderer = new THREE.WebGLRenderer({
+var renderer = new WebGLRenderer({
   antialias: true,
   alpha: true,
 });
@@ -63,10 +73,10 @@ renderer.gammaInput = true
 renderer.gammaOutput = true
 renderer.shadowMap.enabled = options.shadows
 renderer.shadowMap.bias = 0.001
-renderer.shadowMap.type = THREE.PCFSoftShadowMap
+renderer.shadowMap.type = PCFSoftShadowMap
 renderer.shadowMap.autoUpdate = true
 renderer.physicallyCorrectLights = true
-renderer.toneMapping = THREE.Uncharted2ToneMapping
+renderer.toneMapping = Uncharted2ToneMapping
 
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
@@ -74,10 +84,6 @@ document.body.appendChild( renderer.domElement );
 const orbitModule = new OrbitControls(camera, renderer.domElement)
 let controlsModule = orbitModule
 
-// const flyModule = new FlyControls(camera, renderer.domElement)
-// let controlsModule = flyModule
-
-window.THREE = THREE
 window.scene = scene
 window.renderer = renderer
 window.camera = camera
@@ -121,12 +127,12 @@ rendererFolder.add(rendererController, 'low')
 rendererFolder.add(rendererController, 'lowShadow')
 rendererFolder.add(rendererController, 'lowShadowDoF')
 rendererFolder.add(rendererController, 'high')
-scene.fog = new THREE.FogExp2(0x91abb5, 0.0005)
+scene.fog = new FogExp2(0x91abb5, 0.0005)
 
 
-const drone = new THREE.Mesh(
-  new THREE.SphereBufferGeometry(5, 5, 5),
-  new THREE.MeshBasicMaterial({
+const drone = new Mesh(
+  new SphereBufferGeometry(5, 5, 5),
+  new MeshBasicMaterial({
     color: 0xffffff
   })
 )
@@ -141,11 +147,11 @@ dragControls.addEventListener( 'dragend', event => {
 });
 // const dragModule = new WHS.ControlsModule.from(dragControls)
 
-const sunPosition = new THREE.Vector3()
+const sunPosition = new Vector3()
 window.sunPosition = sunPosition
 const sky = initSky(scene, sunPosition, gui)
-const envMapScene = new THREE.Scene();
-const sky2 = initSky(envMapScene, new THREE.Vector3().copy(sunPosition))
+const envMapScene = new Scene();
+const sky2 = initSky(envMapScene, new Vector3().copy(sunPosition))
 initLights(scene, sunPosition)
 dirLight.target = drone
 scene.add(lensFlare)

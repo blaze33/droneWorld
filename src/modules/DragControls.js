@@ -4,23 +4,30 @@
  * Running this will allow you to drag three.js objects around the screen.
  */
 
-import * as THREE from 'three'
+import {
+    Camera,
+    Plane,
+    Raycaster,
+    Vector2,
+    Vector3,
+    EventDispatcher,
+} from 'three'
 
 const DragControls = function ( _objects, _camera, _domElement ) {
 
-    if ( _objects instanceof THREE.Camera ) {
+    if ( _objects instanceof Camera ) {
 
-        console.warn( 'THREE.DragControls: Constructor now expects ( objects, camera, domElement )' );
+        console.warn( 'DragControls: Constructor now expects ( objects, camera, domElement )' );
         var temp = _objects; _objects = _camera; _camera = temp;
 
     }
 
-    var _plane = new THREE.Plane();
-    var _raycaster = new THREE.Raycaster();
+    var _plane = new Plane();
+    var _raycaster = new Raycaster();
 
-    var _mouse = new THREE.Vector2();
-    var _offset = new THREE.Vector3();
-    var _intersection = new THREE.Vector3();
+    var _mouse = new Vector2();
+    var _offset = new Vector3();
+    var _intersection = new Vector3();
 
     var _selected = null, _hovered = null;
 
@@ -253,34 +260,34 @@ const DragControls = function ( _objects, _camera, _domElement ) {
 
     this.setObjects = function () {
 
-        console.error( 'THREE.DragControls: setObjects() has been removed.' );
+        console.error( 'DragControls: setObjects() has been removed.' );
 
     };
 
     this.on = function ( type, listener ) {
 
-        console.warn( 'THREE.DragControls: on() has been deprecated. Use addEventListener() instead.' );
+        console.warn( 'DragControls: on() has been deprecated. Use addEventListener() instead.' );
         scope.addEventListener( type, listener );
 
     };
 
     this.off = function ( type, listener ) {
 
-        console.warn( 'THREE.DragControls: off() has been deprecated. Use removeEventListener() instead.' );
+        console.warn( 'DragControls: off() has been deprecated. Use removeEventListener() instead.' );
         scope.removeEventListener( type, listener );
 
     };
 
     this.notify = function ( type ) {
 
-        console.error( 'THREE.DragControls: notify() has been deprecated. Use dispatchEvent() instead.' );
+        console.error( 'DragControls: notify() has been deprecated. Use dispatchEvent() instead.' );
         scope.dispatchEvent( { type: type } );
 
     };
 
 };
 
-DragControls.prototype = Object.create( THREE.EventDispatcher.prototype );
+DragControls.prototype = Object.create( EventDispatcher.prototype );
 DragControls.prototype.constructor = DragControls;
 
 export default DragControls
