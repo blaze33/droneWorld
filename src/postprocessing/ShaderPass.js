@@ -27,7 +27,7 @@ const ShaderPass = function ( shader, textureID ) {
     } else if ( shader ) {
 
         this.uniforms = UniformsUtils.clone( shader.uniforms );
-        console.log(shader.defines)
+
         this.material = new ShaderMaterial( {
 
             defines: shader.defines || {},

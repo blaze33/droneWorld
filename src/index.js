@@ -25,12 +25,17 @@ import {
   initDoF,
   lensFlare,
 } from './postprocessing'
+import {material} from './terrain'
+
 
 window.THREE = THREE
 
 const scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 50, 1e6);
-let cameraDepth = new THREE.PerspectiveCamera()
+var cubeCamera = new THREE.CubeCamera( 1, 1e6, 1024 );
+
+window.cube = cubeCamera
+cubeCamera.up.set(0, 0, 1)
 
 camera.up = new THREE.Vector3(0, 0, 1)
 camera.position.set(1200, -1175, 70)
@@ -90,8 +95,9 @@ dragControls.addEventListener( 'dragend', event => {
 
 const sunPosition = new THREE.Vector3()
 window.sunPosition = sunPosition
-initSky(scene, gui, sunPosition)
-
+const sky = initSky(scene, sunPosition, gui)
+const envMapScene = new THREE.Scene();
+const sky2 = initSky(envMapScene, new THREE.Vector3().copy(sunPosition))
 initLights(scene, sunPosition)
 dirLight.target = drone
 scene.add(lensFlare)
@@ -124,7 +130,11 @@ var mainLoop = (timestamp) => {
     loops.forEach(loop => loop(timestamp))
     controlsModule.update(delta)
 
-    // renderer.render(scene, camera);
+    sky2.material.uniforms.sunPosition.value = sunPosition
+    cubeCamera.update(renderer, envMapScene);
+    const envMap = cubeCamera.renderTarget
+    material.uniforms.envMap.value = envMap.texture
+    sphere.material.envMap = envMap.texture
 
     dofEffect.renderDepth()
     dofEffect.composer.render()

@@ -71,7 +71,8 @@ const Material = (options, uniforms) => {
       USE_MAP: '',
       USE_NORMALMAP: '',
       USE_ENVMAP: '',
-      ENVMAP_TYPE_SPHERE: '',
+      ENVMAP_TYPE_CUBE: '',
+      ENVMAP_BLENDING_MULTIPLY: '',
       TONE_MAPPING: ''
     },
     vertexShader,
@@ -87,21 +88,21 @@ const Material = (options, uniforms) => {
   })
   material.uniforms.map.value = grassTexture
   material.uniforms.normalMap.value = grassTextureNormal
-  material.uniforms.envMap.value = envmapTexture
+  // material.uniforms.envMap.value = envmapTexture
   material.uniforms.toneMappingExposure = {value: 3}
   material.uniforms.toneMappingWhitePoint = {value: 5}
   // material.uniforms.normalScale = {value: 5}
   material.opacity = 1.0
-  material.roughness = 1.0
-  material.metalness = 0.0
+  material.roughness = 1
+  material.metalness = 0
   material.lightMapIntensity = 1.0
   material.aoMapIntensity = 1.0
   material.emissiveIntensity = 1.0
   material.envMapIntensity = 1
   material.refractionRatio = 0.98
   material.bumpscale = 1.0
-  material.normalScale = new Vector2(10, 10)
-  material.uniforms.reflectivity.value = 0.3
+  material.normalScale = new Vector2(5, 5)
+  material.uniforms.reflectivity.value = 0.5
   material.clearCoatRoughness = 0.0
   material.isMeshStandardMaterial = true
   material.isMeshPhysicalMaterial = true

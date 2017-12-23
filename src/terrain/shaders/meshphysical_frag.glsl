@@ -17,6 +17,7 @@ uniform sampler2D rockTextureNormal;
 #endif
 
 varying vec3 vViewPosition;
+varying vec3 vWorldPosition;
 varying vec3 vNormal2;
 
 #ifndef FLAT_SHADED
@@ -55,6 +56,7 @@ vec4 physicalColor(sampler2D map, sampler2D normalMap, float roughness, float me
 	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
 	vec3 totalEmissiveRadiance = emissive;
 
+	#include <logdepthbuf_fragment>
 	#include <map_fragment>
 	#include <color_fragment>
 	#include <alphamap_fragment>
@@ -72,6 +74,9 @@ vec4 physicalColor(sampler2D map, sampler2D normalMap, float roughness, float me
 	#include <aomap_fragment>
 
 	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;
+	// #include <specularmap_fragment>
+	// #include <envmap_fragment>
+	// return vec4(envColor.rgb, 1.0);
 	return vec4(outgoingLight, diffuseColor.a);
 }
 
@@ -80,9 +85,10 @@ void main() {
 	#include <clipping_planes_fragment>
 
 	vec4 grassColor = physicalColor(map, normalMap, roughness, metalness);
-	vec4 rockColor = physicalColor(rockTexture, rockTextureNormal, 0.5, 0.15);
-	#include <normal_fragment>
-	float flatness = dot(vNormal2, vec3(0.0, 0.0, 1.0));
+	vec4 rockColor = physicalColor(rockTexture, rockTextureNormal, 0.4, 0.15);
+	vec3 normal = normalize( vNormal2 );
+	normal = perturbNormal2Arb( -vViewPosition, normal );
+	float flatness = dot(normal, vec3(0.0, 0.0, 1.0));
 	vec4 colorTerrain = mix(
 		rockColor,
 		// rockColor,
@@ -90,6 +96,11 @@ void main() {
 		smoothstep(0.6, 0.7, flatness)
 	);
 	gl_FragColor = colorTerrain;
+	// gl_FragColor = vec4(vec3(vWorldPosition.z/100.0), 1.0);
+	vec3 outgoingLight = gl_FragColor.rgb;
+	#include <specularmap_fragment>
+	#include <envmap_fragment>
+	gl_FragColor = vec4(outgoingLight.rgb, gl_FragColor.a);
 
 
 	// gl_FragColor = vec4(material.specularColor, 1.0);
@@ -104,7 +115,15 @@ void main() {
 
 	#include <tonemapping_fragment>
 	#include <encodings_fragment>
-	#include <fog_fragment>
+
+	//  FOG
+	// #include <fog_fragment>
+	reflectVec = refract( cameraToVertex, worldNormal, 1.0 );
+	vec4 fogColor = textureCube( envMap, vec3( flipEnvMap * reflectVec.x, reflectVec.yz ) );
+	float fogFactor = whiteCompliment( exp2( - fogDensity * fogDensity * fogDepth * fogDepth * LOG2 ) );
+	fogFactor = mix(fogFactor, fogFactor / 10.0, smoothstep(100.0, 300.0, vWorldPosition.z));
+	gl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor.rgb, fogFactor );
+
 	#include <premultiplied_alpha_fragment>
 	#include <dithering_fragment>
 

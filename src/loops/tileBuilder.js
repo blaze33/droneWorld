@@ -108,7 +108,6 @@ const tileBuilder = (timestamp) => {
       scene.remove(tile)
       tile.geometry.dispose()
       tile.geometry = null
-      tile.material.uniforms.heightmap.value.dispose()
       tile.material.dispose()
       tile.material = null
     }
