@@ -2,6 +2,7 @@
   "name": "drone",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://lab.openbloc.fr/droneWorld",
   "dependencies": {
     "alea": "^0.0.9",
     "autoprefixer": "7.1.6",
@@ -54,6 +55,8 @@
     "worker-loader": "^1.1.0"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom"
