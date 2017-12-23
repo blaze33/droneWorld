@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "droneWorld",
+  "name": "Fly in a 3D world",
   "icons": [
     {
       "src": "favicon.ico",
