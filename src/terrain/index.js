@@ -13,7 +13,7 @@ import {
   UniformsLib,
   ShadowMaterial,
 } from 'three'
-import {renderer, scene, sunPosition} from '../index'
+import {renderer, scene, sunPosition, options} from '../index'
 // import SimplifyModifier from '../modules/meshSimplify'
 import vertexShader from './shaders/terrain.vert'
 import fragmentShader from './shaders/terrain.frag'
@@ -162,8 +162,8 @@ const buildTileFromWorker = event => {
   // standard shader material
   // const material = spectralMaterial({}, {heightmap: {value: heightTexture}})
 
-  // const plane = new Mesh( geometry, material );
-  const plane = new Mesh( geometry, spectralMaterial() );
+  const terrainMaterial = options.PBR ? material : spectralMaterial()
+  const plane = new Mesh( geometry, terrainMaterial )
 
   plane.key = event.data.key
   plane.castShadow = true; //default is false

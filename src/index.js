@@ -5,6 +5,7 @@ import Alea from 'alea'
 import { Easing, Tween, autoPlay } from 'es6-tween'
 import keyboardJS from 'keyboardjs'
 import Stats from 'stats.js'
+import queryString from 'query-string'
 
 // import './modules/terrain.js'
 import DragControls from './modules/DragControls'
@@ -30,6 +31,18 @@ import {material} from './terrain'
 
 window.THREE = THREE
 
+const queryStringOptions = queryString.parse(window.location.search)
+const options = {
+  PBR: queryStringOptions.PBR === 'false' ? false : true,
+  shadows: queryStringOptions.shadows === 'false' ? false : true,
+  postprocessing: queryStringOptions.postprocessing === 'false' ? false : true,
+}
+if (options.PBR) {
+  // PBR material needs an envMap
+  options.postprocessing = true
+}
+console.log(options)
+
 const scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 50, 1e6);
 var cubeCamera = new THREE.CubeCamera( 1, 1e6, 1024 );
@@ -48,7 +61,7 @@ var renderer = new THREE.WebGLRenderer({
 
 renderer.gammaInput = true
 renderer.gammaOutput = true
-renderer.shadowMap.enabled = true
+renderer.shadowMap.enabled = options.shadows
 renderer.shadowMap.bias = 0.001
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.shadowMap.autoUpdate = true
@@ -130,15 +143,17 @@ var mainLoop = (timestamp) => {
     loops.forEach(loop => loop(timestamp))
     controlsModule.update(delta)
 
-    // renderer.render(scene, camera)
+    if (options.postprocessing) {
+      sky2.material.uniforms.sunPosition.value = sunPosition
+      cubeCamera.update(renderer, envMapScene);
+      const envMap = cubeCamera.renderTarget
+      material.uniforms.envMap.value = envMap.texture
 
-    sky2.material.uniforms.sunPosition.value = sunPosition
-    cubeCamera.update(renderer, envMapScene);
-    const envMap = cubeCamera.renderTarget
-    material.uniforms.envMap.value = envMap.texture
-
-    dofEffect.renderDepth()
-    dofEffect.composer.render()
+      dofEffect.renderDepth()
+      dofEffect.composer.render()
+    } else {
+      renderer.render(scene, camera)
+    }
 
     // if (dirLight.shadow && dirLight.shadow.map) {
     //   shadowMapViewer.render(renderer)
@@ -187,4 +202,4 @@ keyboardJS.bind('space', e => play = !play)
 // tween js start
 autoPlay(true)
 
-export {renderer, scene, camera, drone, sunPosition, gui}
+export {renderer, scene, camera, drone, sunPosition, gui, options}
