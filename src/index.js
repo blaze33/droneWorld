@@ -159,8 +159,9 @@ const toggleControls = (controls, state) => {
 }
 
 keyboardJS.bind('p', e => {
-  camera = camera.clone()
+  // camera = camera.clone()
   const newControlsClass = controlsModule.constructor.name === 'OrbitControls' ? FlyControls : OrbitControls
+  console.log('controlsClass', newControlsClass.name)
   controlsModule.dispose()
   const newModule = new newControlsClass(camera, renderer.domElement)
   controlsModule = newModule
