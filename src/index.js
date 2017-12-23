@@ -83,7 +83,7 @@ const drone = new THREE.Mesh(
   })
 )
 scene.add(drone)
-window.drone = drone
+
 const dragControls = new DragControls([drone], camera, renderer.domElement)
 dragControls.addEventListener( 'dragstart', event => {
   toggleControls(controlsModule, false)
@@ -136,7 +136,6 @@ var mainLoop = (timestamp) => {
     cubeCamera.update(renderer, envMapScene);
     const envMap = cubeCamera.renderTarget
     material.uniforms.envMap.value = envMap.texture
-    sphere.material.envMap = envMap.texture
 
     dofEffect.renderDepth()
     dofEffect.composer.render()
