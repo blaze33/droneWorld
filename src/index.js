@@ -130,6 +130,8 @@ var mainLoop = (timestamp) => {
     loops.forEach(loop => loop(timestamp))
     controlsModule.update(delta)
 
+    // renderer.render(scene, camera)
+
     sky2.material.uniforms.sunPosition.value = sunPosition
     cubeCamera.update(renderer, envMapScene);
     const envMap = cubeCamera.renderTarget

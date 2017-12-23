@@ -155,6 +155,7 @@ const buildTileFromWorker = event => {
   // const material = spectralMaterial({}, {heightmap: {value: heightTexture}})
 
   const plane = new Mesh( geometry, material );
+  // const plane = new Mesh( geometry, spectralMaterial() );
 
   plane.key = event.data.key
   plane.castShadow = true; //default is false
