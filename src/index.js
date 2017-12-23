@@ -44,7 +44,7 @@ if (options.PBR) {
 console.log(options)
 
 const scene = new THREE.Scene();
-let camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 50, 1e6);
+let camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 1, 1e6);
 var cubeCamera = new THREE.CubeCamera( 1, 1e6, 1024 );
 
 window.cube = cubeCamera
