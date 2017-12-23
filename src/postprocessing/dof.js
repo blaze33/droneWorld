@@ -27,7 +27,7 @@ const effectController  = {
   bias: 0.5,
   fringe: 0.7,
 
-  focalLength: 35,
+  focalLength: 22,
   noise: true,
   pentagon: false,
 
