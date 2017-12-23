@@ -82,6 +82,7 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 const orbitModule = new OrbitControls(camera, renderer.domElement)
+orbitModule.target.z = 200
 let controlsModule = orbitModule
 
 window.scene = scene
@@ -136,6 +137,7 @@ const drone = new Mesh(
     color: 0xffffff
   })
 )
+drone.visible = false
 scene.add(drone)
 
 const dragControls = new DragControls([drone], camera, renderer.domElement)

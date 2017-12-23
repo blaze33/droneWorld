@@ -15,15 +15,15 @@ window.pngs = pngs
 
 const tileBuilder = (timestamp) => {
   const cameraPosition = camera.position
+  const camVec = camera.getWorldDirection();
+  let targetPosition = cameraPosition.clone()
+
+  targetPosition = targetPosition.add(camVec.multiplyScalar(400 * Math.max(1, Math.abs(cameraPosition.z) / 400)))
+  drone.position.set(targetPosition.x, targetPosition.y, 200)
+  dirLight.updatePosition()
+
   if (cameraPosition.distanceTo(lastCameraPosition) > 10) {
     lastCameraPosition = cameraPosition.clone()
-
-    const camVec = camera.getWorldDirection();
-    let targetPosition = cameraPosition.clone()
-
-    targetPosition = targetPosition.add(camVec.multiplyScalar(400 * Math.max(1, Math.abs(cameraPosition.z) / 400)))
-    drone.position.set(targetPosition.x, targetPosition.y, 0)
-    dirLight.updatePosition()
 
     const z0 = 10
     const zoomDelta = Math.min(7, Math.floor(Math.sqrt(Math.abs(cameraPosition.z)) / 28))
