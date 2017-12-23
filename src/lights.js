@@ -4,17 +4,24 @@ import {
   HemisphereLight,
   AmbientLight,
 } from 'three'
-import {scene} from './index'
+import {drone} from './index'
 
 const dirLight = new DirectionalLight( 0xffffff, 4)
 window.dirLight = dirLight
 const hemishpereLight = new HemisphereLight( 0xffffbb, 0x080820, .1 )
 const ambientLight = new AmbientLight( 0x404040, 0.1 ) // soft white light
 
-const initLights = (scene, sunPosition) => {
-  dirLight.position.copy(sunPosition)
+const updateDirLightPosition = () => {
+  dirLight.position.copy(dirLight.sunPosition)
   dirLight.position.normalize()
   dirLight.position.multiplyScalar(1600.0)
+  dirLight.position.add(drone.position)
+}
+
+const initLights = (scene, sunPosition) => {
+  dirLight.sunPosition = sunPosition
+  dirLight.updatePosition = updateDirLightPosition
+  dirLight.updatePosition()
   dirLight.up.set(0, 0, 1)
   dirLight.name = "sunlight"
 

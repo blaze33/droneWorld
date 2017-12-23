@@ -2,6 +2,7 @@ import {
   Vector3,
 } from 'three'
 import {camera, scene, drone} from '../index'
+import {dirLight} from '../lights'
 import {buildPlane} from '../terrain'
 
 const tileSize = 800
@@ -22,6 +23,7 @@ const tileBuilder = (timestamp) => {
 
     targetPosition = targetPosition.add(camVec.multiplyScalar(400 * Math.max(1, Math.abs(cameraPosition.z) / 400)))
     drone.position.set(targetPosition.x, targetPosition.y, 0)
+    dirLight.updatePosition()
 
     const z0 = 10
     const zoomDelta = Math.min(7, Math.floor(Math.sqrt(Math.abs(cameraPosition.z)) / 28))
