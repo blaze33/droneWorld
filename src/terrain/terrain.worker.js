@@ -98,16 +98,15 @@ const setHeightmap = (geometry, heightmap, scale, offset, key) => {
   const positions = geometry.attributes.position.array.buffer
   const normals = geometry.attributes.normal.array.buffer
   const indices = geometry.index.array.buffer
-  const dem = DEMfromHeightmap(heightmap).buffer
   postMessage({
     key,
-    positions, normals, indices, dem,
+    positions, normals, indices,
     bpe: {
       positions: geometry.attributes.position.array.BYTES_PER_ELEMENT,
       normals: geometry.attributes.normal.array.BYTES_PER_ELEMENT,
       indices: geometry.index.array.BYTES_PER_ELEMENT,
     },
-  }, [positions, normals, indices, dem])
+  }, [positions, normals, indices])
 }
 
 // cf. http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#ECMAScript_.28JavaScript.2FActionScript.2C_etc..29

@@ -74,13 +74,13 @@ const spectralMaterial = (options, uniforms) => {
   const material = new ShaderMaterial({
     uniforms: {
       ...UniformsLib.lights,
-      spectral: {value: spectralTexture},
+      // spectral: {value: spectralTexture},
       rockTexture: {value: rockTexture},
       rockTextureNormal: {value: rockTextureNormal},
       grassTexture: {value: grassTexture},
       grassTextureNormal: {value: grassTextureNormal},
-      icyTexture: {value: icyTexture},
-      snowTexture: {value: snowTexture},
+      // icyTexture: {value: icyTexture},
+      // snowTexture: {value: snowTexture},
       sunPosition: {value: sunPosition},
       ...uniforms
     },
@@ -130,6 +130,9 @@ const setTilePosition = (geometry, key) => {
   )
 }
 
+// PBR
+const material = Material({}, {})
+
 const buildTileFromWorker = event => {
   const geometry = new BufferGeometry();
   const positions = new Float32Array(event.data.positions)
@@ -139,7 +142,7 @@ const buildTileFromWorker = event => {
     4: Uint32Array
   }[event.data.bpe.indices]
   const index = new indexArrayClass(event.data.indices)
-  const dem = new Uint8Array(event.data.dem)
+  // const dem = new Uint8Array(event.data.dem)
   let uv = new Float32Array(positions.length / 3 * 2)
   const n = Math.sqrt(positions.length / 3)
   uv = uv.map((_, index) => index % 2 ? Math.floor((index / 2) / n) /n : (index / 2) % n /  n)
@@ -147,14 +150,10 @@ const buildTileFromWorker = event => {
   geometry.addAttribute('normal', new BufferAttribute(normals, 3))
   geometry.addAttribute('uv', new BufferAttribute(uv, 2))
   geometry.setIndex(new BufferAttribute(index, 1))
-  // geometry.computeVertexNormals()
 
-  const heightTexture = new DataTexture(dem, 256, 256, RGBFormat)
-  heightTexture.anisotropy = 1
-  heightTexture.minFilter = LinearFilter
-  heightTexture.magFilter = LinearFilter
-  heightTexture.needsUpdate = true
-  const material = Material({}, {heightmap: {value: heightTexture}})
+  // standard shader material
+  // const material = spectralMaterial({}, {heightmap: {value: heightTexture}})
+
   const plane = new Mesh( geometry, material );
 
   plane.key = event.data.key
@@ -187,4 +186,5 @@ const buildPlane = (z, x, y, segments, j, size) => {
 
 export {
   buildPlane,
+  material,
 }
