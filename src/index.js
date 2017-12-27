@@ -67,7 +67,7 @@ window.cube = cubeCamera
 cubeCamera.up.set(0, 0, 1)
 
 camera.up = new Vector3(0, 0, 1)
-camera.position.set(1200, -1175, 70)
+camera.position.set(-70, 175, 345)
 camera.lookAt(0, 0, 0)
 
 var renderer = new WebGLRenderer({
@@ -192,7 +192,7 @@ const water = new Water(
 
 water.up.set(0, 0, 1)
 water.rotation.z = - Math.PI / 2;
-water.position.z = 21
+water.position.z = 100
 gui.__folders['Sun, sky and ocean'].add(water.position, "z", 0, 200, 1)
 water.receiveShadow = true;
 window.water = water
@@ -259,7 +259,7 @@ const toggleControls = (controls, state) => {
 keyboardJS.bind('p', e => {
   // camera = camera.clone()
   const newControlsClass = controlsModule.constructor.name === 'OrbitControls' ? FlyControls : OrbitControls
-  console.log('controlsClass', newControlsClass.name)
+  console.log('controlsClass', newControlsClass)
   controlsModule.dispose()
   const newModule = new newControlsClass(camera, renderer.domElement)
   controlsModule = newModule
