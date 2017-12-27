@@ -11,7 +11,13 @@ import {
   Mesh,
   SphereBufferGeometry,
   MeshBasicMaterial,
+
+  // Water imports
+  PlaneBufferGeometry,
+  TextureLoader,
+  RepeatWrapping,
 } from 'three'
+import Water from './modules/Water'
 import dat from 'dat.gui/build/dat.gui.js'
 import Alea from 'alea'
 import { Easing, Tween, autoPlay } from 'es6-tween'
@@ -157,6 +163,41 @@ const sky2 = initSky(envMapScene, new Vector3().copy(sunPosition))
 initLights(scene, sunPosition)
 dirLight.target = drone
 scene.add(lensFlare)
+
+// ##########################
+const waterParameters = {
+  oceanSide: 200000,
+  size: 1.0,
+  distortionScale: 3.7,
+  alpha: 1.0
+}
+var waterGeometry = new PlaneBufferGeometry( waterParameters.oceanSide * 5, waterParameters.oceanSide * 5 );
+
+const water = new Water(
+  waterGeometry,
+  {
+    textureWidth: 512,
+    textureHeight: 512,
+    waterNormals: new TextureLoader().load(require('./textures/waternormals.jpg'), function ( texture ) {
+      texture.wrapS = texture.wrapT = RepeatWrapping;
+    }),
+    alpha: waterParameters.alpha,
+    sunDirection: dirLight.position.clone().normalize(),
+    sunColor: 0xffffff,
+    waterColor: 0x001e0f,
+    distortionScale: waterParameters.distortionScale,
+    fog: scene.fog !== undefined
+  }
+);
+
+water.up.set(0, 0, 1)
+water.rotation.z = - Math.PI / 2;
+water.position.z = 21
+gui.__folders['Sun, sky and ocean'].add(water.position, "z", 0, 200, 1)
+water.receiveShadow = true;
+window.water = water
+scene.add( water );
+// ##########################
 
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
 

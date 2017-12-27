@@ -83,7 +83,7 @@ function initSky(scene, sunPosition, gui) {
 
     }
 
-    const folder = gui.addFolder('Sun and sky')
+    const folder = gui.addFolder('Sun, sky and ocean')
     folder.add( effectController, "turbidity", 1.0, 20.0, 0.1 ).onChange( guiChanged );
     folder.add( effectController, "rayleigh", 0.0, 4, 0.001 ).onChange( guiChanged );
     folder.add( effectController, "mieCoefficient", 0.0, 0.1, 0.001 ).onChange( guiChanged );
