@@ -16,7 +16,7 @@ Matrix4,
 Vector4,
 PerspectiveCamera,
 LinearFilter,
-RGBFormat,
+RGBAFormat,
 WebGLRenderTarget,
 UniformsUtils,
 UniformsLib,
@@ -69,7 +69,7 @@ const Water = function ( geometry, options ) {
     var parameters = {
         minFilter: LinearFilter,
         magFilter: LinearFilter,
-        format: RGBFormat,
+        format: RGBAFormat,
         stencilBuffer: false
     };
 
