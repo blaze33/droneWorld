@@ -47,6 +47,7 @@ import {
   lensFlare,
 } from './postprocessing'
 import {material} from './terrain'
+import {mobileAndTabletcheck} from './utils/isMobile'
 
 
 const queryStringOptions = queryString.parse(window.location.search)
@@ -89,10 +90,15 @@ renderer.toneMapping = Uncharted2ToneMapping
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-// const orbitModule = new OrbitControls(camera, renderer.domElement)
-const flyModule = new FlyControls(camera, renderer.domElement)
-// orbitModule.target.z = 200
-let controlsModule = flyModule
+let controlsModule
+if (mobileAndTabletcheck()) {
+  const orbitModule = new OrbitControls(camera, renderer.domElement)
+  orbitModule.target.z = 200
+  controlsModule = orbitModule
+} else {
+  const flyModule = new FlyControls(camera, renderer.domElement)
+  controlsModule = flyModule
+}
 
 window.scene = scene
 window.renderer = renderer
