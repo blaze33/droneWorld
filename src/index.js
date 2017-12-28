@@ -87,9 +87,10 @@ renderer.toneMapping = Uncharted2ToneMapping
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-const orbitModule = new OrbitControls(camera, renderer.domElement)
-orbitModule.target.z = 200
-let controlsModule = orbitModule
+// const orbitModule = new OrbitControls(camera, renderer.domElement)
+const flyModule = new FlyControls(camera, renderer.domElement)
+// orbitModule.target.z = 200
+let controlsModule = flyModule
 
 window.scene = scene
 window.renderer = renderer
