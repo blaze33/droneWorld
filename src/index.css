@@ -4,3 +4,11 @@ body {
   font-family: sans-serif;
   overflow: hidden;
 }
+
+.touchPane {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+}

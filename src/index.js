@@ -24,6 +24,7 @@ import { Easing, Tween, autoPlay } from 'es6-tween'
 import keyboardJS from 'keyboardjs'
 import Stats from 'stats.js'
 import queryString from 'query-string'
+import nipplejs from 'nipplejs'
 
 // import './modules/terrain.js'
 import DragControls from './modules/DragControls'
@@ -48,7 +49,7 @@ import {
 } from './postprocessing'
 import {material} from './terrain'
 import {mobileAndTabletcheck} from './utils/isMobile'
-
+console.log('nipple', nipplejs)
 
 const queryStringOptions = queryString.parse(window.location.search)
 const options = {
@@ -91,12 +92,21 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 let controlsModule
+const touchPane = window.document.getElementsByClassName('touchPane')[0]
 if (mobileAndTabletcheck()) {
-  const orbitModule = new OrbitControls(camera, renderer.domElement)
-  orbitModule.target.z = 200
-  controlsModule = orbitModule
+  const nippleLook = nipplejs.create({
+    zone: touchPane,
+    mode: 'static',
+    position: {left: '15%', top: '90%'},
+    color: 'white',
+  })
+  // const orbitModule = new OrbitControls(camera, renderer.domElement)
+  // orbitModule.target.z = 200
+  // controlsModule = orbitModule
+  const flyModule = new FlyControls(camera, touchPane, nippleLook)
+  controlsModule = flyModule
 } else {
-  const flyModule = new FlyControls(camera, renderer.domElement)
+  const flyModule = new FlyControls(camera, touchPane)
   controlsModule = flyModule
 }
 

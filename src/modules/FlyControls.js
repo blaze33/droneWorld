@@ -7,7 +7,7 @@ import {
  * @author James Baicoianu / http://www.baicoianu.com/
  */
 
-export default function FlyControls ( object, domElement ) {
+export default function FlyControls ( object, domElement , nipple) {
 
     this.object = object;
 
@@ -22,7 +22,29 @@ export default function FlyControls ( object, domElement ) {
     this.dragToLook = true;
     this.autoForward = false;
 
+    this.nipple = nipple
+    if (this.nipple) {
+        this.nipple.on('move', (event, data) => this.nipplemove(event, data));
+        this.nipple.on('end', (event, data) => {
+            this.autoForward = false
+            this.updateMovementVector()
+        });
+    }
+
     // disable default target object behavior
+
+    this.nipplemove = function(event, data) {
+        this.mouseStatus++
+        const dims = this.getContainerDimensions().size
+        const mockEvent = {
+            pageX: dims[0] / 2 + data.distance * Math.cos(data.angle.radian) * 2,
+            pageY: dims[1] / 2 - data.distance * Math.sin(data.angle.radian) * 2,
+        }
+        this.mousemove(mockEvent)
+        this.autoForward = true
+        this.updateMovementVector()
+        this.mouseStatus--
+    }
 
     // internals
 
