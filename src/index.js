@@ -49,9 +49,9 @@ import {material} from './terrain'
 
 const queryStringOptions = queryString.parse(window.location.search)
 const options = {
-  PBR: queryStringOptions.PBR === 'false' ? false : true,
-  shadows: queryStringOptions.shadows === 'false' ? false : true,
-  postprocessing: queryStringOptions.postprocessing === 'false' ? false : true,
+  PBR: queryStringOptions.PBR === 'true' ? true : false,
+  shadows: queryStringOptions.shadows === 'true' ? true : false,
+  postprocessing: queryStringOptions.postprocessing === 'true' ? true : false,
 }
 if (options.PBR) {
   // PBR material needs an envMap
@@ -127,7 +127,12 @@ const RendererController = function () {
     })
   }
   this.high = () => {
-    window.location.href = window.location.pathname
+    window.location.href = window.location.pathname + '?' +
+    queryString.stringify({
+      PBR: true,
+      shadows: true,
+      postprocessing: true,
+    })
   }
 }
 const rendererController = new RendererController()
