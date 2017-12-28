@@ -115,7 +115,8 @@ window.renderer = renderer
 window.camera = camera
 window.controls = controlsModule
 
-const gui = new dat.GUI()
+const gui = new dat.GUI({ autoPlace: false })
+window.document.getElementsByClassName('guiPane')[0].appendChild(gui.domElement)
 window.gui = gui
 
 const rendererFolder = gui.addFolder('Level of detail')
@@ -242,7 +243,7 @@ loader.load(
     droneFolder.add(droneController, 'y', 0, 2 * Math.PI)
     droneFolder.add(droneController, 'z', 0, 2 * Math.PI)
 
-    const dragControls = new DragControls([drone1], camera, renderer.domElement)
+    const dragControls = new DragControls([drone1], camera, touchPane)
     dragControls.addEventListener( 'dragstart', event => {
       toggleControls(controlsModule, false)
     });
@@ -377,7 +378,7 @@ keyboardJS.bind('p', e => {
   const newControlsClass = controlsModule.constructor.name === 'OrbitControls' ? FlyControls : OrbitControls
   console.log('controlsClass', newControlsClass)
   controlsModule.dispose()
-  const newModule = new newControlsClass(camera, renderer.domElement)
+  const newModule = new newControlsClass(camera, touchPane)
   window.controls = newModule
   controlsModule = newModule
   controlsModule.update(0)
