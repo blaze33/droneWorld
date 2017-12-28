@@ -70,7 +70,7 @@ cubeCamera.up.set(0, 0, 1)
 
 camera.up = new Vector3(0, 0, 1)
 camera.position.set(-70, 175, 345)
-camera.lookAt(0, 0, 0)
+camera.lookAt(0, -400, 0)
 
 var renderer = new WebGLRenderer({
   antialias: true,
