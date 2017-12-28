@@ -210,7 +210,7 @@ window.droneController = droneController
 // Load a glTF resource
 loader.load(
   // resource URL
-  '/assets/drone/scene.gltf',
+  './assets/drone/scene.gltf',
   // called when the resource is loaded
   function (gltf) {
     drone1 = gltf.scene.children[0]
