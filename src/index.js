@@ -32,6 +32,8 @@ import {OrbitControls} from './modules/OrbitControls'
 import SimplexNoise from './modules/simplexNoise'
 import {WindowResize} from './modules/WindowResize'
 import {ShadowMapViewer} from './modules/ShadowMapViewer'
+import GLTFLoader from './modules/GLTFLoader'
+import TrailRenderer from './modules/TrailRenderer'
 import {initSky} from './sky'
 import {initLights} from './lights'
 import {tileBuilder} from './loops/tileBuilder'
@@ -152,15 +154,6 @@ const drone = new Mesh(
 drone.visible = false
 scene.add(drone)
 
-const dragControls = new DragControls([drone], camera, renderer.domElement)
-dragControls.addEventListener( 'dragstart', event => {
-  toggleControls(controlsModule, false)
-});
-dragControls.addEventListener( 'dragend', event => {
-  toggleControls(controlsModule, true)
-});
-// const dragModule = new WHS.ControlsModule.from(dragControls)
-
 const sunPosition = new Vector3()
 window.sunPosition = sunPosition
 const sky = initSky(scene, sunPosition, gui)
@@ -172,7 +165,7 @@ scene.add(lensFlare)
 
 // ##########################
 const waterParameters = {
-  oceanSide: 200000,
+  oceanSide: 20000,
   size: 1.0,
   distortionScale: 3.7,
   alpha: 1.0
@@ -182,8 +175,8 @@ var waterGeometry = new PlaneBufferGeometry( waterParameters.oceanSide * 5, wate
 const water = new Water(
   waterGeometry,
   {
-    textureWidth: 512,
-    textureHeight: 512,
+    textureWidth: 1024,
+    textureHeight: 1024,
     waterNormals: new TextureLoader().load(require('./textures/waternormals.jpg'), function ( texture ) {
       texture.wrapS = texture.wrapT = RepeatWrapping;
     }),
@@ -205,11 +198,112 @@ window.water = water
 scene.add( water );
 // ##########################
 
+let drone1
+let trail
+var loader = new GLTFLoader();
+const droneController = {
+  x: 0,
+  y: 0,
+  z: 0,
+}
+window.droneController = droneController
+// Load a glTF resource
+loader.load(
+  // resource URL
+  '/assets/drone/scene.gltf',
+  // called when the resource is loaded
+  function (gltf) {
+    drone1 = gltf.scene.children[0]
+    scene.add(drone1);
+    window.drone1 = drone1
+    drone1.position.z = 200
+    drone1.up.set(0, 0, 1)
+    drone1.position.copy(drone.position)
+    drone1.rotation.x = 0
+    drone1.scale.set(0.1, 0.1, 0.1)
+    const droneFolder = gui.addFolder('drone')
+    droneFolder.add(droneController, 'x', 0, 2 * Math.PI)
+    droneFolder.add(droneController, 'y', 0, 2 * Math.PI)
+    droneFolder.add(droneController, 'z', 0, 2 * Math.PI)
+
+    const dragControls = new DragControls([drone1], camera, renderer.domElement)
+    dragControls.addEventListener( 'dragstart', event => {
+      toggleControls(controlsModule, false)
+    });
+    dragControls.addEventListener( 'dragend', event => {
+      toggleControls(controlsModule, true)
+    });
+
+    // specify points to create planar trail-head geometry
+    // var trailHeadGeometry = [];
+    // trailHeadGeometry.push( 
+    //   new Vector3( -10.0, 0.0, 0.0 ), 
+    //   new Vector3( 0.0, 0.0, 0.0 ), 
+    //   new Vector3( 10.0, 0.0, 0.0 ) 
+    // );
+    let trailHeadGeometry = [];
+    var twoPI = Math.PI * 2;
+    var index = 0;
+    var scale = 5.0;
+    var inc = twoPI / 16.0;
+    for ( var i = 0; i <= twoPI + inc; i+= inc )  {
+      var vector = new Vector3();
+      vector.set( Math.cos( i ) * scale, Math.sin( i ) * scale, 0 );
+      trailHeadGeometry[ index ] = vector;
+      index ++;
+    }
+
+    // create the trail renderer object
+    trail = new TrailRenderer( scene, false );
+
+    // create material for the trail renderer
+    var trailMaterial = TrailRenderer.createBaseMaterial(); 
+    trailMaterial.uniforms.headColor.value.set( 1, 1, 1, 1 );
+    trailMaterial.uniforms.tailColor.value.set( 1, 1, 1, 1 );
+    trailMaterial.renderOrder = 2
+    // specify length of trail
+    var trailLength = 30;
+
+    // initialize the trail
+    trail.initialize( trailMaterial, trailLength, false, 10, trailHeadGeometry, drone1 );
+    // trail.activate()
+    window.trail = trail
+  }
+)
+
+window.Tween = Tween
+window.drone = drone
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
 
+let lastTrailUpdateTime = -100
+let lastTrailResetTime = -100
 const loops = [
   tileBuilder,
-  () => lensFlare.position.copy(sunPosition)
+  () => lensFlare.position.copy(sunPosition),
+  () => {
+    if (!drone1) return
+    const cameraPosition = camera.position.clone()
+    const camVec = camera.getWorldDirection();
+    let targetPosition = cameraPosition.add(camVec.multiplyScalar(20))
+    drone1.position.copy(targetPosition)
+    drone1.rotation.set(camera.rotation.x, camera.rotation.y, camera.rotation.z)
+    drone1.rotation.x += Math.PI / 2 + droneController.x
+    drone1.rotation.y += Math.PI / 4 + droneController.y
+    drone1.rotation.z += Math.PI + droneController.z
+  },
+  (timestamp) => {
+    if (!trail) return
+    // if ( timestamp - lastTrailUpdateTime > 10 ) {
+      // trail.advance();
+    //   lastTrailUpdateTime = timestamp;
+    // } else {
+    //   trail.updateHead();
+    // }
+    // if ( timestamp - lastTrailResetTime > 2000 ) {
+    //   trail.reset();
+    //   lastTrailResetTime = timestamp;
+    // }
+  },
 ]
 
 // postprocessing
@@ -230,8 +324,8 @@ var mainLoop = (timestamp) => {
   lastTimestamp = timestamp
 
   if (play) {
-    loops.forEach(loop => loop(timestamp))
     controlsModule.update(delta)
+    loops.forEach(loop => loop(timestamp))
 
     if (options.postprocessing) {
       sky2.material.uniforms.sunPosition.value = sunPosition
@@ -268,6 +362,7 @@ keyboardJS.bind('p', e => {
   console.log('controlsClass', newControlsClass)
   controlsModule.dispose()
   const newModule = new newControlsClass(camera, renderer.domElement)
+  window.controls = newModule
   controlsModule = newModule
   controlsModule.update(0)
 
