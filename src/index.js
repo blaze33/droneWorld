@@ -215,7 +215,7 @@ window.water = water
 scene.add( water );
 // ##########################
 
-let drone1
+let drone1, drone2
 let trail
 var loader = new GLTFLoader();
 const droneController = {
@@ -238,6 +238,17 @@ loader.load(
     drone1.position.copy(drone.position)
     drone1.rotation.x = 0
     drone1.scale.set(0.1, 0.1, 0.1)
+
+    drone2 = drone1.clone()
+    window.drone2 = drone2
+    drone2.name = "drone2"
+    scene.add(drone2);
+    drone2.position.z = 200
+    drone2.up.set(0, 0, 1)
+    drone2.position.copy(drone.position)
+    drone2.rotation.x = 0
+    drone2.scale.set(0.1, 0.1, 0.1)
+
     const droneFolder = gui.addFolder('drone')
     droneFolder.add(droneController, 'x', 0, 2 * Math.PI)
     droneFolder.add(droneController, 'y', 0, 2 * Math.PI)
@@ -275,11 +286,11 @@ loader.load(
 
     // create material for the trail renderer
     var trailMaterial = TrailRenderer.createBaseMaterial(); 
-    trailMaterial.uniforms.headColor.value.set( 1, 1, 1, 1 );
-    trailMaterial.uniforms.tailColor.value.set( 1, 1, 1, 1 );
+    trailMaterial.uniforms.headColor.value.set( 1, 1, 1, 0.1 );
+    trailMaterial.uniforms.tailColor.value.set( 1, 1, 1, 0.1 );
     trailMaterial.renderOrder = 2
     // specify length of trail
-    var trailLength = 30;
+    var trailLength = 15;
 
     // initialize the trail
     trail.initialize( trailMaterial, trailLength, false, 10, trailHeadGeometry, drone1 );
@@ -294,7 +305,7 @@ window.drone = drone
 
 let lastTrailUpdateTime = -100
 let lastTrailResetTime = -100
-const loops = [
+let loops = [
   tileBuilder,
   () => lensFlare.position.copy(sunPosition),
   () => {
@@ -303,25 +314,46 @@ const loops = [
     const camVec = camera.getWorldDirection();
     let targetPosition = cameraPosition.add(camVec.multiplyScalar(20))
     drone1.position.copy(targetPosition)
-    drone1.rotation.set(camera.rotation.x, camera.rotation.y, camera.rotation.z)
-    drone1.rotation.x += Math.PI / 2 + droneController.x
-    drone1.rotation.y += Math.PI / 4 + droneController.y
-    drone1.rotation.z += Math.PI + droneController.z
+    drone1.lookAt(targetPosition
+      .add(camVec)
+      .add({x:0, y:0, z:60}))
+    
+    drone1.rotation.x += droneController.x
+    drone1.rotation.y += droneController.y
+    drone1.rotation.z += droneController.z
+  },
+  (timestamp) => {
+    if (!drone2) return
+    const radius = 280
+    drone2.position.set(
+      radius * Math.cos(timestamp / 1000 / 3),
+      radius * Math.sin(timestamp / 1000 / 3),
+      275 + Math.cos(timestamp/ 1000 / 3)
+    )
   },
   (timestamp) => {
     if (!trail) return
-    // if ( timestamp - lastTrailUpdateTime > 10 ) {
-      // trail.advance();
+    // if ( timestamp - lastTrailUpdateTime > 10 ) 
+    // trail.advance();
     //   lastTrailUpdateTime = timestamp;
     // } else {
-    //   trail.updateHead();
+      // trail.updateHead();
     // }
     // if ( timestamp - lastTrailResetTime > 2000 ) {
-    //   trail.reset();
+      // trail.reset();
     //   lastTrailResetTime = timestamp;
     // }
   },
 ]
+const cleanLoops = () => {
+  loops.forEach(loop => {
+    console.log()
+    if (loop.alive !== undefined && loop.alive === false && loop.object) {
+      scene.remove(loop.object)
+    }
+  })
+  loops = loops.filter(loop => loop.alive === undefined || loop.alive === true)
+}
 
 // postprocessing
 const dofEffect = options.postprocessing ? initDoF(scene, renderer, camera, gui) : null
@@ -342,7 +374,9 @@ var mainLoop = (timestamp) => {
 
   if (play) {
     controlsModule.update(delta)
-    loops.forEach(loop => loop(timestamp))
+    loops.forEach(loop => {
+      loop.loop ? loop.loop(timestamp) : loop(timestamp)
+    })
 
     if (options.postprocessing) {
       sky2.material.uniforms.sunPosition.value = sunPosition
@@ -360,6 +394,8 @@ var mainLoop = (timestamp) => {
     //   shadowMapViewer.render(renderer)
     // }
   }
+
+  cleanLoops()
 
   stats.update()
 };
@@ -400,6 +436,33 @@ keyboardJS.bind('r', e => {
 })
 
 keyboardJS.bind('space', e => play = !play)
+
+const bullet = new Mesh(
+  new SphereBufferGeometry(1, 5, 5),
+  new MeshBasicMaterial({color: 0x111111})
+)
+keyboardJS.bind('x', e => {
+  const fire = bullet.clone()
+  fire.position.copy(drone1.position)
+  scene.add(fire)
+
+  const BulletContructor = function() {
+    this.alive = true
+    this.object = fire
+    this.loop = (timestamp) => {
+      if (!this.alive) return
+      const vec = drone2.position.clone().sub(fire.position)
+      if (vec.length() < 10) {
+        this.alive = false
+      }
+      const newDir = vec.normalize().multiplyScalar(10)
+      fire.position.add(newDir)
+    }
+  }
+
+  const callback = new BulletContructor()
+  loops.push(callback)
+})
 
 // tween js start
 autoPlay(true)

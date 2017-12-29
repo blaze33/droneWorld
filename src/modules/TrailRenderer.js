@@ -203,7 +203,6 @@ TrailRenderer.createMaterial = function( vertexShader, fragmentShader, customUni
 
         transparent: true,
         alphaTest: 0.5,
-        alpha: 0.5,
         opacity: 0.5,
 
         blending : CustomBlending,
@@ -212,9 +211,9 @@ TrailRenderer.createMaterial = function( vertexShader, fragmentShader, customUni
         blendEquation : AddEquation,
 
         depthTest: true,
-        depthWrite: false,
+        // depthWrite: false,
 
-        side: DoubleSide,
+        // side: DoubleSide,
         wireframe: false,
     } );
 
