@@ -454,14 +454,14 @@ keyboardJS.bind('x', e => {
   const BulletContructor = function() {
     this.alive = true
     this.object = fire
-    this.loop = (timestamp) => {
+    this.loop = (timestamp, delta) => {
       if (!this.alive) return
       const vec = drone2.position.clone().sub(fire.position)
       if (vec.length() < 10) {
         this.alive = false
         triggerExplosion(fire.position)
       }
-      const newDir = vec.normalize().multiplyScalar(10)
+      const newDir = vec.normalize().multiplyScalar(10 * delta / 16.66)
       fire.position.add(newDir)
     }
   }
