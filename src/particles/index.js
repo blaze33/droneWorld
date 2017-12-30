@@ -1,26 +1,32 @@
 import SPE from 'shader-particle-engine'
 import * as THREE from 'three'
 
-var group = new SPE.Group( {
+// GROUPS
+const textureLoader = new THREE.TextureLoader()
+const group = new SPE.Group( {
         texture: {
-            value: THREE.ImageUtils.loadTexture(require('../textures/sprite-explosion2.png')),
+            value: textureLoader.load(require('../textures/sprite-explosion2.png')),
             frames: new THREE.Vector2( 5, 5 ),
             loop: 1
         },
         depthTest: true,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
-        scale: 600
-    } ),
-    shockwaveGroup = new SPE.Group( {
+        scale: 600,
+        maxParticleCount: 100000,
+    } )
+const shockwaveGroup = new SPE.Group( {
         texture: {
-            value: THREE.ImageUtils.loadTexture(require('../textures/smokeparticle.png')),
+            value: textureLoader.load(require('../textures/smokeparticle.png')),
         },
         depthTest: false,
         depthWrite: true,
         blending: THREE.NormalBlending,
-    } ),
-    shockwave = new SPE.Emitter( {
+        maxParticleCount: 100000,
+    } )
+
+// EMITTERS
+const shockwave = new SPE.Emitter( {
         particleCount: 200,
         type: SPE.distributions.DISC,
         position: {
