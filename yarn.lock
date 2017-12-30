@@ -6199,6 +6199,12 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
+"shader-particle-engine@git+ssh://git@github.com:blaze33/ShaderParticleEngine.git":
+  version "1.0.6"
+  resolved "git+ssh://git@github.com:blaze33/ShaderParticleEngine.git#0a7c22b5ec5cfc6c7b46518d7c1ebe88213d9d6c"
+  dependencies:
+    three "^0.89.0"
+
 shebang-command@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/shebang-command/-/shebang-command-1.2.0.tgz#44aac65b695b03398968c39f363fee5deafdf1ea"
