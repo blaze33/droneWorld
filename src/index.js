@@ -300,6 +300,7 @@ loader.load(
 )
 
 particleGroups.forEach(group => scene.add(group.mesh))
+window.triggerExplosion = triggerExplosion
 window.particleGroups = particleGroups
 
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
