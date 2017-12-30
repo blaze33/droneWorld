@@ -66,7 +66,7 @@ const debrisOptions = {
     maxAge: {
         value: 2
     },
-    duration: 2,
+    duration: 1,
     activeMultiplier: 40,
 
     velocity: {
