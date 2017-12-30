@@ -151,7 +151,7 @@ const debrisGroup = new SPE.Group(pointsGroupOptions)
 const shockGroup = new SPE.Group(pointsGroupOptions)
 const mistGroup = new SPE.Group(pointsGroupOptions)
 
-const poolSize = 10
+const poolSize = 100
 const createNew = false
 
 flashGroup.addPool(poolSize, flashOptions, createNew)
