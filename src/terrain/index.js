@@ -12,6 +12,9 @@ import {
   UniformsUtils,
   UniformsLib,
   ShadowMaterial,
+  MeshStandardMaterial,
+  MeshPhysicalMaterial,
+  Matrix3,
 } from 'three'
 import {renderer, scene, sunPosition, options} from '../index'
 // import SimplifyModifier from '../modules/meshSimplify'
@@ -22,6 +25,7 @@ import whiteShader from './shaders/white.frag'
 import identityShader from './shaders/white.vert'
 import Worker from './terrain.worker.js';
 import {Material} from './shaders/material'
+import {MaterialBasic} from './shaders/materialBasic'
 
 const textureLoader = new TextureLoader().setCrossOrigin("anonymous")
 const tilesElevationURL = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium'
@@ -70,41 +74,57 @@ grassTexture2.wrapS = grassTexture2.wrapT = RepeatWrapping
 icyTexture.wrapS = icyTexture.wrapT = RepeatWrapping
 snowTexture.wrapS = snowTexture.wrapT = RepeatWrapping
 
-const spectralMaterial = (options, uniforms) => {
-  const material = new ShaderMaterial({
-    uniforms: {
-      ...UniformsLib.common,
-      ...UniformsLib.lights,
-      roughness: {value: 1},
-      metalness: {value: 0.5},
-      // spectral: {value: spectralTexture},
-      rockTexture: {value: rockTexture},
-      rockTextureNormal: {value: rockTextureNormal},
-      grassTexture: {value: grassTexture},
-      grassTextureNormal: {value: grassTextureNormal},
-      // icyTexture: {value: icyTexture},
-      // snowTexture: {value: snowTexture},
-      sunPosition: {value: sunPosition},
-      ...uniforms
-    },
-    vertexShader: identityShader,
-    fragmentShader: fragmentShader,
-    extensions: {
-      derivatives: true,
-    },
-    wireframe: false,
-    lights: true,
-    // transparent: true,
-    // ...options,
-  })
-  material.isShaderMaterial = false
-  material.isMeshStandardMaterial = true
-  material.opacity = 1.0
-  material.roughness = 1
-  material.metalness = 0
-  return material
-}
-const spectralMaterialInstance = spectralMaterial()
+grassTexture.repeat.set(20, 20)
+grassTextureNormal.repeat.set(20, 20)
+rockTexture.repeat.set(20, 20)
+rockTextureNormal.repeat.set(20, 20)
+
+// const spectralMaterial = (options, uniforms) => {
+//   const material = new ShaderMaterial({
+//     uniforms: {
+//       ...UniformsLib.common,
+//       ...UniformsLib.lights,
+//       roughness: {value: 1},
+//       metalness: {value: 0.5},
+//       // spectral: {value: spectralTexture},
+//       rockTexture: {value: rockTexture},
+//       rockTextureNormal: {value: rockTextureNormal},
+//       grassTexture: {value: grassTexture},
+//       grassTextureNormal: {value: grassTextureNormal},
+//       // icyTexture: {value: icyTexture},
+//       // snowTexture: {value: snowTexture},
+//       sunPosition: {value: sunPosition},
+//       ...uniforms
+//     },
+//     vertexShader: identityShader,
+//     fragmentShader: fragmentShader,
+//     extensions: {
+//       derivatives: true,
+//     },
+//     wireframe: false,
+//     lights: true,
+//     // transparent: true,
+//     // ...options,
+//   })
+//   material.isShaderMaterial = false
+//   material.isMeshStandardMaterial = true
+//   material.opacity = 1.0
+//   material.roughness = 1
+//   material.metalness = 0
+//   return material
+// }
+// const spectralMaterial = (options, uniforms) => {
+//   const material = new MeshStandardMaterial({
+//     map: grassTexture,
+//     normalMap: grassTextureNormal,
+//     metalness: 0,
+//     roughness: 0.7,
+//     })
+//   // material.uniforms.uvTransform.value = new Matrix3().multiplyScalar(20)
+//   console.log(material)
+//   return material
+// }
+const spectralMaterial = MaterialBasic
 
 // cf. http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#ECMAScript_.28JavaScript.2FActionScript.2C_etc..29
 const long2tile = (lon,zoom) => {
