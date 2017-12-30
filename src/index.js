@@ -49,6 +49,7 @@ import {
 } from './postprocessing'
 import {material} from './terrain'
 import {mobileAndTabletcheck} from './utils/isMobile'
+import {particleGroups, triggerExplosion} from './particles'
 
 const queryStringOptions = queryString.parse(window.location.search)
 const options = {
@@ -298,6 +299,9 @@ loader.load(
   }
 )
 
+particleGroups.forEach(group => scene.add(group.mesh))
+window.particleGroups = particleGroups
+
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
 
 let lastTrailUpdateTime = -100
@@ -340,6 +344,9 @@ let loops = [
       // trail.reset();
     //   lastTrailResetTime = timestamp;
     // }
+  },
+  (timestamp, delta) => {
+    particleGroups.forEach(group => group.tick(delta / 1000))
   },
 ]
 const cleanLoops = () => {
@@ -451,6 +458,7 @@ keyboardJS.bind('x', e => {
       const vec = drone2.position.clone().sub(fire.position)
       if (vec.length() < 10) {
         this.alive = false
+        triggerExplosion(fire.position)
       }
       const newDir = vec.normalize().multiplyScalar(10)
       fire.position.add(newDir)
