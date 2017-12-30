@@ -49,7 +49,6 @@ import {
 } from './postprocessing'
 import {material} from './terrain'
 import {mobileAndTabletcheck} from './utils/isMobile'
-console.log('nipple', nipplejs)
 
 const queryStringOptions = queryString.parse(window.location.search)
 const options = {
