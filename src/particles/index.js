@@ -170,6 +170,8 @@ const groups = [
 ]
 // avoid artifacts with the ocean
 groups.forEach(group => group.mesh.renderOrder = 1)
+// cf. https://github.com/squarefeet/ShaderParticleEngine/issues/126
+groups.forEach(group => group.mesh.frustumCulled = false)
 
 const triggerExplosion = (position) => {
     flashGroup.triggerPoolEmitter(1, position)
