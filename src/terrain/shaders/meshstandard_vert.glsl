@@ -5,9 +5,10 @@ varying vec3 vViewPosition;
 #ifndef FLAT_SHADED
 
 	varying vec3 vNormal;
-	varying vec3 vNormal2;
 
 #endif
+
+varying vec3 vNormal2;
 
 #include <common>
 #include <uv_pars_vertex>

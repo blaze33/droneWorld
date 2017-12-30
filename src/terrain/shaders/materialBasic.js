@@ -74,6 +74,7 @@ const MaterialBasic = (options, uniforms) => {
       // USE_ENVMAP: '',
       USE_NORMALMAP: '',
       // TONE_MAPPING: ''
+      // FLAT_SHADED: '',
     },
     vertexShader,
     fragmentShader,
