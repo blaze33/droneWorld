@@ -2,7 +2,7 @@
   "name": "drone",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://lab.openbloc.fr/droneWorld",
+  "homepage": ".",
   "dependencies": {
     "alea": "^0.0.9",
     "autoprefixer": "7.2.3",
