@@ -298,8 +298,6 @@ loader.load(
   }
 )
 
-window.Tween = Tween
-window.drone = drone
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
 
 let lastTrailUpdateTime = -100
