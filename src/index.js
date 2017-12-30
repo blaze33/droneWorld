@@ -316,8 +316,8 @@ let loops = [
     drone1.position.copy(targetPosition)
     drone1.lookAt(targetPosition
       .add(camVec)
-      .add({x:0, y:0, z:60}))
-    
+      .add({x:0, y:0, z:60})
+    )
     drone1.rotation.x += droneController.x
     drone1.rotation.y += droneController.y
     drone1.rotation.z += droneController.z
