@@ -1551,7 +1551,7 @@ const GLTFLoader = ( function () {
                     array = new TypedArray( accessorDef.count * itemSize );
 
                 } else {
-                    console.log(bufferView, accessorDef, itemSize)
+
                     array = new TypedArray( bufferView, accessorDef.byteOffset, accessorDef.count * itemSize );
 
                 }
