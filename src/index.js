@@ -374,7 +374,7 @@ var mainLoop = (timestamp) => {
   if (play) {
     controlsModule.update(delta)
     loops.forEach(loop => {
-      loop.loop ? loop.loop(timestamp) : loop(timestamp)
+      loop.loop ? loop.loop(timestamp, delta) : loop(timestamp, delta)
     })
 
     if (options.postprocessing) {
