@@ -49,6 +49,8 @@ import {
 import {material} from './terrain'
 import {mobileAndTabletcheck} from './utils/isMobile'
 import {particleGroups, triggerExplosion} from './particles'
+import PubSub from './events'
+import droneMesh from './drones'
 
 const queryStringOptions = queryString.parse(window.location.search)
 const options = {
@@ -223,38 +225,36 @@ const droneController = {
   z: 0,
 }
 window.droneController = droneController
-// Load a glTF resource
-loader.load(
-  // resource URL
-  './assets/drone/scene.gltf',
-  // called when the resource is loaded
-  function (gltf) {
-    drone1 = gltf.scene.children[0]
-    scene.add(drone1);
-    window.drone1 = drone1
-    drone1.position.z = 200
-    drone1.up.set(0, 0, 1)
-    drone1.position.copy(drone.position)
-    drone1.rotation.x = 0
-    drone1.scale.set(0.1, 0.1, 0.1)
 
-    drone2 = drone1.clone()
-    window.drone2 = drone2
-    drone2.name = "drone2"
-    scene.add(drone2);
-    drone2.position.z = 200
-    drone2.up.set(0, 0, 1)
-    drone2.position.copy(drone.position)
-    drone2.rotation.x = 0
-    drone2.scale.set(0.1, 0.1, 0.1)
+const initDrones = (msg, data) => {
+  console.log(msg, data)
+  console.log(droneMesh)
+  drone1 = data.mesh
+  scene.add(drone1);
+  window.drone1 = drone1
+  drone1.position.z = 200
+  drone1.up.set(0, 0, 1)
+  drone1.position.copy(drone.position)
+  drone1.rotation.x = 0
+  drone1.scale.set(0.1, 0.1, 0.1)
 
-    const droneFolder = gui.addFolder('drone')
-    droneFolder.add(droneController, 'x', 0, 2 * Math.PI)
-    droneFolder.add(droneController, 'y', 0, 2 * Math.PI)
-    droneFolder.add(droneController, 'z', 0, 2 * Math.PI)
+  drone2 = drone1.clone()
+  window.drone2 = drone2
+  drone2.name = "drone2"
+  scene.add(drone2);
+  drone2.position.z = 200
+  drone2.up.set(0, 0, 1)
+  drone2.position.copy(drone.position)
+  drone2.rotation.x = 0
+  drone2.scale.set(0.1, 0.1, 0.1)
 
-  }
-)
+  const droneFolder = gui.addFolder('drone')
+  droneFolder.add(droneController, 'x', 0, 2 * Math.PI)
+  droneFolder.add(droneController, 'y', 0, 2 * Math.PI)
+  droneFolder.add(droneController, 'z', 0, 2 * Math.PI)
+
+}
+PubSub.subscribe('assets.drone.loaded', initDrones)
 
 particleGroups.forEach(group => scene.add(group.mesh))
 window.triggerExplosion = triggerExplosion
