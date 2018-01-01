@@ -201,7 +201,7 @@ const water = new Water(
     sunColor: 0xffffff,
     waterColor: 0x001e0f,
     distortionScale: waterParameters.distortionScale,
-    fog: scene.fog !== undefined
+    fog: false,
   }
 );
 
