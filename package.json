@@ -37,6 +37,7 @@
     "postcss-flexbugs-fixes": "3.2.0",
     "postcss-loader": "2.0.9",
     "promise": "8.0.1",
+    "pubsub-js": "^1.5.8",
     "query-string": "^5.0.1",
     "react": "^16.2.0",
     "react-dev-utils": "^4.2.1",
