@@ -52,7 +52,7 @@ const initDoF = (scene, renderer, camera, gui) => {
   bokeh.uniforms = UniformsUtils.clone(BokehShader.uniforms)
   bokeh.vertexShader = BokehShader.vertexShader
   bokeh.fragmentShader = BokehShader.fragmentShader
-  bokeh.uniforms.focusCoords = {value: new Vector2(0.5, 0.5)}
+  bokeh.uniforms.focusCoords = {value: new Vector2(0.5, 0.2)}
   bokeh.uniforms.textureWidth = {value: window.innerWidth}
   bokeh.uniforms.textureHeight = {value: window.innerHeight}
   bokeh.defines = {
