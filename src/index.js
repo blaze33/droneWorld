@@ -34,7 +34,6 @@ import SimplexNoise from './modules/simplexNoise'
 import {WindowResize} from './modules/WindowResize'
 import {ShadowMapViewer} from './modules/ShadowMapViewer'
 import GLTFLoader from './modules/GLTFLoader'
-import TrailRenderer from './modules/TrailRenderer'
 import {initSky} from './sky'
 import {initLights} from './lights'
 import {tileBuilder} from './loops/tileBuilder'
@@ -254,48 +253,6 @@ loader.load(
     droneFolder.add(droneController, 'y', 0, 2 * Math.PI)
     droneFolder.add(droneController, 'z', 0, 2 * Math.PI)
 
-    const dragControls = new DragControls([drone1], camera, touchPane)
-    dragControls.addEventListener( 'dragstart', event => {
-      toggleControls(controlsModule, false)
-    });
-    dragControls.addEventListener( 'dragend', event => {
-      toggleControls(controlsModule, true)
-    });
-
-    // specify points to create planar trail-head geometry
-    // var trailHeadGeometry = [];
-    // trailHeadGeometry.push( 
-    //   new Vector3( -10.0, 0.0, 0.0 ), 
-    //   new Vector3( 0.0, 0.0, 0.0 ), 
-    //   new Vector3( 10.0, 0.0, 0.0 ) 
-    // );
-    let trailHeadGeometry = [];
-    var twoPI = Math.PI * 2;
-    var index = 0;
-    var scale = 5.0;
-    var inc = twoPI / 16.0;
-    for ( var i = 0; i <= twoPI + inc; i+= inc )  {
-      var vector = new Vector3();
-      vector.set( Math.cos( i ) * scale, Math.sin( i ) * scale, 0 );
-      trailHeadGeometry[ index ] = vector;
-      index ++;
-    }
-
-    // create the trail renderer object
-    trail = new TrailRenderer( scene, false );
-
-    // create material for the trail renderer
-    var trailMaterial = TrailRenderer.createBaseMaterial(); 
-    trailMaterial.uniforms.headColor.value.set( 1, 1, 1, 0.1 );
-    trailMaterial.uniforms.tailColor.value.set( 1, 1, 1, 0.1 );
-    trailMaterial.renderOrder = 2
-    // specify length of trail
-    var trailLength = 15;
-
-    // initialize the trail
-    trail.initialize( trailMaterial, trailLength, false, 10, trailHeadGeometry, drone1 );
-    // trail.activate()
-    window.trail = trail
   }
 )
 
@@ -330,21 +287,8 @@ let loops = [
     drone2.position.set(
       radius * Math.cos(timestamp / 1000 / 3),
       radius * Math.sin(timestamp / 1000 / 3),
-      275 + Math.cos(timestamp/ 1000 / 3)
+      275
     )
-  },
-  (timestamp) => {
-    if (!trail) return
-    // if ( timestamp - lastTrailUpdateTime > 10 ) 
-    // trail.advance();
-    //   lastTrailUpdateTime = timestamp;
-    // } else {
-      // trail.updateHead();
-    // }
-    // if ( timestamp - lastTrailResetTime > 2000 ) {
-      // trail.reset();
-    //   lastTrailResetTime = timestamp;
-    // }
   },
   (timestamp, delta) => {
     particleGroups.forEach(group => group.tick(delta / 1000))
