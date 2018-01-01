@@ -19,10 +19,10 @@ const rockTextureNormal = textureLoader.load(require('../../textures/Rock_08_UV_
 const grassTexture = textureLoader.load(require('../../textures/GrassGreenTexture0003.jpg'))
 const grassTextureNormal = textureLoader.load(require('../../textures/GrassGreenTexture0003_normal.jpg'))
 // const grassTexture = textureLoader.load(require('../../textures/rainforest512.jpg'))
-const grassTexture2 = textureLoader.load(require('../../textures/Grass_01_UV_H_CM_1.jpg'))
-const icyTexture = textureLoader.load(require('../../textures/snow_scuffed_ground_1.jpg'))
-const snowTexture = textureLoader.load(require('../../textures/Snow_01_UV_H_CM_1.jpg'))
-const envmapTexture = textureLoader.load(require('../../textures/envmap.jpg'))
+// const grassTexture2 = textureLoader.load(require('../../textures/Grass_01_UV_H_CM_1.jpg'))
+// const icyTexture = textureLoader.load(require('../../textures/snow_scuffed_ground_1.jpg'))
+// const snowTexture = textureLoader.load(require('../../textures/Snow_01_UV_H_CM_1.jpg'))
+// const envmapTexture = textureLoader.load(require('../../textures/envmap.jpg'))
 rockTexture.wrapS = rockTexture.wrapT = RepeatWrapping
 rockTexture.offset.set(0, 0);
 rockTexture.repeat.set( 20, 20 );
@@ -31,9 +31,9 @@ grassTexture.wrapS = grassTexture.wrapT = RepeatWrapping
 grassTextureNormal.wrapS = grassTextureNormal.wrapT = RepeatWrapping
 // grassTexture.offset.set(0, 0);
 // grassTexture.repeat.set( 20, 20 );
-grassTexture2.wrapS = grassTexture2.wrapT = RepeatWrapping
-icyTexture.wrapS = icyTexture.wrapT = RepeatWrapping
-snowTexture.wrapS = snowTexture.wrapT = RepeatWrapping
+// grassTexture2.wrapS = grassTexture2.wrapT = RepeatWrapping
+// icyTexture.wrapS = icyTexture.wrapT = RepeatWrapping
+// snowTexture.wrapS = snowTexture.wrapT = RepeatWrapping
 
 const MaterialBasic = (options, uniforms) => {
   const material = new ShaderMaterial({
