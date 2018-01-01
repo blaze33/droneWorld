@@ -207,7 +207,7 @@ const water = new Water(
 
 water.up.set(0, 0, 1)
 water.rotation.z = - Math.PI / 2;
-water.position.z = 100
+water.position.z = 43
 gui.__folders['Sun, sky and ocean'].add(water.position, "z", 0, 200, 1)
 water.receiveShadow = true;
 window.water = water
