@@ -48,6 +48,7 @@ import {
 } from './postprocessing'
 import {material} from './terrain'
 import {mobileAndTabletcheck} from './utils/isMobile'
+import {screenXYclamped} from './utils'
 import {particleGroups, triggerExplosion} from './particles'
 import PubSub from './events'
 import droneMesh from './drones'
@@ -261,7 +262,8 @@ window.triggerExplosion = triggerExplosion
 window.particleGroups = particleGroups
 
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
-
+const hudElement = document.getElementById('hud')
+let hudPosition
 let lastTrailUpdateTime = -100
 let lastTrailResetTime = -100
 let loops = [
@@ -289,6 +291,10 @@ let loops = [
       radius * Math.sin(timestamp / 1000 / 3),
       275
     )
+    hudPosition = screenXYclamped(drone2.position)
+    hudElement.style.left = `${hudPosition.x - 10}px`
+    hudElement.style.top = `${hudPosition.y - 10}px`
+    hudElement.style.borderColor = hudPosition.z > 1 ? 'red' : '#0f0'
   },
   (timestamp, delta) => {
     particleGroups.forEach(group => group.tick(delta / 1000))

@@ -16,3 +16,13 @@ body {
     position: absolute;
     right: 10px;
 }
+
+.hud-target {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #0f0;
+  border-radius: 20px;
+}
