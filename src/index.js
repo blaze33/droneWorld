@@ -118,6 +118,7 @@ window.camera = camera
 window.controls = controlsModule
 
 const gui = new dat.GUI({ autoPlace: false })
+gui.closed = true
 window.document.getElementsByClassName('guiPane')[0].appendChild(gui.domElement)
 window.gui = gui
 
