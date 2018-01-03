@@ -119,8 +119,8 @@ if (mobileAndTabletcheck()) {
     keyboardJS.pressKey('x')
     setTimeout(() => event.target.style.opacity = 0.3, 250)
   }
-  buttonX.addEventListener("click", pressX, false)
-  buttonX.addEventListener("touchstart", pressX, false)
+  buttonX.addEventListener('click', pressX, false)
+  buttonX.addEventListener('touchstart', pressX, false)
 
   controlsModule = new FlyControls(camera, touchPaneLeft, nippleLook)
   controlsElement = touchPaneLeft
@@ -229,7 +229,7 @@ const water = new Water(
 water.up.set(0, 0, 1)
 water.rotation.z = - Math.PI / 2;
 water.position.z = 43
-gui.__folders['Sun, sky and ocean'].add(water.position, "z", 0, 200, 1)
+gui.__folders['Sun, sky and ocean'].add(water.position, 'z', 0, 200, 1)
 water.receiveShadow = true;
 window.water = water
 scene.add( water );
@@ -259,7 +259,7 @@ const initDrones = (msg, data) => {
 
   drone2 = drone1.clone()
   window.drone2 = drone2
-  drone2.name = "drone2"
+  drone2.name = 'drone2'
   scene.add(drone2);
   drone2.position.z = 200
   drone2.up.set(0, 0, 1)
