@@ -37,9 +37,14 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
     <div class="hud-target" id="hud"></div>
-    <div class="touchPane"></div>
+    <div id="touchPane">
+      <div class="touchPaneLeft"></div>
+      <div class="touchPaneRight">
+        <div class="touchButton" id="buttonX" style="top: 90%;left: 70%;"></div>
+      </div>
+    </div>
     <div class="guiPane"></div>
-    <div style="
+    <div id="verbosePane" style="
       position: fixed; left: 50%;bottom: 0; font-size: 0.9em;text-align: center;width: 50%;
       font-family: sans-serif;
       color: white;

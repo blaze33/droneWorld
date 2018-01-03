@@ -5,16 +5,40 @@ body {
   overflow: hidden;
 }
 
-.touchPane {
+#touchPane {
+  display: none;
+}
+
+.touchPaneLeft {
     position: fixed;
     left: 0;
-    width: 100%;
+    width: 50%;
+    height: 100%;
+}
+
+.touchPaneRight {
+    position: fixed;
+    left: 50%;
+    width: 50%;
     height: 100%;
 }
 
 .guiPane, .dg.main {
     position: absolute;
     right: 10px;
+}
+
+.touchButton {
+  display: none;
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  margin-left: -50px;
+  margin-top: -50px;
+  background: white;
+  opacity: 0.3;
+  transition: opacity 250ms;
+  border-radius: 50%;
 }
 
 .hud-target {

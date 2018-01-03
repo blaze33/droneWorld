@@ -94,22 +94,39 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 let controlsModule
-const touchPane = window.document.getElementsByClassName('touchPane')[0]
+let controlsElement
+let isMobile = false
 if (mobileAndTabletcheck()) {
+  isMobile = true
+
+  document.getElementById('touchPane').style.display = 'block'
+  const touchPaneLeft = window.document.getElementsByClassName('touchPaneLeft')[0]
   const nippleLook = nipplejs.create({
-    zone: touchPane,
+    zone: touchPaneLeft,
     mode: 'static',
-    position: {left: '15%', top: '90%'},
+    position: {left: '30%', top: '90%'},
     color: 'white',
   })
-  // const orbitModule = new OrbitControls(camera, renderer.domElement)
-  // orbitModule.target.z = 200
-  // controlsModule = orbitModule
-  const flyModule = new FlyControls(camera, touchPane, nippleLook)
-  controlsModule = flyModule
+
+  // display touch buttons
+  Array.from(document.getElementsByClassName('touchButton')).map(el => el.style.display = 'block')
+  // hide verbose text
+  document.getElementById('verbosePane').style.display = 'none'
+  // get button X
+  const buttonX = document.getElementById('buttonX')
+  const pressX = (event) => {
+    event.target.style.opacity = 0.5
+    keyboardJS.pressKey('x')
+    setTimeout(() => event.target.style.opacity = 0.3, 250)
+  }
+  buttonX.addEventListener("click", pressX, false)
+  buttonX.addEventListener("touchstart", pressX, false)
+
+  controlsModule = new FlyControls(camera, touchPaneLeft, nippleLook)
+  controlsElement = touchPaneLeft
 } else {
-  const flyModule = new FlyControls(camera, touchPane)
-  controlsModule = flyModule
+  controlsModule = new FlyControls(camera, renderer.domElement)
+  controlsElement = renderer.domElement
 }
 
 window.scene = scene
@@ -366,11 +383,12 @@ const toggleControls = (controls, state) => {
 }
 
 keyboardJS.bind('p', e => {
+  if (isMobile) {return}
   // camera = camera.clone()
   const newControlsClass = controlsModule.constructor.name === 'OrbitControls' ? FlyControls : OrbitControls
   console.log('controlsClass', newControlsClass)
   controlsModule.dispose()
-  const newModule = new newControlsClass(camera, touchPane)
+  const newModule = new newControlsClass(camera, controlsElement)
   window.controls = newModule
   controlsModule = newModule
   controlsModule.update(0)
