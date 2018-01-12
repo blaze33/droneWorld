@@ -25,4 +25,6 @@ const screenXYclamped = (vec3) => {
   }
 }
 
-export {screenXY, screenXYclamped}
+const clamp = (min, value, max) => Math.min(Math.max(min, value), max)
+
+export {screenXY, screenXYclamped, clamp}
