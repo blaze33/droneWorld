@@ -50,3 +50,34 @@ body {
   border: 1px solid #0f0;
   border-radius: 20px;
 }
+
+.hud #horizon {
+  width: 300px;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  border: 0.5px solid #0f0;
+  transform: translateX(-50%);
+  opacity: 0.8;
+}
+
+.hud #target {
+  position: fixed;
+  transform: translateX(-16px) translateY(-16px);
+  height: 32px;
+  opacity: .8;
+}
+.hud #target:before, .hud #target:after {
+  position: absolute;
+  left: 15px;
+  content: ' ';
+  height: 33px;
+  width: 1px;
+  background-color: #0f0;
+}
+.hud #target:before {
+  transform: rotate(45deg);
+}
+.hud #target:after {
+  transform: rotate(-45deg);
+}

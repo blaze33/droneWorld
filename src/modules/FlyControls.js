@@ -7,7 +7,7 @@ import {
  * @author James Baicoianu / http://www.baicoianu.com/
  */
 
-export default function FlyControls ( object, domElement , nipple) {
+export default function FlyControls ( object, domElement , nipple, pointer) {
 
     this.object = object;
 
@@ -19,7 +19,7 @@ export default function FlyControls ( object, domElement , nipple) {
     this.movementSpeed = .1;
     this.rollSpeed = .001;
 
-    this.dragToLook = true;
+    this.dragToLook = false;
     this.autoForward = false;
 
     this.nipple = nipple
@@ -31,26 +31,49 @@ export default function FlyControls ( object, domElement , nipple) {
         });
     }
 
+    this.pointer = pointer
+    if (this.pointer) {
+        const pointerElement = document.getElementById('target')
+        this.rollSpeed = .001
+        const that = this
+        let fifo = []
+        this.pointer.on('attain', function(movements) {
+            const dims = that.getContainerDimensions().size
+            pointerElement.style.top = dims[1] / 2 + 'px'
+            pointerElement.style.left = dims[0] / 2 + 'px'
+            // movements is a readable stream
+            movements.on('data', function(move) {
+                pointerElement.style.left = parseInt(pointerElement.style.left, 10) + move.dx + 'px'
+                pointerElement.style.top = parseInt(pointerElement.style.top, 10) + move.dy + 'px'
+                that.mousemove({
+                    pageX: (parseInt(pointerElement.style.left, 10) - dims[0] / 2),
+                    pageY: (parseInt(pointerElement.style.top, 10) - dims[1] / 2),
+                })
+            })
+
+            movements.on('close', function() {
+                fifo = []
+                // no more movements from this pointer-lock session.
+            })
+        })
+    }
+
     // disable default target object behavior
 
     this.nipplemove = function(event, data) {
-        this.mouseStatus++
         const dims = this.getContainerDimensions().size
         const mockEvent = {
-            pageX: dims[0] / 2 + data.distance * Math.cos(data.angle.radian) * 2,
-            pageY: dims[1] / 2 - data.distance * Math.sin(data.angle.radian) * 2,
+            pageX: data.distance * Math.cos(data.angle.radian) * 2,
+            pageY: - data.distance * Math.sin(data.angle.radian) * 2,
         }
         this.mousemove(mockEvent)
         this.autoForward = true
         this.updateMovementVector()
-        this.mouseStatus--
     }
 
     // internals
 
     this.tmpQuaternion = new Quaternion();
-
-    this.mouseStatus = 0;
 
     this.moveState = {
         up: 0,
@@ -68,16 +91,6 @@ export default function FlyControls ( object, domElement , nipple) {
     };
     this.moveVector = new Vector3( 0, 0, 0 );
     this.rotationVector = new Vector3( 0, 0, 0 );
-
-    this.handleEvent = function ( event ) {
-
-        if ( typeof this[ event.type ] == 'function' ) {
-
-            this[ event.type ]( event );
-
-        }
-
-    };
 
     this.keydown = function( event ) {
 
@@ -149,78 +162,14 @@ export default function FlyControls ( object, domElement , nipple) {
 
     };
 
-    this.mousedown = function( event ) {
-
-        if ( this.domElement !== document ) {
-
-            this.domElement.focus();
-
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        if ( this.dragToLook ) {
-
-            this.mouseStatus ++;
-
-        } else {
-
-            switch ( event.button ) {
-
-                case 0: this.moveState.forward = 1; break;
-                case 2: this.moveState.back = 1; break;
-
-            }
-
-            this.updateMovementVector();
-
-        }
-
-    };
-
     this.mousemove = function( event ) {
-
-        if ( ! this.dragToLook || this.mouseStatus > 0 ) {
-
             var container = this.getContainerDimensions();
             var halfWidth  = container.size[ 0 ] / 2;
             var halfHeight = container.size[ 1 ] / 2;
 
-            this.moveState.yawLeft   = - ( ( event.pageX - container.offset[ 0 ] ) - halfWidth  ) / halfWidth;
-            this.moveState.pitchDown =   ( ( event.pageY - container.offset[ 1 ] ) - halfHeight ) / halfHeight;
-
-            this.updateRotationVector();
-
-        }
-
-    };
-
-    this.mouseup = function( event ) {
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        if ( this.dragToLook ) {
-
-            this.mouseStatus --;
-
-            this.moveState.yawLeft = this.moveState.pitchDown = 0;
-
-        } else {
-
-            switch ( event.button ) {
-
-                case 0: this.moveState.forward = 0; break;
-                case 2: this.moveState.back = 0; break;
-
-            }
-
-            this.updateMovementVector();
-
-        }
-
-        this.updateRotationVector();
+            this.moveState.yawLeft = - event.pageX / halfWidth;
+            this.moveState.rollLeft = this.moveState.yawLeft / 2 - this.object.rollAngle / 5;
+            this.moveState.pitchDown =  event.pageY / halfHeight;
 
     };
 
@@ -239,7 +188,8 @@ export default function FlyControls ( object, domElement , nipple) {
         // expose the rotation vector for convenience
         this.object.rotation.setFromQuaternion( this.object.quaternion, this.object.rotation.order );
 
-
+        this.updateRotationVector()
+        this.updateMovementVector()
     };
 
     this.updateMovementVector = function() {
@@ -303,26 +253,16 @@ export default function FlyControls ( object, domElement , nipple) {
     this.dispose = function() {
 
         this.domElement.removeEventListener( 'contextmenu', contextmenu, false );
-        this.domElement.removeEventListener( 'mousedown', _mousedown, false );
-        this.domElement.removeEventListener( 'mousemove', _mousemove, false );
-        this.domElement.removeEventListener( 'mouseup', _mouseup, false );
 
         window.removeEventListener( 'keydown', _keydown, false );
         window.removeEventListener( 'keyup', _keyup, false );
 
     };
 
-    var _mousemove = bind( this, this.mousemove );
-    var _mousedown = bind( this, this.mousedown );
-    var _mouseup = bind( this, this.mouseup );
     var _keydown = bind( this, this.keydown );
     var _keyup = bind( this, this.keyup );
 
     this.domElement.addEventListener( 'contextmenu', contextmenu, false );
-
-    this.domElement.addEventListener( 'mousemove', _mousemove, false );
-    this.domElement.addEventListener( 'mousedown', _mousedown, false );
-    this.domElement.addEventListener( 'mouseup',   _mouseup, false );
 
     window.addEventListener( 'keydown', _keydown, false );
     window.addEventListener( 'keyup',   _keyup, false );

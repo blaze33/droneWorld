@@ -25,6 +25,7 @@ import keyboardJS from 'keyboardjs'
 import Stats from 'stats.js'
 import queryString from 'query-string'
 import nipplejs from 'nipplejs'
+import lock from 'pointer-lock'
 
 // import './modules/terrain.js'
 import DragControls from './modules/DragControls'
@@ -125,7 +126,8 @@ if (mobileAndTabletcheck()) {
   controlsModule = new FlyControls(camera, touchPaneLeft, nippleLook)
   controlsElement = touchPaneLeft
 } else {
-  controlsModule = new FlyControls(camera, renderer.domElement)
+  const pointer = lock(renderer.domElement)
+  controlsModule = new FlyControls(camera, renderer.domElement, undefined, pointer)
   controlsElement = renderer.domElement
 }
 
@@ -281,6 +283,7 @@ window.particleGroups = particleGroups
 
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
 const hudElement = document.getElementById('hud')
+const hudHorizon = document.getElementById('horizon')
 let hudPosition
 let lastTrailUpdateTime = -100
 let lastTrailResetTime = -100
@@ -313,6 +316,16 @@ let loops = [
     hudElement.style.left = `${hudPosition.x - 10}px`
     hudElement.style.top = `${hudPosition.y - 10}px`
     hudElement.style.borderColor = hudPosition.z > 1 ? 'red' : '#0f0'
+  },
+  (timestamp) => {
+    const localX = new Vector3(1, 0, 0).applyQuaternion(camera.quaternion)
+    const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
+    const rollAngle = (
+      Math.PI / 2 - camera.up.angleTo(localX) * Math.sign(camera.up.dot(localY))
+    )
+    camera.rollAngle = rollAngle
+    const rollAngleDegree = rollAngle / Math.PI * 180
+    hudHorizon.style.transform = `translate(-50%) rotate(${rollAngleDegree}deg)`
   },
   (timestamp, delta) => {
     particleGroups.forEach(group => group.tick(delta / 1000))
