@@ -2,6 +2,7 @@ import {
     Quaternion,
     Vector3,
 } from 'three'
+import {clamp} from '../utils'
 
 /**
  * @author James Baicoianu / http://www.baicoianu.com/
@@ -42,8 +43,8 @@ export default function FlyControls ( object, domElement , nipple, pointer) {
             pointerElement.style.left = dims[0] / 2 + 'px'
             // movements is a readable stream
             movements.on('data', move => {
-                pointerElement.style.left = parseInt(pointerElement.style.left, 10) + move.dx + 'px'
-                pointerElement.style.top = parseInt(pointerElement.style.top, 10) + move.dy + 'px'
+                pointerElement.style.left = clamp(0, parseInt(pointerElement.style.left, 10) + move.dx, dims[0]) + 'px'
+                pointerElement.style.top = clamp(0, parseInt(pointerElement.style.top, 10) + move.dy, dims[1]) + 'px'
                 this.mousemove({
                     pageX: (parseInt(pointerElement.style.left, 10) - dims[0] / 2),
                     pageY: (parseInt(pointerElement.style.top, 10) - dims[1] / 2),
