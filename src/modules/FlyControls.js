@@ -35,17 +35,16 @@ export default function FlyControls ( object, domElement , nipple, pointer) {
     if (this.pointer) {
         const pointerElement = document.getElementById('target')
         this.rollSpeed = .001
-        const that = this
         let fifo = []
-        this.pointer.on('attain', function(movements) {
-            const dims = that.getContainerDimensions().size
+        this.pointer.on('attain', movements => {
+            const dims = this.getContainerDimensions().size
             pointerElement.style.top = dims[1] / 2 + 'px'
             pointerElement.style.left = dims[0] / 2 + 'px'
             // movements is a readable stream
-            movements.on('data', function(move) {
+            movements.on('data', move => {
                 pointerElement.style.left = parseInt(pointerElement.style.left, 10) + move.dx + 'px'
                 pointerElement.style.top = parseInt(pointerElement.style.top, 10) + move.dy + 'px'
-                that.mousemove({
+                this.mousemove({
                     pageX: (parseInt(pointerElement.style.left, 10) - dims[0] / 2),
                     pageY: (parseInt(pointerElement.style.top, 10) - dims[1] / 2),
                 })
