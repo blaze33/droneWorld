@@ -285,6 +285,7 @@ window.particleGroups = particleGroups
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
 const hudElement = document.getElementById('hud')
 const hudTarget = document.getElementById('target')
+const hudFocal = document.getElementById('focal')
 const hudHorizon = document.getElementById('horizon')
 let hudPosition
 let targetDistance
@@ -327,8 +328,10 @@ let loops = [
     if (hudElement.style.borderColor === 'orange' && targetDistance < 75) {
       hudElement.style.borderColor = '#0f0'
       drone1.armed = true
+      hudFocal.style.boxShadow = '0 0 4px #0f0'
     } else {
       drone1.armed = false
+      hudFocal.style.boxShadow = ''
     }
   },
   (timestamp) => {
