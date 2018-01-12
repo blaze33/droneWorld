@@ -428,7 +428,7 @@ const bullet = new Mesh(
   new SphereBufferGeometry(1, 5, 5),
   new MeshBasicMaterial({color: 0x111111})
 )
-keyboardJS.bind('x', e => {
+renderer.domElement.addEventListener('mousedown', e => {
   const fire = bullet.clone()
   fire.position.copy(drone1.position)
   scene.add(fire)
@@ -450,7 +450,7 @@ keyboardJS.bind('x', e => {
 
   const callback = new BulletContructor()
   loops.push(callback)
-})
+}, false)
 
 // tween js start
 autoPlay(true)
