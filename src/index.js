@@ -430,6 +430,7 @@ const bullet = new Mesh(
   new MeshBasicMaterial({color: 0x111111})
 )
 renderer.domElement.addEventListener('mousedown', e => {
+  if (!drone1) return
   const fire = bullet.clone()
   fire.position.copy(drone1.position)
   scene.add(fire)
