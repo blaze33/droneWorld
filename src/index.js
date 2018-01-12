@@ -298,7 +298,9 @@ let loops = [
     const cameraPosition = camera.position.clone()
     const camVec = camera.getWorldDirection();
     let targetPosition = cameraPosition.add(camVec.multiplyScalar(20))
-    drone1.position.copy(targetPosition)
+    const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
+    let targetPositionFinal = targetPosition.sub(localY.multiplyScalar(8))
+    drone1.position.copy(targetPositionFinal)
     drone1.lookAt(targetPosition
       .add(camVec)
       .add({x:0, y:0, z:60})
