@@ -3,6 +3,7 @@ import {
   Scene,
   PerspectiveCamera,
   CubeCamera,
+  Vector2,
   Vector3,
   WebGLRenderer,
   PCFSoftShadowMap,
@@ -283,8 +284,10 @@ window.particleGroups = particleGroups
 
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
 const hudElement = document.getElementById('hud')
+const hudTarget = document.getElementById('target')
 const hudHorizon = document.getElementById('horizon')
 let hudPosition
+let targetDistance
 let lastTrailUpdateTime = -100
 let lastTrailResetTime = -100
 let loops = [
@@ -315,7 +318,16 @@ let loops = [
     hudPosition = screenXYclamped(drone2.position)
     hudElement.style.left = `${hudPosition.x - 10}px`
     hudElement.style.top = `${hudPosition.y - 10}px`
-    hudElement.style.borderColor = hudPosition.z > 1 ? 'red' : '#0f0'
+    hudElement.style.borderColor = hudPosition.z > 1 ? 'red' : 'orange'
+    targetDistance = new Vector2(window.innerWidth / 2, window.innerHeight / 2).sub(
+      new Vector2(hudPosition.x, hudPosition.y)
+    ).length()
+    if (hudElement.style.borderColor === 'orange' && targetDistance < 75) {
+      hudElement.style.borderColor = '#0f0'
+      drone1.armed = true
+    } else {
+      drone1.armed = false
+    }
   },
   (timestamp) => {
     const localX = new Vector3(1, 0, 0).applyQuaternion(camera.quaternion)
@@ -430,7 +442,7 @@ const bullet = new Mesh(
   new MeshBasicMaterial({color: 0x111111})
 )
 renderer.domElement.addEventListener('mousedown', e => {
-  if (!drone1) return
+  if (!drone1 || !drone1.armed) return
   const fire = bullet.clone()
   fire.position.copy(drone1.position)
   scene.add(fire)

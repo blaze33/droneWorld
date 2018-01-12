@@ -81,3 +81,14 @@ body {
 .hud #target:after {
   transform: rotate(-45deg);
 }
+
+#focal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  height: 150px;
+  width: 150px;
+  border-radius: 150px;
+  border: 1px solid #0f0;
+}
