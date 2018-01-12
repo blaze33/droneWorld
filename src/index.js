@@ -324,8 +324,9 @@ let loops = [
       Math.PI / 2 - camera.up.angleTo(localX) * Math.sign(camera.up.dot(localY))
     )
     camera.rollAngle = rollAngle
+    const pitch = camera.up.dot(camera.getWorldDirection())
     const rollAngleDegree = rollAngle / Math.PI * 180
-    hudHorizon.style.transform = `translate(-50%) rotate(${rollAngleDegree}deg)`
+    hudHorizon.style.transform = `translateX(-50%) translateY(${pitch * window.innerHeight / 2}px) rotate(${rollAngleDegree}deg)`
   },
   (timestamp, delta) => {
     particleGroups.forEach(group => group.tick(delta / 1000))
