@@ -35,16 +35,23 @@ export default function FlyControls ( object, domElement , nipple, pointer) {
     this.pointer = pointer
     if (this.pointer) {
         const pointerElement = document.getElementById('target')
-        this.rollSpeed = .001
-        let fifo = []
+        this.zone = 300
         this.pointer.on('attain', movements => {
             const dims = this.getContainerDimensions().size
             pointerElement.style.top = dims[1] / 2 + 'px'
             pointerElement.style.left = dims[0] / 2 + 'px'
             // movements is a readable stream
             movements.on('data', move => {
-                pointerElement.style.left = clamp(0, parseInt(pointerElement.style.left, 10) + move.dx, dims[0]) + 'px'
-                pointerElement.style.top = clamp(0, parseInt(pointerElement.style.top, 10) + move.dy, dims[1]) + 'px'
+                pointerElement.style.left = clamp(
+                    dims[0] / 2 - this.zone,
+                    parseInt(pointerElement.style.left, 10) + move.dx,
+                    dims[0] / 2 + this.zone
+                ) + 'px'
+                pointerElement.style.top = clamp(
+                    dims[1] / 2 - this.zone,
+                    parseInt(pointerElement.style.top, 10) + move.dy,
+                    dims[1] / 2 + this.zone
+                ) + 'px'
                 this.mousemove({
                     pageX: (parseInt(pointerElement.style.left, 10) - dims[0] / 2),
                     pageY: (parseInt(pointerElement.style.top, 10) - dims[1] / 2),
@@ -52,7 +59,6 @@ export default function FlyControls ( object, domElement , nipple, pointer) {
             })
 
             movements.on('close', function() {
-                fifo = []
                 // no more movements from this pointer-lock session.
             })
         })
