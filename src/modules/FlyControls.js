@@ -53,8 +53,8 @@ export default function FlyControls ( object, domElement , nipple, pointer) {
                     dims[1] / 2 + this.zone
                 ) + 'px'
                 this.mousemove({
-                    pageX: (parseInt(pointerElement.style.left, 10) - dims[0] / 2),
-                    pageY: (parseInt(pointerElement.style.top, 10) - dims[1] / 2),
+                    pageX: (parseInt(pointerElement.style.left, 10) - dims[0] / 2) / 2,
+                    pageY: (parseInt(pointerElement.style.top, 10) - dims[1] / 2) / 2,
                 })
             })
 

@@ -72,7 +72,7 @@ body {
   left: 15px;
   content: ' ';
   height: 33px;
-  width: 1px;
+  width: 2px;
   background-color: #0f0;
 }
 .hud #target:before {
@@ -90,5 +90,6 @@ body {
   height: 150px;
   width: 150px;
   border-radius: 150px;
-  border: 1px solid #0f0;
+  border: 2px solid #0f0;
+  opacity: 0.8;
 }

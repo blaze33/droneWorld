@@ -328,7 +328,7 @@ let loops = [
     if (hudElement.style.borderColor === 'orange' && targetDistance < 75) {
       hudElement.style.borderColor = '#0f0'
       drone1.armed = true
-      hudFocal.style.boxShadow = '0 0 4px #0f0'
+      hudFocal.style.boxShadow = '0 0 6px #0f0'
     } else {
       drone1.armed = false
       hudFocal.style.boxShadow = ''
