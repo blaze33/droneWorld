@@ -118,7 +118,7 @@ if (mobileAndTabletcheck()) {
   const buttonX = document.getElementById('buttonX')
   const pressX = (event) => {
     event.target.style.opacity = 0.5
-    keyboardJS.pressKey('x')
+    fireBullet()
     setTimeout(() => event.target.style.opacity = 0.3, 250)
   }
   buttonX.addEventListener('click', pressX, false)
@@ -446,7 +446,7 @@ const bullet = new Mesh(
   new SphereBufferGeometry(1, 5, 5),
   new MeshBasicMaterial({color: 0x111111})
 )
-renderer.domElement.addEventListener('mousedown', e => {
+const fireBullet = e => {
   if (!drone1 || !drone1.armed) return
   const fire = bullet.clone()
   fire.position.copy(drone1.position)
@@ -469,7 +469,8 @@ renderer.domElement.addEventListener('mousedown', e => {
 
   const callback = new BulletContructor()
   loops.push(callback)
-}, false)
+}
+renderer.domElement.addEventListener('mousedown', fireBullet, false)
 
 // tween js start
 autoPlay(true)

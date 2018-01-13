@@ -69,8 +69,8 @@ export default function FlyControls ( object, domElement , nipple, pointer) {
     this.nipplemove = function(event, data) {
         const dims = this.getContainerDimensions().size
         const mockEvent = {
-            pageX: data.distance * Math.cos(data.angle.radian) * 2,
-            pageY: - data.distance * Math.sin(data.angle.radian) * 2,
+            pageX: data.distance * Math.cos(data.angle.radian),
+            pageY: - data.distance * Math.sin(data.angle.radian),
         }
         this.mousemove(mockEvent)
         this.autoForward = true
