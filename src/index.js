@@ -249,58 +249,27 @@ const droneController = {
 window.droneController = droneController
 
 const initDrones = (msg, data) => {
-  console.log(msg, data)
-  console.log(droneMesh)
-  drone1 = data.mesh
+
+  const droneFactory = () => {
+    const drone = data.mesh.clone()
+    drone.up.set(0, 0, 1)
+    drone.rotation.x = 0
+    drone.scale.set(0.1, 0.1, 0.1)
+    return drone
+  }
+
+  drone1 = droneFactory()
   scene.add(drone1);
-  window.drone1 = drone1
-  drone1.position.z = 200
-  drone1.up.set(0, 0, 1)
-  drone1.position.copy(drone.position)
-  drone1.rotation.x = 0
-  drone1.scale.set(0.1, 0.1, 0.1)
-
-  drone2 = drone1.clone()
-  window.drone2 = drone2
-  drone2.name = 'drone2'
-  scene.add(drone2);
-  drone2.position.z = 200
-  drone2.up.set(0, 0, 1)
-  drone2.position.copy(drone.position)
-  drone2.rotation.x = 0
-  drone2.scale.set(0.1, 0.1, 0.1)
-
-  const droneFolder = gui.addFolder('drone')
-  droneFolder.add(droneController, 'x', 0, 2 * Math.PI)
-  droneFolder.add(droneController, 'y', 0, 2 * Math.PI)
-  droneFolder.add(droneController, 'z', 0, 2 * Math.PI)
-
-}
-PubSub.subscribe('assets.drone.loaded', initDrones)
-
-particleGroups.forEach(group => scene.add(group.mesh))
-window.triggerExplosion = triggerExplosion
-window.particleGroups = particleGroups
-
-// const shadowMapViewer = new ShadowMapViewer(dirLight)
-const hudElement = document.getElementById('hud')
-const hudTarget = document.getElementById('target')
-const hudFocal = document.getElementById('focal')
-const hudHorizon = document.getElementById('horizon')
-let hudPosition
-let targetDistance
-let lastTrailUpdateTime = -100
-let lastTrailResetTime = -100
-let loops = [
-  tileBuilder,
-  () => lensFlare.position.copy(sunPosition),
-  () => {
-    if (!drone1) return
-    const cameraPosition = camera.position.clone()
-    const camVec = camera.getWorldDirection();
-    let targetPosition = cameraPosition.add(camVec.multiplyScalar(20))
-    const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
-    let targetPositionFinal = targetPosition.sub(localY.multiplyScalar(8))
+  let localY
+  let targetPosition
+  let targetPositionFinal
+  let camVec
+  const drone1Loop = () => {
+    camVec = camera.getWorldDirection()
+    targetPosition = camera.position.clone()
+      .add(camVec.multiplyScalar(20))
+    localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
+    targetPositionFinal = targetPosition.sub(localY.multiplyScalar(8))
     drone1.position.copy(targetPositionFinal)
     drone1.lookAt(targetPosition
       .add(camVec)
@@ -309,8 +278,12 @@ let loops = [
     drone1.rotation.x += droneController.x
     drone1.rotation.y += droneController.y
     drone1.rotation.z += droneController.z
-  },
-  (timestamp) => {
+  }
+  loops.push(drone1Loop)
+
+  drone2 = droneFactory()
+  scene.add(drone2);
+  const drone2Loop = (timestamp) => {
     if (!drone2) return
     const radius = 280
     drone2.position.set(
@@ -333,8 +306,15 @@ let loops = [
       drone1.armed = false
       hudFocal.style.boxShadow = ''
     }
-  },
-  (timestamp) => {
+  }
+  loops.push(drone2Loop)
+
+  const droneFolder = gui.addFolder('drone')
+  droneFolder.add(droneController, 'x', 0, 2 * Math.PI)
+  droneFolder.add(droneController, 'y', 0, 2 * Math.PI)
+  droneFolder.add(droneController, 'z', 0, 2 * Math.PI)
+
+  const hudLoop = (timestamp) => {
     const localX = new Vector3(1, 0, 0).applyQuaternion(camera.quaternion)
     const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
     const rollAngle = (
@@ -344,14 +324,34 @@ let loops = [
     const pitch = camera.up.dot(camera.getWorldDirection())
     const rollAngleDegree = rollAngle / Math.PI * 180
     hudHorizon.style.transform = `translateX(-50%) translateY(${pitch * window.innerHeight / 2}px) rotate(${rollAngleDegree}deg)`
-  },
+  }
+  loops.push(hudLoop)
+
+}
+PubSub.subscribe('assets.drone.loaded', initDrones)
+
+particleGroups.forEach(group => scene.add(group.mesh))
+// var helper = new CameraHelper( camera );
+// scene.add( helper );
+
+// const shadowMapViewer = new ShadowMapViewer(dirLight)
+const hudElement = document.getElementById('hud')
+const hudTarget = document.getElementById('target')
+const hudFocal = document.getElementById('focal')
+const hudHorizon = document.getElementById('horizon')
+let hudPosition
+let targetDistance
+let lastTrailUpdateTime = -100
+let lastTrailResetTime = -100
+let loops = [
+  tileBuilder,
+  () => lensFlare.position.copy(sunPosition),
   (timestamp, delta) => {
     particleGroups.forEach(group => group.tick(delta / 1000))
   },
 ]
 const cleanLoops = () => {
   loops.forEach(loop => {
-    console.log()
     if (loop.alive !== undefined && loop.alive === false && loop.object) {
       scene.remove(loop.object)
     }
