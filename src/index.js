@@ -43,6 +43,7 @@ import {mobileAndTabletcheck} from './utils/isMobile'
 import {screenXYclamped} from './utils'
 import {particleGroups, triggerExplosion} from './particles'
 import PubSub from './events'
+import loadDroneAssets from './drones'
 
 const queryStringOptions = queryString.parse(window.location.search)
 const options = {
@@ -314,6 +315,7 @@ const initDrones = (msg, data) => {
   }
   loops.push(hudLoop)
 }
+loadDroneAssets()
 PubSub.subscribe('assets.drone.loaded', initDrones)
 
 particleGroups.forEach(group => scene.add(group.mesh))
