@@ -1,19 +1,17 @@
 import {camera} from '../index'
 
-function screenXY(vec3){
-
+function screenXY (vec3) {
   var vector = vec3.clone()
 
-  var widthHalf = (window.innerWidth/2)
-  var heightHalf = (window.innerHeight/2)
+  var widthHalf = (window.innerWidth / 2)
+  var heightHalf = (window.innerHeight / 2)
 
   vector.project(camera)
 
-  vector.x = ( vector.x * widthHalf ) + widthHalf
-  vector.y = - ( vector.y * heightHalf ) + heightHalf
+  vector.x = (vector.x * widthHalf) + widthHalf
+  vector.y = -(vector.y * heightHalf) + heightHalf
 
   return vector
-
 }
 
 const screenXYclamped = (vec3) => {

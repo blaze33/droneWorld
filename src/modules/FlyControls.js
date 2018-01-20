@@ -1,6 +1,6 @@
 import {
     Quaternion,
-    Vector3,
+    Vector3
 } from 'three'
 import {clamp} from '../utils'
 
@@ -8,272 +8,240 @@ import {clamp} from '../utils'
  * @author James Baicoianu / http://www.baicoianu.com/
  */
 
-export default function FlyControls ( object, domElement , nipple, pointer) {
+export default function FlyControls (object, domElement, nipple, pointer) {
+  this.object = object
 
-    this.object = object;
-
-    this.domElement = ( domElement !== undefined ) ? domElement : document;
-    if ( domElement ) this.domElement.setAttribute( 'tabindex', - 1 );
+  this.domElement = (domElement !== undefined) ? domElement : document
+  if (domElement) this.domElement.setAttribute('tabindex', -1)
 
     // API
 
-    this.movementSpeed = .1;
-    this.rollSpeed = .001;
+  this.movementSpeed = 0.1
+  this.rollSpeed = 0.001
 
-    this.dragToLook = false;
-    this.autoForward = false;
+  this.dragToLook = false
+  this.autoForward = false
 
-    this.nipple = nipple
-    if (this.nipple) {
-        this.nipple.on('move', (event, data) => this.nipplemove(event, data));
-        this.nipple.on('end', (event, data) => {
-            this.autoForward = false
-            this.updateMovementVector()
-        });
-    }
+  this.nipple = nipple
+  if (this.nipple) {
+    this.nipple.on('move', (event, data) => this.nipplemove(event, data))
+    this.nipple.on('end', (event, data) => {
+      this.autoForward = false
+      this.updateMovementVector()
+    })
+  }
 
-    this.pointer = pointer
-    if (this.pointer) {
-        const pointerElement = document.getElementById('target')
-        this.zone = 300
-        this.pointer.on('attain', movements => {
-            const dims = this.getContainerDimensions().size
-            pointerElement.style.top = dims[1] / 2 + 'px'
-            pointerElement.style.left = dims[0] / 2 + 'px'
+  this.pointer = pointer
+  if (this.pointer) {
+    const pointerElement = document.getElementById('target')
+    this.zone = 300
+    this.pointer.on('attain', movements => {
+      const dims = this.getContainerDimensions().size
+      pointerElement.style.top = dims[1] / 2 + 'px'
+      pointerElement.style.left = dims[0] / 2 + 'px'
             // movements is a readable stream
-            movements.on('data', move => {
-                pointerElement.style.left = clamp(
+      movements.on('data', move => {
+        pointerElement.style.left = clamp(
                     dims[0] / 2 - this.zone,
                     parseInt(pointerElement.style.left, 10) + move.dx,
                     dims[0] / 2 + this.zone
                 ) + 'px'
-                pointerElement.style.top = clamp(
+        pointerElement.style.top = clamp(
                     dims[1] / 2 - this.zone,
                     parseInt(pointerElement.style.top, 10) + move.dy,
                     dims[1] / 2 + this.zone
                 ) + 'px'
-                this.mousemove({
-                    pageX: (parseInt(pointerElement.style.left, 10) - dims[0] / 2) / 1.5,
-                    pageY: (parseInt(pointerElement.style.top, 10) - dims[1] / 2) / 1.5,
-                })
-            })
-
-            movements.on('close', function() {
-                // no more movements from this pointer-lock session.
-            })
+        this.mousemove({
+          pageX: (parseInt(pointerElement.style.left, 10) - dims[0] / 2) / 1.5,
+          pageY: (parseInt(pointerElement.style.top, 10) - dims[1] / 2) / 1.5
         })
-    }
+      })
+
+      movements.on('close', function () {
+                // no more movements from this pointer-lock session.
+      })
+    })
+  }
 
     // disable default target object behavior
 
-    this.nipplemove = function(event, data) {
-        const dims = this.getContainerDimensions().size
-        const mockEvent = {
-            pageX: data.distance * Math.cos(data.angle.radian) * 1.5,
-            pageY: - data.distance * Math.sin(data.angle.radian) * 1.5,
-        }
-        this.mousemove(mockEvent)
-        this.autoForward = true
-        this.updateMovementVector()
+  this.nipplemove = function (event, data) {
+    const dims = this.getContainerDimensions().size
+    const mockEvent = {
+      pageX: data.distance * Math.cos(data.angle.radian) * 1.5,
+      pageY: -data.distance * Math.sin(data.angle.radian) * 1.5
     }
+    this.mousemove(mockEvent)
+    this.autoForward = true
+    this.updateMovementVector()
+  }
 
     // internals
 
-    this.tmpQuaternion = new Quaternion();
+  this.tmpQuaternion = new Quaternion()
 
-    this.moveState = {
-        up: 0,
-        down: 0,
-        left: 0,
-        right: 0,
-        forward: 0,
-        back: 0,
-        pitchUp: 0,
-        pitchDown: 0,
-        yawLeft: 0,
-        yawRight: 0,
-        rollLeft: 0,
-        rollRight: 0
-    };
-    this.moveVector = new Vector3( 0, 0, 0 );
-    this.rotationVector = new Vector3( 0, 0, 0 );
+  this.moveState = {
+    up: 0,
+    down: 0,
+    left: 0,
+    right: 0,
+    forward: 0,
+    back: 0,
+    pitchUp: 0,
+    pitchDown: 0,
+    yawLeft: 0,
+    yawRight: 0,
+    rollLeft: 0,
+    rollRight: 0
+  }
+  this.moveVector = new Vector3(0, 0, 0)
+  this.rotationVector = new Vector3(0, 0, 0)
 
-    this.keydown = function( event ) {
+  this.keydown = function (event) {
+    if (event.altKey) {
+      return
+    }
 
-        if ( event.altKey ) {
+        // event.preventDefault();
 
-            return;
+    switch (event.keyCode) {
+      case 16: /* shift */ this.movementSpeedMultiplier = 0.1; break
 
-        }
+      case 87: /* W */ this.moveState.forward = 1; break
+      case 83: /* S */ this.moveState.back = 1; break
 
-        //event.preventDefault();
+      case 65: /* A */ this.moveState.left = 1; break
+      case 68: /* D */ this.moveState.right = 1; break
 
-        switch ( event.keyCode ) {
+      case 82: /* R */ this.moveState.up = 1; break
+      case 70: /* F */ this.moveState.down = 1; break
 
-            case 16: /* shift */ this.movementSpeedMultiplier = .1; break;
+      case 38: /* up */ this.moveState.pitchUp = 1; break
+      case 40: /* down */ this.moveState.pitchDown = 1; break
 
-            case 87: /*W*/ this.moveState.forward = 1; break;
-            case 83: /*S*/ this.moveState.back = 1; break;
+      case 37: /* left */ this.moveState.yawLeft = 1; break
+      case 39: /* right */ this.moveState.yawRight = 1; break
 
-            case 65: /*A*/ this.moveState.left = 1; break;
-            case 68: /*D*/ this.moveState.right = 1; break;
+      case 81: /* Q */ this.moveState.rollLeft = 1; break
+      case 69: /* E */ this.moveState.rollRight = 1; break
+    }
 
-            case 82: /*R*/ this.moveState.up = 1; break;
-            case 70: /*F*/ this.moveState.down = 1; break;
+    this.updateMovementVector()
+    this.updateRotationVector()
+  }
 
-            case 38: /*up*/ this.moveState.pitchUp = 1; break;
-            case 40: /*down*/ this.moveState.pitchDown = 1; break;
+  this.keyup = function (event) {
+    switch (event.keyCode) {
+      case 16: /* shift */ this.movementSpeedMultiplier = 1; break
 
-            case 37: /*left*/ this.moveState.yawLeft = 1; break;
-            case 39: /*right*/ this.moveState.yawRight = 1; break;
+      case 87: /* W */ this.moveState.forward = 0; break
+      case 83: /* S */ this.moveState.back = 0; break
 
-            case 81: /*Q*/ this.moveState.rollLeft = 1; break;
-            case 69: /*E*/ this.moveState.rollRight = 1; break;
+      case 65: /* A */ this.moveState.left = 0; break
+      case 68: /* D */ this.moveState.right = 0; break
 
-        }
+      case 82: /* R */ this.moveState.up = 0; break
+      case 70: /* F */ this.moveState.down = 0; break
 
-        this.updateMovementVector();
-        this.updateRotationVector();
+      case 38: /* up */ this.moveState.pitchUp = 0; break
+      case 40: /* down */ this.moveState.pitchDown = 0; break
 
-    };
+      case 37: /* left */ this.moveState.yawLeft = 0; break
+      case 39: /* right */ this.moveState.yawRight = 0; break
 
-    this.keyup = function( event ) {
+      case 81: /* Q */ this.moveState.rollLeft = 0; break
+      case 69: /* E */ this.moveState.rollRight = 0; break
+    }
 
-        switch ( event.keyCode ) {
+    this.updateMovementVector()
+    this.updateRotationVector()
+  }
 
-            case 16: /* shift */ this.movementSpeedMultiplier = 1; break;
+  this.mousemove = function (event) {
+    var container = this.getContainerDimensions()
+    var halfWidth = container.size[ 0 ] / 2
+    var halfHeight = container.size[ 1 ] / 2
 
-            case 87: /*W*/ this.moveState.forward = 0; break;
-            case 83: /*S*/ this.moveState.back = 0; break;
+    this.moveState.yawLeft = -event.pageX / halfWidth
+    this.moveState.rollLeft = this.moveState.yawLeft / 2 - this.object.rollAngle / 5
+    this.moveState.pitchDown = event.pageY / halfHeight
+  }
 
-            case 65: /*A*/ this.moveState.left = 0; break;
-            case 68: /*D*/ this.moveState.right = 0; break;
+  this.update = function (delta) {
+    var moveMult = delta * this.movementSpeed
+    var rotMult = delta * this.rollSpeed
 
-            case 82: /*R*/ this.moveState.up = 0; break;
-            case 70: /*F*/ this.moveState.down = 0; break;
+    this.object.translateX(this.moveVector.x * moveMult)
+    this.object.translateY(this.moveVector.y * moveMult)
+    this.object.translateZ(this.moveVector.z * moveMult)
 
-            case 38: /*up*/ this.moveState.pitchUp = 0; break;
-            case 40: /*down*/ this.moveState.pitchDown = 0; break;
-
-            case 37: /*left*/ this.moveState.yawLeft = 0; break;
-            case 39: /*right*/ this.moveState.yawRight = 0; break;
-
-            case 81: /*Q*/ this.moveState.rollLeft = 0; break;
-            case 69: /*E*/ this.moveState.rollRight = 0; break;
-
-        }
-
-        this.updateMovementVector();
-        this.updateRotationVector();
-
-    };
-
-    this.mousemove = function( event ) {
-            var container = this.getContainerDimensions();
-            var halfWidth  = container.size[ 0 ] / 2;
-            var halfHeight = container.size[ 1 ] / 2;
-
-            this.moveState.yawLeft = - event.pageX / halfWidth;
-            this.moveState.rollLeft = this.moveState.yawLeft / 2 - this.object.rollAngle / 5;
-            this.moveState.pitchDown =  event.pageY / halfHeight;
-
-    };
-
-    this.update = function( delta ) {
-
-        var moveMult = delta * this.movementSpeed;
-        var rotMult = delta * this.rollSpeed;
-
-        this.object.translateX( this.moveVector.x * moveMult );
-        this.object.translateY( this.moveVector.y * moveMult );
-        this.object.translateZ( this.moveVector.z * moveMult );
-
-        this.tmpQuaternion.set( this.rotationVector.x * rotMult, this.rotationVector.y * rotMult, this.rotationVector.z * rotMult, 1 ).normalize();
-        this.object.quaternion.multiply( this.tmpQuaternion );
+    this.tmpQuaternion.set(this.rotationVector.x * rotMult, this.rotationVector.y * rotMult, this.rotationVector.z * rotMult, 1).normalize()
+    this.object.quaternion.multiply(this.tmpQuaternion)
 
         // expose the rotation vector for convenience
-        this.object.rotation.setFromQuaternion( this.object.quaternion, this.object.rotation.order );
+    this.object.rotation.setFromQuaternion(this.object.quaternion, this.object.rotation.order)
 
-        this.updateRotationVector()
-        this.updateMovementVector()
-    };
+    this.updateRotationVector()
+    this.updateMovementVector()
+  }
 
-    this.updateMovementVector = function() {
+  this.updateMovementVector = function () {
+    var forward = (this.moveState.forward || (this.autoForward && !this.moveState.back)) ? 1 : 0
 
-        var forward = ( this.moveState.forward || ( this.autoForward && ! this.moveState.back ) ) ? 1 : 0;
+    this.moveVector.x = (-this.moveState.left + this.moveState.right)
+    this.moveVector.y = (-this.moveState.down + this.moveState.up)
+    this.moveVector.z = (-forward + this.moveState.back)
 
-        this.moveVector.x = ( - this.moveState.left    + this.moveState.right );
-        this.moveVector.y = ( - this.moveState.down    + this.moveState.up );
-        this.moveVector.z = ( - forward + this.moveState.back );
+        // console.log( 'move:', [ this.moveVector.x, this.moveVector.y, this.moveVector.z ] );
+  }
 
-        //console.log( 'move:', [ this.moveVector.x, this.moveVector.y, this.moveVector.z ] );
+  this.updateRotationVector = function () {
+    this.rotationVector.x = (-this.moveState.pitchDown + this.moveState.pitchUp)
+    this.rotationVector.y = (-this.moveState.yawRight + this.moveState.yawLeft)
+    this.rotationVector.z = (-this.moveState.rollRight + this.moveState.rollLeft)
 
-    };
+        // console.log( 'rotate:', [ this.rotationVector.x, this.rotationVector.y, this.rotationVector.z ] );
+  }
 
-    this.updateRotationVector = function() {
-
-        this.rotationVector.x = ( - this.moveState.pitchDown + this.moveState.pitchUp );
-        this.rotationVector.y = ( - this.moveState.yawRight  + this.moveState.yawLeft );
-        this.rotationVector.z = ( - this.moveState.rollRight + this.moveState.rollLeft );
-
-        //console.log( 'rotate:', [ this.rotationVector.x, this.rotationVector.y, this.rotationVector.z ] );
-
-    };
-
-    this.getContainerDimensions = function() {
-
-        if ( this.domElement != document ) {
-
-            return {
-                size    : [ this.domElement.offsetWidth, this.domElement.offsetHeight ],
-                offset  : [ this.domElement.offsetLeft,  this.domElement.offsetTop ]
-            };
-
-        } else {
-
-            return {
-                size    : [ window.innerWidth, window.innerHeight ],
-                offset  : [ 0, 0 ]
-            };
-
-        }
-
-    };
-
-    function bind( scope, fn ) {
-
-        return function () {
-
-            fn.apply( scope, arguments );
-
-        };
-
+  this.getContainerDimensions = function () {
+    if (this.domElement != document) {
+      return {
+        size: [ this.domElement.offsetWidth, this.domElement.offsetHeight ],
+        offset: [ this.domElement.offsetLeft, this.domElement.offsetTop ]
+      }
+    } else {
+      return {
+        size: [ window.innerWidth, window.innerHeight ],
+        offset: [ 0, 0 ]
+      }
     }
+  }
 
-    function contextmenu( event ) {
-
-        event.preventDefault();
-
+  function bind (scope, fn) {
+    return function () {
+      fn.apply(scope, arguments)
     }
+  }
 
-    this.dispose = function() {
+  function contextmenu (event) {
+    event.preventDefault()
+  }
 
-        this.domElement.removeEventListener( 'contextmenu', contextmenu, false );
+  this.dispose = function () {
+    this.domElement.removeEventListener('contextmenu', contextmenu, false)
 
-        window.removeEventListener( 'keydown', _keydown, false );
-        window.removeEventListener( 'keyup', _keyup, false );
+    window.removeEventListener('keydown', _keydown, false)
+    window.removeEventListener('keyup', _keyup, false)
+  }
 
-    };
+  var _keydown = bind(this, this.keydown)
+  var _keyup = bind(this, this.keyup)
 
-    var _keydown = bind( this, this.keydown );
-    var _keyup = bind( this, this.keyup );
+  this.domElement.addEventListener('contextmenu', contextmenu, false)
 
-    this.domElement.addEventListener( 'contextmenu', contextmenu, false );
+  window.addEventListener('keydown', _keydown, false)
+  window.addEventListener('keyup', _keyup, false)
 
-    window.addEventListener( 'keydown', _keydown, false );
-    window.addEventListener( 'keyup',   _keyup, false );
-
-    this.updateMovementVector();
-    this.updateRotationVector();
-
+  this.updateMovementVector()
+  this.updateRotationVector()
 };

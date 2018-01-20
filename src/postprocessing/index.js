@@ -20,5 +20,5 @@ export {
   ShaderPass,
 
   initDoF,
-  lensFlare,
+  lensFlare
 }

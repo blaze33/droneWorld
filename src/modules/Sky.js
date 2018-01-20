@@ -19,38 +19,36 @@ import {
   Mesh,
   Vector3,
   UniformsUtils,
-  BackSide,
+  BackSide
 } from 'three'
 
 const Sky = function () {
+  var shader = Sky.SkyShader
 
-    var shader = Sky.SkyShader;
+  var material = new ShaderMaterial({
+    fragmentShader: shader.fragmentShader,
+    vertexShader: shader.vertexShader,
+    uniforms: UniformsUtils.clone(shader.uniforms),
+    side: BackSide
+  })
 
-    var material = new ShaderMaterial( {
-        fragmentShader: shader.fragmentShader,
-        vertexShader: shader.vertexShader,
-        uniforms: UniformsUtils.clone( shader.uniforms ),
-        side: BackSide
-    } );
+  Mesh.call(this, new SphereBufferGeometry(1, 32, 15), material)
+}
 
-    Mesh.call( this, new SphereBufferGeometry( 1, 32, 15 ), material );
-
-};
-
-Sky.prototype = Object.create( Mesh.prototype );
+Sky.prototype = Object.create(Mesh.prototype)
 
 Sky.SkyShader = {
 
-    uniforms: {
-        luminance: { value: 1 },
-        turbidity: { value: 2 },
-        rayleigh: { value: 1 },
-        mieCoefficient: { value: 0.005 },
-        mieDirectionalG: { value: 0.8 },
-        sunPosition: { value: new Vector3() }
-    },
+  uniforms: {
+    luminance: { value: 1 },
+    turbidity: { value: 2 },
+    rayleigh: { value: 1 },
+    mieCoefficient: { value: 0.005 },
+    mieDirectionalG: { value: 0.8 },
+    sunPosition: { value: new Vector3() }
+  },
 
-    vertexShader: `
+  vertexShader: `
         uniform vec3 sunPosition;
         uniform float rayleigh;
         uniform float turbidity;
@@ -123,7 +121,7 @@ Sky.SkyShader = {
         }
     `,
 
-    fragmentShader: `
+  fragmentShader: `
         varying vec3 vWorldPosition;
         varying vec3 vSunDirection;
         varying float vSunfade;
@@ -225,6 +223,6 @@ Sky.SkyShader = {
 
         }`
 
-};
+}
 
-export {Sky};
+export {Sky}

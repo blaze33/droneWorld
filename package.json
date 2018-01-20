@@ -63,7 +63,9 @@
     "deploy": "gh-pages -d build",
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node scripts/test.js --env=jsdom",
+    "lint": "standard src/**/*.js | snazzy",
+    "lint-fix": "standard --fix src/**/*.js | snazzy"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -107,6 +109,16 @@
     "extends": "react-app"
   },
   "devDependencies": {
-    "gh-pages": "^1.1.0"
+    "gh-pages": "^1.1.0",
+    "snazzy": "^7.0.0",
+    "standard": "^10.0.3"
+  },
+  "standard": {
+    "env": {
+      "browser": true
+    },
+    "ignore": [
+      "src/modules/"
+    ]
   }
 }

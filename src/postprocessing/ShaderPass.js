@@ -8,72 +8,58 @@ import {
   OrthographicCamera,
   Scene,
   Mesh,
-  PlaneBufferGeometry,
+  PlaneBufferGeometry
 } from 'three'
 import Pass from './Pass'
 
-const ShaderPass = function ( shader, textureID ) {
+const ShaderPass = function (shader, textureID) {
+  Pass.call(this)
 
-    Pass.call( this );
+  this.textureID = (textureID !== undefined) ? textureID : 'tDiffuse'
 
-    this.textureID = ( textureID !== undefined ) ? textureID : "tDiffuse";
+  if (shader instanceof ShaderMaterial) {
+    this.uniforms = shader.uniforms
 
-    if ( shader instanceof ShaderMaterial ) {
+    this.material = shader
+  } else if (shader) {
+    this.uniforms = UniformsUtils.clone(shader.uniforms)
 
-        this.uniforms = shader.uniforms;
+    this.material = new ShaderMaterial({
 
-        this.material = shader;
+      defines: shader.defines || {},
+      uniforms: this.uniforms,
+      vertexShader: shader.vertexShader,
+      fragmentShader: shader.fragmentShader
 
-    } else if ( shader ) {
+    })
+  }
 
-        this.uniforms = UniformsUtils.clone( shader.uniforms );
+  this.camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1)
+  this.scene = new Scene()
 
-        this.material = new ShaderMaterial( {
+  this.quad = new Mesh(new PlaneBufferGeometry(2, 2), null)
+  this.quad.frustumCulled = false // Avoid getting clipped
+  this.scene.add(this.quad)
+}
 
-            defines: shader.defines || {},
-            uniforms: this.uniforms,
-            vertexShader: shader.vertexShader,
-            fragmentShader: shader.fragmentShader
+ShaderPass.prototype = Object.assign(Object.create(Pass.prototype), {
 
-        } );
+  constructor: ShaderPass,
 
+  render: function (renderer, writeBuffer, readBuffer, delta, maskActive) {
+    if (this.uniforms[ this.textureID ]) {
+      this.uniforms[ this.textureID ].value = readBuffer.texture
     }
 
-    this.camera = new OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
-    this.scene = new Scene();
+    this.quad.material = this.material
 
-    this.quad = new Mesh( new PlaneBufferGeometry( 2, 2 ), null );
-    this.quad.frustumCulled = false; // Avoid getting clipped
-    this.scene.add( this.quad );
-
-};
-
-ShaderPass.prototype = Object.assign( Object.create( Pass.prototype ), {
-
-    constructor: ShaderPass,
-
-    render: function( renderer, writeBuffer, readBuffer, delta, maskActive ) {
-
-        if ( this.uniforms[ this.textureID ] ) {
-
-            this.uniforms[ this.textureID ].value = readBuffer.texture;
-
-        }
-
-        this.quad.material = this.material;
-
-        if ( this.renderToScreen ) {
-
-            renderer.render( this.scene, this.camera );
-
-        } else {
-
-            renderer.render( this.scene, this.camera, writeBuffer, this.clear );
-
-        }
-
+    if (this.renderToScreen) {
+      renderer.render(this.scene, this.camera)
+    } else {
+      renderer.render(this.scene, this.camera, writeBuffer, this.clear)
     }
+  }
 
-} );
+})
 
 export default ShaderPass

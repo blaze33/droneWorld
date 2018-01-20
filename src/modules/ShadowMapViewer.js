@@ -37,214 +37,193 @@ import {
     Texture,
     LinearFilter,
     MeshBasicMaterial,
-    DoubleSide,
+    DoubleSide
 } from 'three'
 
 const UnpackDepthRGBAShader = {
 
-    uniforms: {
+  uniforms: {
 
-        "tDiffuse": { value: null },
-        "opacity":  { value: 1.0 }
+    'tDiffuse': { value: null },
+    'opacity': { value: 1.0 }
 
-    },
+  },
 
-    vertexShader: [
+  vertexShader: [
 
-        "varying vec2 vUv;",
+    'varying vec2 vUv;',
 
-        "void main() {",
+    'void main() {',
 
-            "vUv = uv;",
-            "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+    'vUv = uv;',
+    'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
 
-        "}"
+    '}'
 
-    ].join( "\n" ),
+  ].join('\n'),
 
-    fragmentShader: [
+  fragmentShader: [
 
-        "uniform float opacity;",
+    'uniform float opacity;',
 
-        "uniform sampler2D tDiffuse;",
+    'uniform sampler2D tDiffuse;',
 
-        "varying vec2 vUv;",
+    'varying vec2 vUv;',
 
-        "#include <packing>",
+    '#include <packing>',
 
-        "void main() {",
+    'void main() {',
 
-            "float depth = 1.0 - unpackRGBAToDepth( texture2D( tDiffuse, vUv ) );",
-            "gl_FragColor = opacity * vec4( vec3( depth ), 1.0 );",
+    'float depth = 1.0 - unpackRGBAToDepth( texture2D( tDiffuse, vUv ) );',
+    'gl_FragColor = opacity * vec4( vec3( depth ), 1.0 );',
 
-        "}"
+    '}'
 
-    ].join( "\n" )
+  ].join('\n')
 
-};
+}
 
-const ShadowMapViewer = function ( light ) {
+const ShadowMapViewer = function (light) {
+    // - Internals
+  var scope = this
+  var doRenderLabel = (light.name !== undefined && light.name !== '')
+  var userAutoClearSetting
 
-    //- Internals
-    var scope = this;
-    var doRenderLabel = ( light.name !== undefined && light.name !== '' );
-    var userAutoClearSetting;
+    // Holds the initial position and dimension of the HUD
+  var frame = {
+    x: 10,
+    y: 10,
+    width: 256,
+    height: 256
+  }
 
-    //Holds the initial position and dimension of the HUD
-    var frame = {
-        x: 10,
-        y: 10,
-        width: 256,
-        height: 256
-    };
+  var camera = new OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 1, 10)
+  camera.position.set(0, 0, 2)
+  var scene = new Scene()
 
-    var camera = new OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 1, 10 );
-    camera.position.set( 0, 0, 2 );
-    var scene = new Scene();
+    // HUD for shadow map
+  var shader = UnpackDepthRGBAShader
 
-    //HUD for shadow map
-    var shader = UnpackDepthRGBAShader;
+  var uniforms = new UniformsUtils.clone(shader.uniforms)
+  var material = new ShaderMaterial({
+    uniforms: uniforms,
+    vertexShader: shader.vertexShader,
+    fragmentShader: shader.fragmentShader
+  })
+  var plane = new PlaneBufferGeometry(frame.width, frame.height)
+  var mesh = new Mesh(plane, material)
 
-    var uniforms = new UniformsUtils.clone( shader.uniforms );
-    var material = new ShaderMaterial( {
-        uniforms: uniforms,
-        vertexShader: shader.vertexShader,
-        fragmentShader: shader.fragmentShader
-    } );
-    var plane = new PlaneBufferGeometry( frame.width, frame.height );
-    var mesh = new Mesh( plane, material );
+  scene.add(mesh)
 
-    scene.add( mesh );
+    // Label for light's name
+  var labelCanvas, labelMesh
 
+  if (doRenderLabel) {
+    labelCanvas = document.createElement('canvas')
 
-    //Label for light's name
-    var labelCanvas, labelMesh;
+    var context = labelCanvas.getContext('2d')
+    context.font = 'Bold 20px Arial'
 
-    if ( doRenderLabel ) {
+    var labelWidth = context.measureText(light.name).width
+    labelCanvas.width = labelWidth
+    labelCanvas.height = 25    // 25 to account for g, p, etc.
 
-        labelCanvas = document.createElement( 'canvas' );
+    context.font = 'Bold 20px Arial'
+    context.fillStyle = 'rgba( 255, 0, 0, 1 )'
+    context.fillText(light.name, 0, 20)
 
-        var context = labelCanvas.getContext( '2d' );
-        context.font = 'Bold 20px Arial';
+    var labelTexture = new Texture(labelCanvas)
+    labelTexture.magFilter = LinearFilter
+    labelTexture.minFilter = LinearFilter
+    labelTexture.needsUpdate = true
 
-        var labelWidth = context.measureText( light.name ).width;
-        labelCanvas.width = labelWidth;
-        labelCanvas.height = 25;    //25 to account for g, p, etc.
+    var labelMaterial = new MeshBasicMaterial({ map: labelTexture, side: DoubleSide })
+    labelMaterial.transparent = true
 
-        context.font = 'Bold 20px Arial';
-        context.fillStyle = 'rgba( 255, 0, 0, 1 )';
-        context.fillText( light.name, 0, 20 );
+    var labelPlane = new PlaneBufferGeometry(labelCanvas.width, labelCanvas.height)
+    labelMesh = new Mesh(labelPlane, labelMaterial)
 
-        var labelTexture = new Texture( labelCanvas );
-        labelTexture.magFilter = LinearFilter;
-        labelTexture.minFilter = LinearFilter;
-        labelTexture.needsUpdate = true;
+    scene.add(labelMesh)
+  }
 
-        var labelMaterial = new MeshBasicMaterial( { map: labelTexture, side: DoubleSide } );
-        labelMaterial.transparent = true;
+  function resetPosition () {
+    scope.position.set(scope.position.x, scope.position.y)
+  }
 
-        var labelPlane = new PlaneBufferGeometry( labelCanvas.width, labelCanvas.height );
-        labelMesh = new Mesh( labelPlane, labelMaterial );
-
-        scene.add( labelMesh );
-
-    }
-
-
-    function resetPosition () {
-
-        scope.position.set( scope.position.x, scope.position.y );
-
-    }
-
-    //- API
+    // - API
     // Set to false to disable displaying this shadow map
-    this.enabled = true;
+  this.enabled = true
 
     // Set the size of the displayed shadow map on the HUD
-    this.size = {
-        width: frame.width,
-        height: frame.height,
-        set: function ( width, height ) {
+  this.size = {
+    width: frame.width,
+    height: frame.height,
+    set: function (width, height) {
+      this.width = width
+      this.height = height
 
-            this.width = width;
-            this.height = height;
+      mesh.scale.set(this.width / frame.width, this.height / frame.height, 1)
 
-            mesh.scale.set( this.width / frame.width, this.height / frame.height, 1 );
-
-            //Reset the position as it is off when we scale stuff
-            resetPosition();
-
-        }
-    };
+            // Reset the position as it is off when we scale stuff
+      resetPosition()
+    }
+  }
 
     // Set the position of the displayed shadow map on the HUD
-    this.position = {
-        x: frame.x,
-        y: frame.y,
-        set: function ( x, y ) {
+  this.position = {
+    x: frame.x,
+    y: frame.y,
+    set: function (x, y) {
+      this.x = x
+      this.y = y
 
-            this.x = x;
-            this.y = y;
+      var width = scope.size.width
+      var height = scope.size.height
 
-            var width = scope.size.width;
-            var height = scope.size.height;
+      mesh.position.set(-window.innerWidth / 2 + width / 2 + this.x, window.innerHeight / 2 - height / 2 - this.y, 0)
 
-            mesh.position.set( - window.innerWidth / 2 + width / 2 + this.x, window.innerHeight / 2 - height / 2 - this.y, 0 );
+      if (doRenderLabel) labelMesh.position.set(mesh.position.x, mesh.position.y - scope.size.height / 2 + labelCanvas.height / 2, 0)
+    }
+  }
 
-            if ( doRenderLabel ) labelMesh.position.set( mesh.position.x, mesh.position.y - scope.size.height / 2 + labelCanvas.height / 2, 0 );
+  this.render = function (renderer) {
+    if (this.enabled) {
+            // Because a light's .shadowMap is only initialised after the first render pass
+            // we have to make sure the correct map is sent into the shader, otherwise we
+            // always end up with the scene's first added shadow casting light's shadowMap
+            // in the shader
+            // See: https://github.com/mrdoob/three.js/issues/5932
+      uniforms.tDiffuse.value = light.shadow.map.texture
 
-        }
-    };
+      userAutoClearSetting = renderer.autoClear
+      renderer.autoClear = false // To allow render overlay
+      renderer.clearDepth()
+      renderer.render(scene, camera)
+      renderer.autoClear = userAutoClearSetting  // Restore user's setting
+    }
+  }
 
-    this.render = function ( renderer ) {
+  this.updateForWindowResize = function () {
+    if (this.enabled) {
+      camera.left = window.innerWidth / -2
+      camera.right = window.innerWidth / 2
+      camera.top = window.innerHeight / 2
+      camera.bottom = window.innerHeight / -2
+      camera.updateProjectionMatrix()
 
-        if ( this.enabled ) {
+      this.update()
+    }
+  }
 
-            //Because a light's .shadowMap is only initialised after the first render pass
-            //we have to make sure the correct map is sent into the shader, otherwise we
-            //always end up with the scene's first added shadow casting light's shadowMap
-            //in the shader
-            //See: https://github.com/mrdoob/three.js/issues/5932
-            uniforms.tDiffuse.value = light.shadow.map.texture;
+  this.update = function () {
+    this.position.set(this.position.x, this.position.y)
+    this.size.set(this.size.width, this.size.height)
+  }
 
-            userAutoClearSetting = renderer.autoClear;
-            renderer.autoClear = false; // To allow render overlay
-            renderer.clearDepth();
-            renderer.render( scene, camera );
-            renderer.autoClear = userAutoClearSetting;  //Restore user's setting
+    // Force an update to set position/size
+  this.update()
+}
 
-        }
-
-    };
-
-    this.updateForWindowResize = function () {
-
-        if ( this.enabled ) {
-
-             camera.left = window.innerWidth / - 2;
-             camera.right = window.innerWidth / 2;
-             camera.top = window.innerHeight / 2;
-             camera.bottom = window.innerHeight / - 2;
-             camera.updateProjectionMatrix();
-
-             this.update();
-        }
-
-    };
-
-    this.update = function () {
-
-        this.position.set( this.position.x, this.position.y );
-        this.size.set( this.size.width, this.size.height );
-
-    };
-
-    //Force an update to set position/size
-    this.update();
-
-};
-
-ShadowMapViewer.prototype.constructor = ShadowMapViewer;
+ShadowMapViewer.prototype.constructor = ShadowMapViewer
 
 export {ShadowMapViewer}

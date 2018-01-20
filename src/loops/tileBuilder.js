@@ -1,5 +1,5 @@
 import {
-  Vector3,
+  Vector3
 } from 'three'
 import {camera, scene, drone} from '../index'
 import {dirLight} from '../lights'
@@ -15,7 +15,7 @@ window.pngs = pngs
 
 const tileBuilder = (timestamp) => {
   const cameraPosition = camera.position
-  const camVec = camera.getWorldDirection();
+  const camVec = camera.getWorldDirection()
   let targetPosition = cameraPosition.clone()
 
   targetPosition = targetPosition.add(camVec.multiplyScalar(400 * Math.max(1, Math.abs(cameraPosition.z) / 400)))
@@ -41,9 +41,9 @@ const tileBuilder = (timestamp) => {
     const segments2 = 15
 
     let visibleKeysArray = [
-        [zoom, x0,     y0    , segments0, 0, currentTileSize],
-        [zoom, x0,     y0 + 1, segments0, 0, currentTileSize],
-        [zoom, x0 + 1, y0    , segments0, 0, currentTileSize],
+        [zoom, x0, y0, segments0, 0, currentTileSize],
+        [zoom, x0, y0 + 1, segments0, 0, currentTileSize],
+        [zoom, x0 + 1, y0, segments0, 0, currentTileSize],
         [zoom, x0 + 1, y0 + 1, segments0, 0, currentTileSize],
 
         [zoom, x0 - 1, y0 - 1, segments1, 0, currentTileSize],
@@ -56,8 +56,8 @@ const tileBuilder = (timestamp) => {
         [zoom, x0 + 2, y0 + 1, segments1, 0, currentTileSize],
         [zoom, x0 + 2, y0 + 2, segments1, 0, currentTileSize],
 
-        [zoom, x0    , y0 - 1, segments1, 0, currentTileSize],
-        [zoom, x0    , y0 + 2, segments1, 0, currentTileSize],
+        [zoom, x0, y0 - 1, segments1, 0, currentTileSize],
+        [zoom, x0, y0 + 2, segments1, 0, currentTileSize],
         [zoom, x0 + 1, y0 - 1, segments1, 0, currentTileSize],
         [zoom, x0 + 1, y0 + 2, segments1, 0, currentTileSize],
 
@@ -77,12 +77,12 @@ const tileBuilder = (timestamp) => {
 
         [zoom, x0 - 1, y0 - 2, segments2, 0, currentTileSize],
         [zoom, x0 - 1, y0 + 3, segments2, 0, currentTileSize],
-        [zoom, x0    , y0 - 2, segments2, 0, currentTileSize],
-        [zoom, x0    , y0 + 3, segments2, 0, currentTileSize],
+        [zoom, x0, y0 - 2, segments2, 0, currentTileSize],
+        [zoom, x0, y0 + 3, segments2, 0, currentTileSize],
         [zoom, x0 + 1, y0 - 2, segments2, 0, currentTileSize],
         [zoom, x0 + 1, y0 + 3, segments2, 0, currentTileSize],
         [zoom, x0 + 2, y0 - 2, segments2, 0, currentTileSize],
-        [zoom, x0 + 2, y0 + 3, segments2, 0, currentTileSize],
+        [zoom, x0 + 2, y0 + 3, segments2, 0, currentTileSize]
 
     ]
 
@@ -118,14 +118,13 @@ const tileBuilder = (timestamp) => {
     ).map(
       tile => {
         if (!tile.markedForDeletion) {
-          new Promise((resolve) => window.setTimeout(() => deleteTile(tile), 750))
+          window.setTimeout(() => deleteTile(tile), 750)
           tile.markedForDeletion = true
         }
       }
     )
 
     currentKeysArray = visibleKeysArray.slice(0)
-
   }
 }
 
