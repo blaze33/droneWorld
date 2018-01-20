@@ -3,15 +3,13 @@ import {
   TextureLoader,
   RepeatWrapping,
   UniformsLib,
-  MeshPhysicalMaterial,
   Vector2,
-  Matrix3,
+  Matrix3
 } from 'three'
 import vertexShader from './meshphysical_vert.glsl'
 import fragmentShader from './meshphysical_frag.glsl'
-import {sunPosition} from '../../index'
 
-const textureLoader = new TextureLoader().setCrossOrigin("anonymous")
+const textureLoader = new TextureLoader().setCrossOrigin('anonymous')
 
 const rockTexture = textureLoader.load(require('../../textures/Rock_08_UV_H_CM_1.jpg'))
 const rockTextureNormal = textureLoader.load(require('../../textures/Rock_08_UV_H_CM_1_normal.jpg'))
@@ -22,10 +20,10 @@ const grassTextureNormal = textureLoader.load(require('../../textures/GrassGreen
 const grassTexture2 = textureLoader.load(require('../../textures/Grass_01_UV_H_CM_1.jpg'))
 const icyTexture = textureLoader.load(require('../../textures/snow_scuffed_ground_1.jpg'))
 const snowTexture = textureLoader.load(require('../../textures/Snow_01_UV_H_CM_1.jpg'))
-const envmapTexture = textureLoader.load(require('../../textures/envmap.jpg'))
+// const envmapTexture = textureLoader.load(require('../../textures/envmap.jpg'))
 rockTexture.wrapS = rockTexture.wrapT = RepeatWrapping
-rockTexture.offset.set(0, 0);
-rockTexture.repeat.set( 20, 20 );
+rockTexture.offset.set(0, 0)
+rockTexture.repeat.set(20, 20)
 rockTextureNormal.wrapS = rockTextureNormal.wrapT = RepeatWrapping
 grassTexture.wrapS = grassTexture.wrapT = RepeatWrapping
 grassTextureNormal.wrapS = grassTextureNormal.wrapT = RepeatWrapping
@@ -78,11 +76,11 @@ const Material = (options, uniforms) => {
     vertexShader,
     fragmentShader,
     extensions: {
-      derivatives: true,
+      derivatives: true
     },
     wireframe: false,
     lights: true,
-    fog: true,
+    fog: true
     // transparent: true,
     // ...options,
   })

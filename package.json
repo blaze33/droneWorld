@@ -64,8 +64,8 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
-    "lint": "standard src/**/*.js | snazzy",
-    "lint-fix": "standard --fix src/**/*.js | snazzy"
+    "lint": "standard | snazzy",
+    "lint-fix": "standard --fix | snazzy"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -118,7 +118,8 @@
       "browser": true
     },
     "ignore": [
-      "src/modules/"
+      "src/modules/",
+      "build/"
     ]
   }
 }

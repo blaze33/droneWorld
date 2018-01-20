@@ -1,15 +1,14 @@
 import {
   DirectionalLight,
-  DirectionalLightHelper,
   HemisphereLight,
-  AmbientLight,
+  AmbientLight
 } from 'three'
 import {drone} from './index'
 
-const dirLight = new DirectionalLight( 0xffffff, 4)
+const dirLight = new DirectionalLight(0xffffff, 4)
 window.dirLight = dirLight
-const hemishpereLight = new HemisphereLight( 0xffffbb, 0x080820, .1 )
-const ambientLight = new AmbientLight( 0x404040, 0.1 ) // soft white light
+const hemishpereLight = new HemisphereLight(0xffffbb, 0x080820, 0.1)
+const ambientLight = new AmbientLight(0x404040, 0.1) // soft white light
 
 const updateDirLightPosition = () => {
   dirLight.position.copy(dirLight.sunPosition)
@@ -23,7 +22,7 @@ const initLights = (scene, sunPosition) => {
   dirLight.updatePosition = updateDirLightPosition
   dirLight.updatePosition()
   dirLight.up.set(0, 0, 1)
-  dirLight.name = "sunlight"
+  dirLight.name = 'sunlight'
 
   dirLight.castShadow = true
   dirLight.shadow.mapSize.width = dirLight.shadow.mapSize.height = 1024
@@ -40,7 +39,6 @@ const initLights = (scene, sunPosition) => {
   scene.add(dirLight)
   scene.add(hemishpereLight)
   scene.add(ambientLight)
-
 }
 
 export {initLights, dirLight, hemishpereLight, ambientLight}
