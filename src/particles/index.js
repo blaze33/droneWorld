@@ -1,12 +1,15 @@
 import SPE from 'shader-particle-engine/build/SPE'
 import * as THREE from 'three'
+import {loops} from '../index'
 
 // GROUPS
 const textureLoader = new THREE.TextureLoader()
 const fireGroupOptions = {
   texture: {
-    value: textureLoader.load(require('../textures/sprite-explosion2.png')),
-    frames: new THREE.Vector2(5, 5),
+    value: textureLoader.load(require('../textures/Explosion_002_Tile_8x8_256x256.png')),
+    frames: new THREE.Vector2(8, 8),
+    // value: textureLoader.load(require('../textures/sprite-explosion2.png')),
+    // frames: new THREE.Vector2(5, 5),
     loop: 1
   },
   depthTest: true,
@@ -19,8 +22,8 @@ const pointsGroupOptions = {
   texture: {
     value: textureLoader.load(require('../textures/smokeparticle.png'))
   },
-  depthTest: false,
-  depthWrite: true,
+  depthTest: true,
+  depthWrite: false,
   blending: THREE.NormalBlending,
   maxParticleCount: 100000
 }
@@ -88,13 +91,13 @@ const debrisOptions = {
       new THREE.Color(0.4, 0.2, 0.1)
     ]
   },
-  opacity: { value: [0.4, 0] }
+  opacity: { value: [0.8, 0] }
 }
 const fireOptions = {
   particleCount: 20,
   type: SPE.distributions.SPHERE,
   position: {
-    radius: 1
+    radius: 5
   },
   maxAge: { value: 2 },
   duration: 1,
@@ -112,9 +115,9 @@ const fireOptions = {
   opacity: { value: [0.5, 0.35, 0.1, 0] }
 }
 const mistOptions = {
-  particleCount: 50,
+  particleCount: 100,
   position: {
-    spread: new THREE.Vector3(10, 10, 10),
+    spread: new THREE.Vector3(15, 15, 15),
     distribution: SPE.distributions.SPHERE
   },
   maxAge: { value: 2 },
@@ -128,7 +131,7 @@ const mistOptions = {
   color: {
     value: new THREE.Color(0.2, 0.2, 0.2)
   },
-  opacity: { value: [0, 0, 0.2, 0] }
+  opacity: { value: [0, 0, 0.4, 0] }
 }
 const flashOptions = {
   duration: 1,
@@ -141,7 +144,28 @@ const flashOptions = {
   size: { value: [2, 20, 20, 20] },
   maxAge: { value: 2 },
   activeMultiplier: 2000,
-  opacity: { value: [0.5, 0.25, 0, 0] }
+  // opacity: { value: [0.5, 0.25, 0, 0] }
+  opacity: { value: [1, 1, 0, 0] }
+  // opacity: { value: 1 }
+}
+
+const smokeOptions = {
+  particleCount: 1000,
+  position: {
+    spread: new THREE.Vector3(1, 1, 1)
+  },
+  maxAge: { value: 10 },
+  duration: 10,
+  // activeMultiplier: 2000,
+  velocity: {
+    value: new THREE.Vector3(4, 2, 5),
+    distribution: SPE.distributions.SPHERE
+  },
+  size: { value: [20, 40] },
+  color: {
+    value: new THREE.Color(0.9, 0.9, 0.9)
+  },
+  opacity: { value: [0.4, 0.4, 0.4, 0] }
 }
 
 const flashGroup = new SPE.Group(fireGroupOptions)
@@ -150,6 +174,7 @@ const fireGroup = new SPE.Group(fireGroupOptions)
 const debrisGroup = new SPE.Group(pointsGroupOptions)
 const shockGroup = new SPE.Group(pointsGroupOptions)
 const mistGroup = new SPE.Group(pointsGroupOptions)
+const smokeGroup = new SPE.Group(pointsGroupOptions)
 
 const poolSize = 100
 const createNew = false
@@ -160,25 +185,71 @@ fireGroup.addPool(poolSize, fireOptions, createNew)
 debrisGroup.addPool(poolSize, debrisOptions, createNew)
 shockGroup.addPool(poolSize, shockwaveOptions, createNew)
 mistGroup.addPool(poolSize, mistOptions, createNew)
+smokeGroup.addPool(poolSize, smokeOptions, createNew)
 
 const groups = [
   flashGroup,
   fireGroup,
   debrisGroup,
   shockGroup,
-  mistGroup
+  mistGroup,
+  smokeGroup
 ]
 // avoid artifacts with the ocean
-groups.forEach(group => { group.mesh.renderOrder = 1 })
+groups.forEach(group => { group.mesh.renderOrder = 2 })
+smokeGroup.mesh.renderOrder = 1
 // cf. https://github.com/squarefeet/ShaderParticleEngine/issues/126
 groups.forEach(group => { group.mesh.frustumCulled = false })
 
+window.smokeGroup = smokeGroup
+
+const triggerSingleEmitter = (group, pos, follow = false) => {
+  const emitter = group.getFromPool()
+
+  if (emitter === null) {
+    console.log('SPE.Group pool ran out.')
+    return
+  }
+
+  // TODO:
+  // - Make sure buffers are update with thus new position.
+  if (pos instanceof THREE.Vector3) {
+    emitter.position.value = pos
+
+    // Trigger the setter for this property to force an
+    // update to the emitter's position attribute.
+    emitter.position.value = emitter.position.value
+  }
+
+  const loop = {
+    loop: () => { emitter.position.value = pos },
+    alive: true
+  }
+  if (follow) {
+    loops.push(loop)
+  }
+
+  emitter.enable()
+
+  setTimeout(() => {
+    emitter.disable()
+    if (follow) { loop.alive = false }
+    group.releaseIntoPool(emitter)
+  }, (Math.max(emitter.duration, (emitter.maxAge.value + emitter.maxAge.spread))) * 1000)
+}
+
 const triggerExplosion = (position) => {
-  flashGroup.triggerPoolEmitter(1, position)
-  fireGroup.triggerPoolEmitter(1, position)
-  debrisGroup.triggerPoolEmitter(1, position)
-  shockGroup.triggerPoolEmitter(1, position)
-  mistGroup.triggerPoolEmitter(1, position)
+  // flashGroup.triggerPoolEmitter(1, position)
+  // fireGroup.triggerPoolEmitter(1, position)
+  // debrisGroup.triggerPoolEmitter(1, position)
+  // // shockGroup.triggerPoolEmitter(1, position)
+  // mistGroup.triggerPoolEmitter(1, position)
+  triggerSingleEmitter(smokeGroup, position, true)
+  triggerSingleEmitter(flashGroup, position)
+  triggerSingleEmitter(fireGroup, position)
+  triggerSingleEmitter(debrisGroup, position)
+  triggerSingleEmitter(mistGroup, position)
+
 }
 
 export {groups as particleGroups, triggerExplosion}

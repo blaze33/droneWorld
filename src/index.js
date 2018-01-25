@@ -439,7 +439,7 @@ const fireBullet = e => {
       const vec = drone2.position.clone().sub(fire.position)
       if (vec.length() < 10) {
         this.alive = false
-        triggerExplosion(fire.position)
+        triggerExplosion(drone2.position)
       }
       const newDir = vec.normalize().multiplyScalar(10 * delta / 16.66)
       fire.position.add(newDir)
@@ -451,4 +451,4 @@ const fireBullet = e => {
 }
 renderer.domElement.addEventListener('mousedown', fireBullet, false)
 
-export {renderer, scene, camera, drone, sunPosition, gui, options}
+export {renderer, scene, camera, drone, sunPosition, gui, options, loops}
