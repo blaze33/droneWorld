@@ -46,9 +46,9 @@ const registerTarget = (msg, target) => {
   let targetDistance
   const targetLoop = () => {
     hudPosition = screenXYclamped(target.position)
-    targetElement.style.left = `${hudPosition.x - 10}px`
-    targetElement.style.top = `${hudPosition.y - 10}px`
-    // TODO use translate instead of top/left
+    targetElement.style.transform = `
+      translateX(${hudPosition.x - 10}px) translateY(${hudPosition.y - 10}px)
+    `
     targetElement.style.borderColor = hudPosition.z > 1 ? 'red' : 'orange'
     targetDistance = new Vector2(window.innerWidth / 2, window.innerHeight / 2).sub(
         new Vector2(hudPosition.x, hudPosition.y)
