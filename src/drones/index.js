@@ -1,20 +1,4 @@
-import GLTFLoader from '../modules/GLTFLoader'
-import PubSub from '../events'
-
-var loader = new GLTFLoader()
-
-let droneMesh
-
-const loadDroneAssets = () => {
-  loader.load(
-    // resource URL
-    './assets/drone/scene.gltf',
-    // called when the resource is loaded
-    function (gltf) {
-      droneMesh = gltf.scene.children[0]
-      PubSub.publish('assets.drone.loaded', {mesh: droneMesh})
-    }
-  )
-}
+import loadDroneAssets from './loader'
+import initDroneFactory from './init'
 
 export default loadDroneAssets

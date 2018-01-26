@@ -1,0 +1,93 @@
+import {Vector3} from 'three'
+import {scene, camera, loops, gui} from '../index'
+import PubSub from '../events'
+import hud from '../hud'
+
+let droneFactory = {
+  ready: false
+}
+
+const droneController = {
+  x: 0,
+  y: 0,
+  z: 0
+}
+
+const initDroneGui = (gui) => {
+  window.droneController = droneController
+  const droneFolder = gui.addFolder('drone')
+  droneFolder.add(droneController, 'x', 0, 2 * Math.PI)
+  droneFolder.add(droneController, 'y', 0, 2 * Math.PI)
+  droneFolder.add(droneController, 'z', 0, 2 * Math.PI)
+}
+PubSub.subscribe('x.gui.init', (msg, data) => initDroneGui(data.gui))
+
+const initDroneFactory = (msg, data) => {
+  droneFactory = () => {
+    const drone = data.mesh.clone()
+    drone.up.set(0, 0, 1)
+    drone.rotation.x = 0
+    drone.scale.set(0.1, 0.1, 0.1)
+    return drone
+  }
+  droneFactory.ready = true
+  PubSub.publish('x.drones.factory.ready')
+}
+PubSub.subscribe('x.assets.drone.loaded', initDroneFactory)
+
+const buildPilotDrone = () => {
+  const pilotDrone = droneFactory()
+  scene.add(pilotDrone)
+  let localY
+  let targetPosition
+  let targetPositionFinal
+  let camVec
+  const pilotDroneLoop = () => {
+    camVec = camera.getWorldDirection()
+    targetPosition = camera.position.clone()
+      .add(camVec.multiplyScalar(20))
+    localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
+    targetPositionFinal = targetPosition.sub(localY.multiplyScalar(8))
+    pilotDrone.position.copy(targetPositionFinal)
+    pilotDrone.lookAt(targetPosition
+      .add(camVec)
+      .add({x: 0, y: 0, z: 60})
+    )
+    pilotDrone.rotation.x += droneController.x
+    pilotDrone.rotation.y += droneController.y
+    pilotDrone.rotation.z += droneController.z
+  }
+  loops.push(pilotDroneLoop)
+  PubSub.publish('x.drones.pilotDrone.loaded', {pilotDrone})
+}
+PubSub.subscribe('x.drones.factory.ready', buildPilotDrone)
+
+const spawnDrone = (circle = true, phase = 0) => {
+  const drone = droneFactory()
+  scene.add(drone)
+  const droneLoop = (timestamp) => {
+    if (!drone) return
+    const radius = 280
+    if (circle) {
+      drone.position.set(
+        radius * Math.cos(timestamp / 1000 / 3 + phase),
+        radius * Math.sin(timestamp / 1000 / 3 + phase),
+        275
+      )
+    } else {
+      drone.position.copy(camera.position.clone()
+        .add(camera.getWorldDirection().multiplyScalar(100)))
+    }
+  }
+  PubSub.publish('x.hud.register.target', drone)
+  loops.push(droneLoop)
+}
+
+const initTargets = () => {
+  spawnDrone(true)
+  spawnDrone(true, Math.PI / 2)
+  spawnDrone(true, Math.PI)
+}
+PubSub.subscribe('x.drones.factory.ready', initTargets)
+
+export default initDroneFactory

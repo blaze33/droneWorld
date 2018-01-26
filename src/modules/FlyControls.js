@@ -33,7 +33,7 @@ export default function FlyControls (object, domElement, nipple, pointer) {
 
   this.pointer = pointer
   if (this.pointer) {
-    const pointerElement = document.getElementById('target')
+    const pointerElement = document.getElementById('pointer')
     this.zone = 300
     this.pointer.on('attain', movements => {
       const dims = this.getContainerDimensions().size
@@ -167,7 +167,7 @@ export default function FlyControls (object, domElement, nipple, pointer) {
     this.moveState.pitchDown = event.pageY / halfHeight
   }
 
-  this.update = function (delta) {
+  this.update = (delta) => {
     var moveMult = delta * this.movementSpeed
     var rotMult = delta * this.rollSpeed
 

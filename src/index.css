@@ -41,7 +41,7 @@ body {
   border-radius: 50%;
 }
 
-.hud-target {
+.hud .target {
   position: fixed;
   left: 0;
   top: 0;
@@ -61,13 +61,13 @@ body {
   opacity: 0.8;
 }
 
-.hud #target {
+.hud #pointer {
   position: fixed;
   transform: translateX(-16px) translateY(-16px);
   height: 32px;
   opacity: .8;
 }
-.hud #target:before, .hud #target:after {
+.hud #pointer:before, .hud #pointer:after {
   position: absolute;
   left: 15px;
   content: ' ';
@@ -75,10 +75,10 @@ body {
   width: 2px;
   background-color: #0f0;
 }
-.hud #target:before {
+.hud #pointer:before {
   transform: rotate(45deg);
 }
-.hud #target:after {
+.hud #pointer:after {
   transform: rotate(-45deg);
 }
 

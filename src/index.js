@@ -3,7 +3,6 @@ import {
   Scene,
   PerspectiveCamera,
   CubeCamera,
-  Vector2,
   Vector3,
   WebGLRenderer,
   PCFSoftShadowMap,
@@ -20,15 +19,8 @@ import {
 } from 'three'
 import Water from './modules/Water'
 import dat from 'dat.gui/build/dat.gui.js'
-import keyboardJS from 'keyboardjs'
 import Stats from 'stats.js'
 import queryString from 'query-string'
-import nipplejs from 'nipplejs'
-import lock from 'pointer-lock'
-
-// import './modules/terrain.js'
-import FlyControls from './modules/FlyControls'
-import {OrbitControls} from './modules/OrbitControls'
 import {WindowResize} from './modules/WindowResize'
 // import {ShadowMapViewer} from './modules/ShadowMapViewer'
 import {initSky} from './sky'
@@ -39,11 +31,10 @@ import {
   lensFlare
 } from './postprocessing'
 import {material} from './terrain'
-import {mobileAndTabletcheck} from './utils/isMobile'
-import {screenXYclamped} from './utils'
-import {particleGroups, triggerExplosion} from './particles'
+import {particleGroups} from './particles'
 import PubSub from './events'
-import loadDroneAssets from './drones'
+import setupDrones from './drones'
+import './controls'
 
 const queryStringOptions = queryString.parse(window.location.search)
 const options = {
@@ -85,54 +76,15 @@ renderer.toneMapping = Uncharted2ToneMapping
 renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
 
-let controlsModule
-let controlsElement
-let isMobile = false
-if (mobileAndTabletcheck()) {
-  isMobile = true
-
-  document.getElementById('touchPane').style.display = 'block'
-  const touchPaneLeft = window.document.getElementsByClassName('touchPaneLeft')[0]
-  const nippleLook = nipplejs.create({
-    zone: touchPaneLeft,
-    mode: 'static',
-    position: {left: '30%', top: '90%'},
-    color: 'white'
-  })
-
-  // display touch buttons
-  Array.from(document.getElementsByClassName('touchButton')).forEach(el => {
-    el.style.display = 'block'
-  })
-  // hide verbose text
-  document.getElementById('verbosePane').style.display = 'none'
-  // get button X
-  const buttonX = document.getElementById('buttonX')
-  const pressX = (event) => {
-    event.target.style.opacity = 0.5
-    fireBullet()
-    setTimeout(() => { event.target.style.opacity = 0.3 }, 250)
-  }
-  buttonX.addEventListener('click', pressX, false)
-  buttonX.addEventListener('touchstart', pressX, false)
-
-  controlsModule = new FlyControls(camera, touchPaneLeft, nippleLook)
-  controlsElement = touchPaneLeft
-} else {
-  const pointer = lock(renderer.domElement)
-  controlsModule = new FlyControls(camera, renderer.domElement, undefined, pointer)
-  controlsElement = renderer.domElement
-}
-
 window.scene = scene
 window.renderer = renderer
 window.camera = camera
-window.controls = controlsModule
 
 const gui = new dat.GUI({ autoPlace: false })
 gui.closed = true
 window.document.getElementsByClassName('guiPane')[0].appendChild(gui.domElement)
 window.gui = gui
+PubSub.publish('x.gui.init', {gui})
 
 const rendererFolder = gui.addFolder('Level of detail')
 const RendererController = function () {
@@ -229,105 +181,14 @@ window.water = water
 scene.add(water)
 // ##########################
 
-let drone1, drone2
-const droneController = {
-  x: 0,
-  y: 0,
-  z: 0
-}
-window.droneController = droneController
-
-const initDrones = (msg, data) => {
-  const droneFactory = () => {
-    const drone = data.mesh.clone()
-    drone.up.set(0, 0, 1)
-    drone.rotation.x = 0
-    drone.scale.set(0.1, 0.1, 0.1)
-    return drone
-  }
-
-  drone1 = droneFactory()
-  scene.add(drone1)
-  let localY
-  let targetPosition
-  let targetPositionFinal
-  let camVec
-  const drone1Loop = () => {
-    camVec = camera.getWorldDirection()
-    targetPosition = camera.position.clone()
-      .add(camVec.multiplyScalar(20))
-    localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
-    targetPositionFinal = targetPosition.sub(localY.multiplyScalar(8))
-    drone1.position.copy(targetPositionFinal)
-    drone1.lookAt(targetPosition
-      .add(camVec)
-      .add({x: 0, y: 0, z: 60})
-    )
-    drone1.rotation.x += droneController.x
-    drone1.rotation.y += droneController.y
-    drone1.rotation.z += droneController.z
-  }
-  loops.push(drone1Loop)
-
-  drone2 = droneFactory()
-  scene.add(drone2)
-  const drone2Loop = (timestamp) => {
-    if (!drone2) return
-    const radius = 280
-    drone2.position.set(
-      radius * Math.cos(timestamp / 1000 / 3),
-      radius * Math.sin(timestamp / 1000 / 3),
-      275
-    )
-    hudPosition = screenXYclamped(drone2.position)
-    hudElement.style.left = `${hudPosition.x - 10}px`
-    hudElement.style.top = `${hudPosition.y - 10}px`
-    hudElement.style.borderColor = hudPosition.z > 1 ? 'red' : 'orange'
-    targetDistance = new Vector2(window.innerWidth / 2, window.innerHeight / 2).sub(
-      new Vector2(hudPosition.x, hudPosition.y)
-    ).length()
-    if (hudElement.style.borderColor === 'orange' && targetDistance < 75) {
-      hudElement.style.borderColor = '#0f0'
-      drone1.armed = true
-      hudFocal.style.boxShadow = '0 0 6px #0f0'
-    } else {
-      drone1.armed = false
-      hudFocal.style.boxShadow = ''
-    }
-  }
-  loops.push(drone2Loop)
-
-  const droneFolder = gui.addFolder('drone')
-  droneFolder.add(droneController, 'x', 0, 2 * Math.PI)
-  droneFolder.add(droneController, 'y', 0, 2 * Math.PI)
-  droneFolder.add(droneController, 'z', 0, 2 * Math.PI)
-
-  const hudLoop = (timestamp) => {
-    const localX = new Vector3(1, 0, 0).applyQuaternion(camera.quaternion)
-    const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
-    const rollAngle = (
-      Math.PI / 2 - camera.up.angleTo(localX) * Math.sign(camera.up.dot(localY))
-    )
-    camera.rollAngle = rollAngle
-    const pitch = camera.up.dot(camera.getWorldDirection())
-    const rollAngleDegree = rollAngle / Math.PI * 180
-    hudHorizon.style.transform = `translateX(-50%) translateY(${pitch * window.innerHeight / 2}px) rotate(${rollAngleDegree}deg)`
-  }
-  loops.push(hudLoop)
-}
-loadDroneAssets()
-PubSub.subscribe('assets.drone.loaded', initDrones)
+setupDrones()
 
 particleGroups.forEach(group => scene.add(group.mesh))
 // var helper = new CameraHelper( camera );
 // scene.add( helper );
 
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
-const hudElement = document.getElementById('hud')
-const hudFocal = document.getElementById('focal')
-const hudHorizon = document.getElementById('horizon')
-let hudPosition
-let targetDistance
+
 let loops = [
   tileBuilder,
   () => lensFlare.position.copy(sunPosition),
@@ -335,6 +196,8 @@ let loops = [
     particleGroups.forEach(group => group.tick(delta / 1000))
   }
 ]
+window.loops = loops
+PubSub.publish('x.loops.loaded')
 const cleanLoops = () => {
   loops.forEach(loop => {
     if (loop.alive !== undefined && loop.alive === false && loop.object) {
@@ -349,12 +212,13 @@ const dofEffect = options.postprocessing ? initDoF(scene, renderer, camera, gui)
 
 // Start the app
 renderer.setPixelRatio(1.0)
-controlsModule.update(0)
 
 const stats = new Stats()
 document.body.appendChild(stats.dom)
 
 let play = true
+PubSub.subscribe('x.toggle.play', () => { play = !play })
+
 let lastTimestamp = 0
 var mainLoop = (timestamp) => {
   requestAnimationFrame(mainLoop)
@@ -362,7 +226,6 @@ var mainLoop = (timestamp) => {
   lastTimestamp = timestamp
 
   if (play) {
-    controlsModule.update(delta)
     loops.forEach(loop => {
       loop.loop ? loop.loop(timestamp, delta) : loop(timestamp, delta)
     })
@@ -392,63 +255,5 @@ var mainLoop = (timestamp) => {
 mainLoop(0)
 
 WindowResize(renderer, camera)
-
-keyboardJS.bind('p', e => {
-  if (isMobile) { return }
-  const NewControlsClass = controlsModule.constructor.name === 'OrbitControls' ? FlyControls : OrbitControls
-  console.log('controlsClass', NewControlsClass)
-  controlsModule.dispose()
-  const newModule = new NewControlsClass(camera, controlsElement)
-  window.controls = newModule
-  controlsModule = newModule
-  controlsModule.update(0)
-
-  if (NewControlsClass === OrbitControls) {
-    let cam = drone.position.clone()
-    newModule.target.set(cam.x, cam.y, cam.z)
-  }
-})
-
-keyboardJS.bind('c', e => {
-  console.log(camera.position)
-})
-
-keyboardJS.bind('r', e => {
-  if (controlsModule.constructor.name === 'OrbitControls') {
-    controlsModule.autoRotate = !controlsModule.autoRotate
-  }
-})
-
-keyboardJS.bind('space', e => { play = !play })
-
-const bullet = new Mesh(
-  new SphereBufferGeometry(1, 5, 5),
-  new MeshBasicMaterial({color: 0x111111})
-)
-const fireBullet = e => {
-  if (!drone1 || !drone1.armed) return
-  const fire = bullet.clone()
-  fire.position.copy(drone1.position)
-  scene.add(fire)
-
-  const BulletContructor = function () {
-    this.alive = true
-    this.object = fire
-    this.loop = (timestamp, delta) => {
-      if (!this.alive) return
-      const vec = drone2.position.clone().sub(fire.position)
-      if (vec.length() < 10) {
-        this.alive = false
-        triggerExplosion(drone2.position)
-      }
-      const newDir = vec.normalize().multiplyScalar(10 * delta / 16.66)
-      fire.position.add(newDir)
-    }
-  }
-
-  const callback = new BulletContructor()
-  loops.push(callback)
-}
-renderer.domElement.addEventListener('mousedown', fireBullet, false)
 
 export {renderer, scene, camera, drone, sunPosition, gui, options, loops}
