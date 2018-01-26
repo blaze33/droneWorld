@@ -6,7 +6,7 @@ import FlyControls from '../modules/FlyControls'
 import {OrbitControls} from '../modules/OrbitControls'
 import {triggerExplosion} from '../particles'
 import PubSub from '../events'
-import {scene, camera, renderer, loops} from '../index'
+import {scene, camera, renderer} from '../index'
 import {
   Mesh,
   SphereBufferGeometry,
@@ -57,7 +57,7 @@ const initControls = (msg, data) => {
   }
 
   controlsModule.update(0)
-  loops.unshift((timestamp, delta) => controlsModule.update(delta))
+  PubSub.publish('x.loops.unshift', (timestamp, delta) => controlsModule.update(delta))
 
   const pilotDrone = data.pilotDrone
 
@@ -97,7 +97,8 @@ const initControls = (msg, data) => {
     if (!pilotDrone) return
 
     const target = selectNearestTargetInSight()
-    if (target === null) return
+    if (target === null || target.destroyed) return
+    console.log(target.id, target.position)
 
     const fire = bullet.clone()
     fire.position.copy(pilotDrone.position)
@@ -111,7 +112,14 @@ const initControls = (msg, data) => {
         const vec = target.position.clone().sub(fire.position)
         if (vec.length() < 10) {
           this.alive = false
-          triggerExplosion(target.position)
+          triggerExplosion(target)
+          target.life -= 25
+          if (target.life <= 0) {
+            if (!target.destroyed) {
+              PubSub.publish('x.drones.destroy', target)
+              target.destroyed = true
+            }
+          }
         }
         const newDir = vec.normalize().multiplyScalar(10 * delta / 16.66)
         fire.position.add(newDir)
@@ -119,7 +127,7 @@ const initControls = (msg, data) => {
     }
 
     const callback = new BulletContructor()
-    loops.push(callback)
+    PubSub.publish('x.loops.push', callback)
   }
   renderer.domElement.addEventListener('mousedown', fireBullet, false)
 }

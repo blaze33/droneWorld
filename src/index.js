@@ -196,6 +196,13 @@ let loops = [
     particleGroups.forEach(group => group.tick(delta / 1000))
   }
 ]
+const removeLoop = (loop) => {
+  loops = loops.filter(item => item.id !== loop.id)
+}
+PubSub.subscribe('x.loops.remove', (msg, loop) => removeLoop(loop))
+PubSub.subscribe('x.loops.push', (msg, loop) => loops.push(loop))
+PubSub.subscribe('x.loops.unshift', (msg, loop) => loops.unshift(loop))
+
 window.loops = loops
 PubSub.publish('x.loops.loaded')
 const cleanLoops = () => {

@@ -1,6 +1,6 @@
 import SPE from 'shader-particle-engine/build/SPE'
 import * as THREE from 'three'
-import {loops} from '../index'
+import PubSub from '../events'
 
 // GROUPS
 const textureLoader = new THREE.TextureLoader()
@@ -203,7 +203,7 @@ groups.forEach(group => { group.mesh.frustumCulled = false })
 
 window.smokeGroup = smokeGroup
 
-const triggerSingleEmitter = (group, pos, follow = false) => {
+const triggerSingleEmitter = (group, target, follow = false) => {
   const emitter = group.getFromPool()
 
   if (emitter === null) {
@@ -211,22 +211,19 @@ const triggerSingleEmitter = (group, pos, follow = false) => {
     return
   }
 
-  // TODO:
-  // - Make sure buffers are update with thus new position.
-  if (pos instanceof THREE.Vector3) {
-    emitter.position.value = pos
-
-    // Trigger the setter for this property to force an
-    // update to the emitter's position attribute.
-    emitter.position.value = emitter.position.value
-  }
+  emitter.position.value = target.position.clone()
 
   const loop = {
-    loop: () => { emitter.position.value = pos },
-    alive: true
+    loop: () => { emitter.position.value = target.position.clone() },
+    alive: true,
+    id: target.id
   }
-  if (follow) {
-    loops.push(loop)
+  if (follow && !target.destroyed) {
+    PubSub.publish('x.loops.push', loop)
+    PubSub.subscribe('x.drones.destroy', (msg, drone) => {
+      if (drone.id !== target.id) return
+      loop.alive = false
+    })
   }
 
   emitter.enable()
@@ -238,18 +235,12 @@ const triggerSingleEmitter = (group, pos, follow = false) => {
   }, (Math.max(emitter.duration, (emitter.maxAge.value + emitter.maxAge.spread))) * 1000)
 }
 
-const triggerExplosion = (position) => {
-  // flashGroup.triggerPoolEmitter(1, position)
-  // fireGroup.triggerPoolEmitter(1, position)
-  // debrisGroup.triggerPoolEmitter(1, position)
-  // // shockGroup.triggerPoolEmitter(1, position)
-  // mistGroup.triggerPoolEmitter(1, position)
-  triggerSingleEmitter(smokeGroup, position, true)
-  triggerSingleEmitter(flashGroup, position)
-  triggerSingleEmitter(fireGroup, position)
-  triggerSingleEmitter(debrisGroup, position)
-  triggerSingleEmitter(mistGroup, position)
-
+const triggerExplosion = (target) => {
+  triggerSingleEmitter(smokeGroup, target, true)
+  triggerSingleEmitter(flashGroup, target)
+  triggerSingleEmitter(fireGroup, target)
+  triggerSingleEmitter(debrisGroup, target)
+  triggerSingleEmitter(mistGroup, target)
 }
 
 export {groups as particleGroups, triggerExplosion}

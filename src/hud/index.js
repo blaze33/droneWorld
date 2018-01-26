@@ -3,11 +3,11 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import {screenXYclamped} from '../utils'
 import PubSub from '../events'
-import {camera, loops} from '../index'
+import {scene, camera} from '../index'
 
 let hudHorizon
 let hudFocal
-const targets = []
+let targets = []
 const targetsInSight = new Set()
 
 class HUD extends Component {
@@ -23,7 +23,9 @@ class HUD extends Component {
         <div id='horizon' />
         <div id='targets'>
           {targets.map(target => (
-            <div className='target' key={target.id} id={'target-' + target.id} />
+            <div className='target' key={target.id} id={'target-' + target.id}>
+              <div className='life' />
+            </div>
           ))}
         </div>
       </div>
@@ -35,11 +37,9 @@ const hudElement = ReactDOM.render(
   <HUD />,
   document.getElementById('hud')
 )
-console.log(hudElement)
 
 const registerTarget = (msg, target) => {
   targets.push(target)
-  console.log(targets)
   hudElement.forceUpdate()
   const targetElement = document.getElementById('target-' + target.id)
   let hudPosition
@@ -56,13 +56,26 @@ const registerTarget = (msg, target) => {
     if (targetElement.style.borderColor === 'orange' && targetDistance < 75) {
       targetElement.style.borderColor = '#0f0'
       hudFocal.style.boxShadow = '0 0 6px #0f0'
-      targetsInSight.add(target)
     } else {
       hudFocal.style.boxShadow = ''
+    }
+    if (!target.destroyed && targetDistance < 75) {
+      targetsInSight.add(target)
+    } else {
       targetsInSight.delete(target)
     }
   }
-  loops.push(targetLoop)
+  targetLoop.id = target.id
+  const destroyTarget = (msg, targetToDestroy) => {
+    if (targetToDestroy.id !== target.id) return
+    scene.remove(targetToDestroy)
+    PubSub.publish('x.loops.remove', targetLoop)
+    targets = targets.filter(item => item.id !== targetToDestroy.id)
+    targetsInSight.delete(target)
+    hudElement.forceUpdate()
+  }
+  PubSub.subscribe('x.drones.destroy', destroyTarget)
+  PubSub.publish('x.loops.push', targetLoop)
 }
 PubSub.subscribe('x.hud.register.target', registerTarget)
 
@@ -80,7 +93,7 @@ const hudLoop = (timestamp) => {
 PubSub.subscribe('x.hud.mounted', () => {
   hudHorizon = document.getElementById('horizon')
   hudFocal = document.getElementById('focal')
-  loops.push(hudLoop)
+  PubSub.publish('x.loops.push', hudLoop)
 })
 
 const selectNearestTargetInSight = () => {
@@ -90,7 +103,6 @@ const selectNearestTargetInSight = () => {
     distances.push([camera.position.distanceTo(target.position), target])
   )
   distances.sort((a, b) => a[0] > b[0])
-  console.log(distances, distances[0][1].getElementById)
   return distances[0][1]
 }
 

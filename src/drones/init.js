@@ -63,6 +63,7 @@ PubSub.subscribe('x.drones.factory.ready', buildPilotDrone)
 
 const spawnDrone = (circle = true, phase = 0) => {
   const drone = droneFactory()
+  drone.life = 100
   scene.add(drone)
   const droneLoop = (timestamp) => {
     if (!drone) return
@@ -90,5 +91,6 @@ const initTargets = () => {
   spawnDrone(true, Math.PI)
 }
 PubSub.subscribe('x.drones.factory.ready', initTargets)
+PubSub.subscribe('x.drones.destroy', () => spawnDrone(true, Math.random() * 2 * Math.PI))
 
 export default initDroneFactory
