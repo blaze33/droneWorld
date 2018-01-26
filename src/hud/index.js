@@ -72,13 +72,8 @@ const registerTarget = (msg, target) => {
       rotate(${targetVector.angle() / Math.PI * 180 - 90}deg)
     `
     targetDistance = targetVector.length()
-    if (targetElement.style.borderColor === 'orange' && targetDistance < 75) {
+    if (!target.destroyed && targetElement.style.borderColor === 'orange' && targetDistance < 75) {
       targetElement.style.borderColor = '#0f0'
-      hudFocal.style.boxShadow = '0 0 6px #0f0'
-    } else {
-      hudFocal.style.boxShadow = ''
-    }
-    if (!target.destroyed && targetDistance < 75) {
       targetsInSight.add(target)
     } else {
       targetsInSight.delete(target)
@@ -108,6 +103,11 @@ const hudLoop = (timestamp) => {
   const pitch = camera.up.dot(camera.getWorldDirection())
   const rollAngleDegree = rollAngle / Math.PI * 180
   hudHorizon.style.transform = `translateX(-50%) translateY(${pitch * window.innerHeight / 2}px) rotate(${rollAngleDegree}deg)`
+  if (targetsInSight.size > 0) {
+    hudFocal.style.boxShadow = '0 0 50px #0f0'
+  } else {
+    hudFocal.style.boxShadow = ''
+  }
 }
 
 PubSub.subscribe('x.hud.mounted', () => {
