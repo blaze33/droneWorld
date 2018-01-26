@@ -25,6 +25,7 @@ class HUD extends Component {
           {targets.map(target => (
             <div className='target' key={target.id} id={'target-' + target.id}>
               <div className='life' style={{width: target.life / 100 * 20}} />
+              <div className='arrow' />
             </div>
           ))}
         </div>
@@ -37,15 +38,34 @@ const registerTarget = (msg, target) => {
   targets.push(target)
   hudElement.forceUpdate()
   const targetElement = document.getElementById('target-' + target.id)
+  const arrow = targetElement.querySelector('.arrow')
+  const screenCenter = new Vector2(window.innerWidth / 2, window.innerHeight / 2)
   let hudPosition
   let targetDistance
   const targetLoop = () => {
     if (!hudElement.mounted) return
     hudPosition = screenXYclamped(target.position)
+    if (hudPosition.z > 1) {
+      hudPosition.y = window.innerHeight - 10
+      targetElement.style.borderColor = 'red'
+      arrow.style.borderBottomColor = 'red'
+    } else {
+      targetElement.style.borderColor = 'orange'
+      arrow.style.borderBottomColor = 'orange'
+    }
     targetElement.style.transform = `
-      translateX(${hudPosition.x - 10}px) translateY(${hudPosition.y - 10}px)
+      translateX(${hudPosition.x - 10}px)
+      translateY(${hudPosition.y - 10}px)
     `
-    targetElement.style.borderColor = hudPosition.z > 1 ? 'red' : 'orange'
+    const arrowToBorderX = Math.min(hudPosition.x, window.innerWidth - hudPosition.x)
+    const arrowToBorderY = Math.min(hudPosition.y, window.innerHeight - hudPosition.y)
+    const arrowToBorder = Math.min(arrowToBorderX, arrowToBorderY)
+    arrow.style.opacity = 0.8 * (1 - arrowToBorder / 50)
+      // translateX(-2px)
+    arrow.style.transform = `
+      translateY(2px)
+      rotate(${90 + new Vector2(hudPosition.x, hudPosition.y).sub(screenCenter).angle() / Math.PI * 180}deg)
+    `
     targetDistance = new Vector2(window.innerWidth / 2, window.innerHeight / 2).sub(
         new Vector2(hudPosition.x, hudPosition.y)
       ).length()
@@ -88,12 +108,10 @@ const hudLoop = (timestamp) => {
 }
 
 PubSub.subscribe('x.hud.mounted', () => {
-  console.log('mounted', hudElement.mounted)
   hudHorizon = document.getElementById('horizon')
   hudFocal = document.getElementById('focal')
   PubSub.publish('x.loops.push', hudLoop)
   hudElement.mounted = true
-  console.log('mounted', hudElement.mounted)
 })
 
 const selectNearestTargetInSight = () => {
