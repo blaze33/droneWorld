@@ -24,7 +24,7 @@ class HUD extends Component {
         <div id='targets'>
           {targets.map(target => (
             <div className='target' key={target.id} id={'target-' + target.id}>
-              <div className='life' />
+              <div className='life' style={{width: target.life / 100 * 20}} />
             </div>
           ))}
         </div>
@@ -106,4 +106,4 @@ const selectNearestTargetInSight = () => {
   return distances[0][1]
 }
 
-export {selectNearestTargetInSight}
+export {selectNearestTargetInSight, hudElement}

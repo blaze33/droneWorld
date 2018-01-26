@@ -12,7 +12,7 @@ import {
   SphereBufferGeometry,
   MeshBasicMaterial
 } from 'three'
-import {selectNearestTargetInSight} from '../hud'
+import {selectNearestTargetInSight, hudElement} from '../hud'
 
 let controlsModule
 let controlsElement
@@ -114,6 +114,7 @@ const initControls = (msg, data) => {
           this.alive = false
           triggerExplosion(target)
           target.life -= 25
+          hudElement.forceUpdate()
           if (target.life <= 0) {
             if (!target.destroyed) {
               PubSub.publish('x.drones.destroy', target)
