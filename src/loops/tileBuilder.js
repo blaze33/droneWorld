@@ -115,7 +115,7 @@ const tileBuilder = (timestamp) => {
     }
     scene.children.filter(
       child => child.key && visibleKeysString.indexOf(child.key) < 0
-    ).map(
+    ).forEach(
       tile => {
         if (!tile.markedForDeletion) {
           window.setTimeout(() => deleteTile(tile), 750)

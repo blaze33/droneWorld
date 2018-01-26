@@ -66,7 +66,6 @@ export default function FlyControls (object, domElement, nipple, pointer) {
     // disable default target object behavior
 
   this.nipplemove = function (event, data) {
-    const dims = this.getContainerDimensions().size
     const mockEvent = {
       pageX: data.distance * Math.cos(data.angle.radian) * 1.5,
       pageY: -data.distance * Math.sin(data.angle.radian) * 1.5
@@ -124,6 +123,8 @@ export default function FlyControls (object, domElement, nipple, pointer) {
 
       case 81: /* Q */ this.moveState.rollLeft = 1; break
       case 69: /* E */ this.moveState.rollRight = 1; break
+
+      default: // do nothing
     }
 
     this.updateMovementVector()
@@ -151,6 +152,8 @@ export default function FlyControls (object, domElement, nipple, pointer) {
 
       case 81: /* Q */ this.moveState.rollLeft = 0; break
       case 69: /* E */ this.moveState.rollRight = 0; break
+
+      default: // do nothing
     }
 
     this.updateMovementVector()
@@ -204,7 +207,7 @@ export default function FlyControls (object, domElement, nipple, pointer) {
   }
 
   this.getContainerDimensions = function () {
-    if (this.domElement != document) {
+    if (this.domElement !== document) {
       return {
         size: [ this.domElement.offsetWidth, this.domElement.offsetHeight ],
         offset: [ this.domElement.offsetLeft, this.domElement.offsetTop ]
