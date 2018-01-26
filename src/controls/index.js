@@ -98,7 +98,6 @@ const initControls = (msg, data) => {
 
     const target = selectNearestTargetInSight()
     if (target === null || target.destroyed) return
-    console.log(target.id, target.position)
 
     const fire = bullet.clone()
     fire.position.copy(pilotDrone.position)

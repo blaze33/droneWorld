@@ -33,11 +33,6 @@ class HUD extends Component {
   }
 }
 
-const hudElement = ReactDOM.render(
-  <HUD />,
-  document.getElementById('hud')
-)
-
 const registerTarget = (msg, target) => {
   targets.push(target)
   hudElement.forceUpdate()
@@ -45,6 +40,7 @@ const registerTarget = (msg, target) => {
   let hudPosition
   let targetDistance
   const targetLoop = () => {
+    if (!hudElement.mounted) return
     hudPosition = screenXYclamped(target.position)
     targetElement.style.transform = `
       translateX(${hudPosition.x - 10}px) translateY(${hudPosition.y - 10}px)
@@ -90,10 +86,14 @@ const hudLoop = (timestamp) => {
   const rollAngleDegree = rollAngle / Math.PI * 180
   hudHorizon.style.transform = `translateX(-50%) translateY(${pitch * window.innerHeight / 2}px) rotate(${rollAngleDegree}deg)`
 }
+
 PubSub.subscribe('x.hud.mounted', () => {
+  console.log('mounted', hudElement.mounted)
   hudHorizon = document.getElementById('horizon')
   hudFocal = document.getElementById('focal')
   PubSub.publish('x.loops.push', hudLoop)
+  hudElement.mounted = true
+  console.log('mounted', hudElement.mounted)
 })
 
 const selectNearestTargetInSight = () => {
@@ -105,5 +105,10 @@ const selectNearestTargetInSight = () => {
   distances.sort((a, b) => a[0] > b[0])
   return distances[0][1]
 }
+
+const hudElement = ReactDOM.render(
+  <HUD />,
+  document.getElementById('hud')
+)
 
 export {selectNearestTargetInSight, hudElement}
