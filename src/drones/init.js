@@ -1,7 +1,6 @@
 import {Vector3} from 'three'
-import {scene, camera, loops, gui} from '../index'
+import {scene, camera, loops} from '../index'
 import PubSub from '../events'
-import hud from '../hud'
 
 let droneFactory = {
   ready: false
@@ -85,6 +84,8 @@ const spawnDrone = (circle = true, phase = 0) => {
 
 const initTargets = () => {
   spawnDrone(true)
+  spawnDrone(true, Math.PI / 8)
+  spawnDrone(true, Math.PI / 4)
   spawnDrone(true, Math.PI / 2)
   spawnDrone(true, Math.PI)
 }

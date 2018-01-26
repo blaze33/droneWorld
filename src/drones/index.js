@@ -1,4 +1,4 @@
 import loadDroneAssets from './loader'
-import initDroneFactory from './init'
+import './init'
 
 export default loadDroneAssets
