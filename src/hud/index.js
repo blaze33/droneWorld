@@ -42,7 +42,9 @@ const registerTarget = (msg, target) => {
   const screenCenter = new Vector2(window.innerWidth / 2, window.innerHeight / 2)
   let hudPosition
   let targetDistance
-  const targetLoop = () => {
+  let targetVector
+  let arrowToBorder
+  const targetLoop = (timestamp, delta) => {
     if (!hudElement.mounted) return
     hudPosition = screenXYclamped(target.position)
     if (hudPosition.z > 1) {
@@ -57,18 +59,19 @@ const registerTarget = (msg, target) => {
       translateX(${hudPosition.x - 10}px)
       translateY(${hudPosition.y - 10}px)
     `
-    const arrowToBorderX = Math.min(hudPosition.x, window.innerWidth - hudPosition.x)
-    const arrowToBorderY = Math.min(hudPosition.y, window.innerHeight - hudPosition.y)
-    const arrowToBorder = Math.min(arrowToBorderX, arrowToBorderY)
+    arrowToBorder = Math.min(
+      Math.min(hudPosition.x, window.innerWidth - hudPosition.x),
+      Math.min(hudPosition.y, window.innerHeight - hudPosition.y)
+    )
     arrow.style.opacity = 0.8 * (1 - arrowToBorder / 50)
-      // translateX(-2px)
+    targetVector = screenCenter.clone().sub(
+      new Vector2(hudPosition.x, hudPosition.y)
+    )
     arrow.style.transform = `
       translateY(2px)
-      rotate(${90 + new Vector2(hudPosition.x, hudPosition.y).sub(screenCenter).angle() / Math.PI * 180}deg)
+      rotate(${targetVector.angle() / Math.PI * 180 - 90}deg)
     `
-    targetDistance = new Vector2(window.innerWidth / 2, window.innerHeight / 2).sub(
-        new Vector2(hudPosition.x, hudPosition.y)
-      ).length()
+    targetDistance = targetVector.length()
     if (targetElement.style.borderColor === 'orange' && targetDistance < 75) {
       targetElement.style.borderColor = '#0f0'
       hudFocal.style.boxShadow = '0 0 6px #0f0'
