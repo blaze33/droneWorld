@@ -51,6 +51,14 @@ body {
   border-radius: 20px;
 }
 
+.hud .target .life {
+  position: relative;
+  top: 22px;
+  background-color: #0f0;
+  width: 20px;
+  height: 2px;
+}
+
 .hud #horizon {
   width: 300px;
   position: fixed;
