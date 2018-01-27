@@ -104,7 +104,7 @@ const hudLoop = (timestamp) => {
   const rollAngleDegree = rollAngle / Math.PI * 180
   hudHorizon.style.transform = `translateX(-50%) translateY(${pitch * window.innerHeight / 2}px) rotate(${rollAngleDegree}deg)`
   if (targetsInSight.size > 0) {
-    hudFocal.style.boxShadow = '0 0 50px #0f0'
+    hudFocal.style.boxShadow = '0 0 75px #0f0'
   } else {
     hudFocal.style.boxShadow = ''
   }
