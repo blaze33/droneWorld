@@ -34,7 +34,7 @@ export default function FlyControls (object, domElement, nipple, pointer) {
   this.pointer = pointer
   if (this.pointer) {
     const pointerElement = document.getElementById('pointer')
-    this.zone = 300
+    this.zone = 400
     this.pointer.on('attain', movements => {
       const dims = this.getContainerDimensions().size
       pointerElement.style.left = dims[0] / 2 + 'px'
