@@ -31,6 +31,9 @@ export default function FlyControls (object, domElement, nipple, pointer) {
     })
   }
 
+  this.acceleration = 60
+  this.velocity = new Vector3(0, 0, 0)
+
   this.pointer = pointer
   if (this.pointer) {
     const pointerElement = document.getElementById('pointer')
@@ -170,13 +173,25 @@ export default function FlyControls (object, domElement, nipple, pointer) {
     this.moveState.pitchDown = event.pageY / halfHeight
   }
 
+  this.deltaVelocity = null
+  this.deltaPosition = null
   this.update = (delta) => {
-    var moveMult = delta * this.movementSpeed
     var rotMult = delta * this.rollSpeed
 
-    this.object.translateX(this.moveVector.x * moveMult)
-    this.object.translateY(this.moveVector.y * moveMult)
-    this.object.translateZ(this.moveVector.z * moveMult)
+    this.deltaVelocity = this.moveVector.clone().multiplyScalar(
+      delta / 1000 * this.acceleration
+    )
+    console.log(delta)
+    this.velocity.sub(
+      this.velocity.clone().multiplyScalar(
+        Math.max(
+          1,
+          this.deltaVelocity.length() ? 1 : 100 / (this.velocity.length() + 1)
+        ) * 0.01 * delta / 16.67
+      )
+    ).add(this.deltaVelocity)
+    this.deltaPosition = this.velocity.clone().multiplyScalar(delta / 1000)
+    this.object.position.add(this.deltaPosition.applyQuaternion(this.object.quaternion))
 
     this.tmpQuaternion.set(this.rotationVector.x * rotMult, this.rotationVector.y * rotMult, this.rotationVector.z * rotMult, 1).normalize()
     this.object.quaternion.multiply(this.tmpQuaternion)
