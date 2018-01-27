@@ -67,12 +67,12 @@ const spawnDrone = (circle = true, phase = 0) => {
   scene.add(drone)
   const droneLoop = (timestamp) => {
     if (!drone) return
-    const radius = 280
+    const radius = 300
     if (circle) {
       drone.position.set(
         radius * Math.cos(timestamp / 1000 / 3 + phase),
         radius * Math.sin(timestamp / 1000 / 3 + phase),
-        275
+        300 + 50 * Math.cos(timestamp / 1000 + phase)
       )
     } else {
       drone.position.copy(camera.position.clone()
