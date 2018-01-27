@@ -181,7 +181,6 @@ export default function FlyControls (object, domElement, nipple, pointer) {
     this.deltaVelocity = this.moveVector.clone().multiplyScalar(
       delta / 1000 * this.acceleration
     )
-    console.log(delta)
     this.velocity.sub(
       this.velocity.clone().multiplyScalar(
         Math.max(
