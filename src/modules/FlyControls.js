@@ -1,8 +1,8 @@
 import {
     Quaternion,
+    Vector2,
     Vector3
 } from 'three'
-import {clamp} from '../utils'
 
 /**
  * @author James Baicoianu / http://www.baicoianu.com/
@@ -37,23 +37,23 @@ export default function FlyControls (object, domElement, nipple, pointer) {
     this.zone = 300
     this.pointer.on('attain', movements => {
       const dims = this.getContainerDimensions().size
-      pointerElement.style.top = dims[1] / 2 + 'px'
       pointerElement.style.left = dims[0] / 2 + 'px'
-            // movements is a readable stream
+      pointerElement.style.top = dims[1] / 2 + 'px'
+
+      // movements is a readable stream
+      let pointerVector = new Vector2(0, 0)
       movements.on('data', move => {
-        pointerElement.style.left = clamp(
-                    dims[0] / 2 - this.zone,
-                    parseInt(pointerElement.style.left, 10) + move.dx,
-                    dims[0] / 2 + this.zone
-                ) + 'px'
-        pointerElement.style.top = clamp(
-                    dims[1] / 2 - this.zone,
-                    parseInt(pointerElement.style.top, 10) + move.dy,
-                    dims[1] / 2 + this.zone
-                ) + 'px'
+        pointerVector.add(new Vector2(move.dx, move.dy))
+        if (pointerVector.length() > this.zone) {
+          pointerVector.normalize().multiplyScalar(this.zone)
+        }
+        pointerElement.style.transform = `
+          translateX(${pointerVector.x - 16}px)
+          translateY(${pointerVector.y - 16}px)
+        `
         this.mousemove({
-          pageX: (parseInt(pointerElement.style.left, 10) - dims[0] / 2) / 1.5,
-          pageY: (parseInt(pointerElement.style.top, 10) - dims[1] / 2) / 1.5
+          pageX: (pointerVector.x) / 1.5,
+          pageY: (pointerVector.y) / 1.5
         })
       })
 
