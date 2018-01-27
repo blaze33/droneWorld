@@ -64,6 +64,7 @@ const registerTarget = (msg, target) => {
     targetElement.style.transform = `
       translateX(${targetVector.x - 10 + screenCenter.x}px)
       translateY(${targetVector.y - 10 + screenCenter.y}px)
+      scale(${1.1 - Math.min(0.2, camera.position.clone().sub(target.position).length() / 2000)})
     `
     arrow.style.transform = `
       translateY(2px)
