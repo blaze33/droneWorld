@@ -49,6 +49,7 @@ const registerTarget = (msg, target) => {
     if (!hudElement.mounted) return
     hudPosition = screenXYclamped(target.position)
     if (hudPosition.z > 1) {
+      hudPosition.x = window.innerWidth - hudPosition.x
       hudPosition.y = window.innerHeight - 10
       targetElement.style.borderColor = 'red'
       arrow.style.borderBottomColor = 'red'
