@@ -112,4 +112,19 @@ body {
   border-radius: 150px;
   border: 2px solid #0f0;
   opacity: 0.8;
+  pointer-events: none;
+}
+
+#limiter {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  height: 800px;
+  width: 800px;
+  border-radius: 800px;
+  border: 1px solid #0f0;
+  border-style: dashed;
+  opacity: 0.8;
+  pointer-events: none;
 }

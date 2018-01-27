@@ -18,6 +18,7 @@ class HUD extends Component {
   render () {
     return (
       <div>
+        <div id='limiter' />
         <div id='pointer' />
         <div id='focal' />
         <div id='horizon' />
