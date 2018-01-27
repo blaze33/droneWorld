@@ -44,7 +44,6 @@ const registerTarget = (msg, target) => {
   let hudPosition
   let targetDistance
   let targetVector
-  let arrowToBorder
   this.zone = 400
   const targetLoop = (timestamp, delta) => {
     if (!hudElement.mounted) return
@@ -57,15 +56,11 @@ const registerTarget = (msg, target) => {
       targetElement.style.borderColor = 'orange'
       arrow.style.borderBottomColor = 'orange'
     }
-    arrowToBorder = Math.min(
-      Math.min(hudPosition.x, window.innerWidth - hudPosition.x),
-      Math.min(hudPosition.y, window.innerHeight - hudPosition.y)
-    )
-    arrow.style.opacity = 0.8 * (1 - arrowToBorder / 50)
     targetVector = new Vector2(hudPosition.x, hudPosition.y).sub(screenCenter)
     if (targetVector.length() > this.zone) {
       targetVector.normalize().multiplyScalar(this.zone)
     }
+    arrow.style.opacity = 0.8 * (1 - (this.zone - targetVector.length()) / 50)
     targetElement.style.transform = `
       translateX(${targetVector.x - 10 + screenCenter.x}px)
       translateY(${targetVector.y - 10 + screenCenter.y}px)
