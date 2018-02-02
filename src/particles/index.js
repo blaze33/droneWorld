@@ -396,6 +396,8 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
     if (follow) { loop.alive = false }
     group.releaseIntoPool(emitter)
   }, (emitter.duration + emitter.maxAge.value + emitter.maxAge.spread) * 1000)
+
+  return emitter
 }
 
 const triggerExplosion = (target) => {
@@ -410,8 +412,18 @@ const triggerSmallExplosion = (target) => {
   triggerSingleEmitter(sparkGroup, target)
 }
 
-const triggerHappy = (target, vectorFunction) => {
-  triggerSingleEmitter(bulletGroup, target, true, vectorFunction, true)
-}
+PubSub.subscribe('x.drones.gun.start', (msg, drone) => {
+  const velocityFunction = () => {
+    let targetVector = camera.getWorldDirection().multiplyScalar(500)
+    const localY = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
+    targetVector = targetVector.add(localY.multiplyScalar(24))
+    return targetVector
+  }
+  drone.gunEmitter = triggerSingleEmitter(bulletGroup, drone, true, velocityFunction, true)
+})
 
-export {groups as particleGroups, triggerExplosion, triggerHappy}
+PubSub.subscribe('x.drones.gun.stop', (msg, drone) => {
+  drone.gunEmitter.disable()
+})
+
+export {groups as particleGroups, triggerExplosion}

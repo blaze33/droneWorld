@@ -4,14 +4,13 @@ import lock from 'pointer-lock'
 import {mobileAndTabletcheck} from '../utils/isMobile'
 import FlyControls from '../modules/FlyControls'
 import {OrbitControls} from '../modules/OrbitControls'
-import {triggerExplosion, triggerHappy} from '../particles'
+import {triggerExplosion} from '../particles'
 import PubSub from '../events'
 import {scene, camera, renderer} from '../index'
 import {
   Mesh,
   SphereBufferGeometry,
-  MeshBasicMaterial,
-  Vector3
+  MeshPhongMaterial
 } from 'three'
 import {selectNearestTargetInSight, hudElement} from '../hud'
 
@@ -92,21 +91,13 @@ const initControls = (msg, data) => {
 
   const bullet = new Mesh(
     new SphereBufferGeometry(1, 5, 5),
-    new MeshBasicMaterial({color: 0x111111})
+    new MeshPhongMaterial({color: 0x111111})
   )
   const fireBullet = e => {
     if (!pilotDrone) return
 
     if (e.button === 0) { // left click
-      triggerHappy(
-        pilotDrone,
-        () => {
-          let targetVector = camera.getWorldDirection().multiplyScalar(500)
-          const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
-          targetVector = targetVector.add(localY.multiplyScalar(24))
-          return targetVector
-        }
-      )
+      PubSub.publish('x.drones.gun.start', pilotDrone)
     } else if (e.button === 2) { // right click
       const target = selectNearestTargetInSight()
       if (target === null || target.destroyed) return
@@ -137,6 +128,9 @@ const initControls = (msg, data) => {
     }
   }
   renderer.domElement.addEventListener('mousedown', fireBullet, false)
+  renderer.domElement.addEventListener('mouseup', (e) => {
+    if (e.button === 0) PubSub.publish('x.drones.gun.stop', pilotDrone)
+  }, false)
 }
 PubSub.subscribe('x.drones.pilotDrone.loaded', initControls)
 
