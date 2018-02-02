@@ -72,7 +72,8 @@ const registerTarget = (msg, target) => {
   let hudPosition
   let targetDistance2D
   let targetDistance3D
-  let targetVector
+  let targetVector2D
+  let targetVector3D
   let targetDirection
   this.zone = 400
   this.gunRange = 500
@@ -89,25 +90,26 @@ const registerTarget = (msg, target) => {
       arrow.style.borderBottomColor = 'orange'
     }
     target.hudPosition = hudPosition
-    targetVector = new Vector2(hudPosition.x, hudPosition.y).sub(screenCenter)
-    if (targetVector.length() > this.zone) {
-      targetVector.normalize().multiplyScalar(this.zone)
+    targetVector2D = new Vector2(hudPosition.x, hudPosition.y).sub(screenCenter)
+    if (targetVector2D.length() > this.zone) {
+      targetVector2D.normalize().multiplyScalar(this.zone)
     }
-    arrow.style.opacity = 0.8 * (1 - (this.zone - targetVector.length()) / 50)
-    targetDistance3D = camera.position.clone().sub(target.position).length()
+    arrow.style.opacity = 0.8 * (1 - (this.zone - targetVector2D.length()) / 50)
+    targetVector3D = camera.position.clone().sub(target.position)
+    targetDistance3D = targetVector3D.length()
     distance.innerHTML = targetDistance3D.toFixed(0)
     distance.style.color = targetDistance3D < this.gunRange ? '#0f0' : 'orange'
     name.innerHTML = 'drone-' + target.id
     targetElement.style.transform = `
-      translateX(${targetVector.x + screenCenter.x}px)
-      translateY(${targetVector.y + screenCenter.y}px)
+      translateX(${targetVector2D.x + screenCenter.x}px)
+      translateY(${targetVector2D.y + screenCenter.y}px)
       scale(${1.1 - Math.min(0.2, targetDistance3D / 2000)})
     `
     arrow.style.transform = `
       translateY(2px)
-      rotate(${targetVector.angle() / Math.PI * 180 + 90}deg)
+      rotate(${targetVector2D.angle() / Math.PI * 180 + 90}deg)
     `
-    targetDistance2D = targetVector.length()
+    targetDistance2D = targetVector2D.length()
     if (!target.destroyed && targetElement.style.borderColor === 'orange' && targetDistance2D < 75) {
       targetElement.style.borderColor = '#0f0'
       targetsInSight.add(target)
@@ -122,13 +124,15 @@ const registerTarget = (msg, target) => {
     if (targetDistance2D < this.zone * 0.8) {
       targetDirection = screenXYclamped(
         target.position.clone().add(target.velocity.clone().multiplyScalar(
-          Math.min(1, targetDistance3D / this.gunRange)
+          Math.min(1,
+            (targetDistance3D + targetVector3D.clone().add(target.velocity).length()) / 2 / this.gunRange
+          )
         ))
       )
       target.gunHud = true
       target.direction = {
-        x: targetDirection.x - (targetVector.x + screenCenter.x),
-        y: targetDirection.y - (targetVector.y + screenCenter.y)
+        x: targetDirection.x - (targetVector2D.x + screenCenter.x),
+        y: targetDirection.y - (targetVector2D.y + screenCenter.y)
       }
     } else {
       target.gunHud = false
