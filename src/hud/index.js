@@ -75,6 +75,7 @@ const registerTarget = (msg, target) => {
   let targetVector
   let targetDirection
   this.zone = 400
+  this.gunRange = 500
   const targetLoop = (timestamp, delta) => {
     if (!hudElement.mounted) return
     hudPosition = screenXYclamped(target.position)
@@ -95,7 +96,7 @@ const registerTarget = (msg, target) => {
     arrow.style.opacity = 0.8 * (1 - (this.zone - targetVector.length()) / 50)
     targetDistance3D = camera.position.clone().sub(target.position).length()
     distance.innerHTML = targetDistance3D.toFixed(0)
-    distance.style.color = targetDistance3D < 300 ? '#0f0' : 'orange'
+    distance.style.color = targetDistance3D < this.gunRange ? '#0f0' : 'orange'
     name.innerHTML = 'drone-' + target.id
     targetElement.style.transform = `
       translateX(${targetVector.x + screenCenter.x}px)
@@ -121,7 +122,7 @@ const registerTarget = (msg, target) => {
     if (targetDistance2D < this.zone * 0.8) {
       targetDirection = screenXYclamped(
         target.position.clone().add(target.velocity.clone().multiplyScalar(
-          Math.min(1, targetDistance3D / 300)
+          Math.min(1, targetDistance3D / this.gunRange)
         ))
       )
       target.gunHud = true

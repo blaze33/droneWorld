@@ -207,7 +207,7 @@ const bulletOptions = {
   activeMultiplier: 1,
   velocity: {
     value: new THREE.Vector3(100),
-    spread: new THREE.Vector3(5, 5, 5)
+    spread: new THREE.Vector3(10, 10, 10)
   },
   acceleration: {
     value: 0

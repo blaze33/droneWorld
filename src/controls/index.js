@@ -101,7 +101,7 @@ const initControls = (msg, data) => {
       triggerHappy(
         pilotDrone,
         () => {
-          let targetVector = camera.getWorldDirection().multiplyScalar(300)
+          let targetVector = camera.getWorldDirection().multiplyScalar(500)
           const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
           targetVector = targetVector.add(localY.multiplyScalar(16))
           return targetVector
