@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import PubSub from '../events'
 // import {scene} from '../index'
 import {targetsInFront} from '../hud'
+import {camera} from '../index'
 
 // GROUPS
 const textureLoader = new THREE.TextureLoader()
@@ -297,7 +298,7 @@ groups.forEach(group => { group.mesh.frustumCulled = false })
 
 window.smokeGroup = smokeGroup
 
-const triggerSingleEmitter = (group, target, follow = false, velocityFunction) => {
+const triggerSingleEmitter = (group, target, follow = false, velocityFunction, offset = false) => {
   const emitter = group.getFromPool()
 
   if (emitter === null) {
@@ -305,7 +306,13 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction) =
     return
   }
 
-  emitter.position.value = target.position.clone()
+  if (offset) {
+    emitter.position.value = target.position.clone().add(
+      camera.getWorldDirection().multiplyScalar(5)
+    )
+  } else {
+    emitter.position.value = target.position.clone()
+  }
   if (velocityFunction) {
     emitter.velocity.value = velocityFunction()
   }
@@ -326,7 +333,13 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction) =
 
   const loop = {
     loop: () => {
-      emitter.position.value = target.position.clone()
+      if (offset) {
+        emitter.position.value = target.position.clone().add(
+          camera.getWorldDirection().multiplyScalar(5)
+        )
+      } else {
+        emitter.position.value = target.position.clone()
+      }
       if (velocityFunction) {
         emitter.velocity.value = velocityFunction()
         initialPositions = emitter.attributes.position.typedArray.array.slice(
@@ -398,7 +411,7 @@ const triggerSmallExplosion = (target) => {
 }
 
 const triggerHappy = (target, vectorFunction) => {
-  triggerSingleEmitter(bulletGroup, target, true, vectorFunction)
+  triggerSingleEmitter(bulletGroup, target, true, vectorFunction, true)
 }
 
 export {groups as particleGroups, triggerExplosion, triggerHappy}
