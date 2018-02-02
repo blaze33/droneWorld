@@ -7,7 +7,7 @@ const crackFix = (geometry) => {
 
   const zOffset = Math.sqrt(geometry.parameters.width * geometry.parameters.height) * 0.1 * 255 / Math.sqrt(w * h)
 
-  console.time('crackFix')
+  // console.time('crackFix')
   for (let i = 1; i < w - 1; i++) {
     geometry.attributes.position.setZ(
       i,
@@ -73,7 +73,7 @@ const crackFix = (geometry) => {
   }
 
   geometry.scale((w - 1) / (w - 3), (h - 1) / (h - 3), 1)
-  console.timeEnd('crackFix')
+  // console.timeEnd('crackFix')
 }
 
 export {crackFix}

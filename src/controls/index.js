@@ -4,13 +4,14 @@ import lock from 'pointer-lock'
 import {mobileAndTabletcheck} from '../utils/isMobile'
 import FlyControls from '../modules/FlyControls'
 import {OrbitControls} from '../modules/OrbitControls'
-import {triggerExplosion} from '../particles'
+import {triggerExplosion, triggerHappy} from '../particles'
 import PubSub from '../events'
 import {scene, camera, renderer} from '../index'
 import {
   Mesh,
   SphereBufferGeometry,
-  MeshBasicMaterial
+  MeshBasicMaterial,
+  Vector3
 } from 'three'
 import {selectNearestTargetInSight, hudElement} from '../hud'
 
@@ -61,21 +62,21 @@ const initControls = (msg, data) => {
 
   const pilotDrone = data.pilotDrone
 
-  keyboardJS.bind('p', e => {
-    if (isMobile) { return }
-    const NewControlsClass = controlsModule.constructor.name === 'OrbitControls' ? FlyControls : OrbitControls
-    console.log('controlsClass', NewControlsClass)
-    controlsModule.dispose()
-    const newModule = new NewControlsClass(camera, controlsElement)
-    window.controls = newModule
-    controlsModule = newModule
-    controlsModule.update(0)
+  // keyboardJS.bind('p', e => {
+  //   if (isMobile) { return }
+  //   const NewControlsClass = controlsModule.constructor.name === 'OrbitControls' ? FlyControls : OrbitControls
+  //   console.log('controlsClass', NewControlsClass)
+  //   controlsModule.dispose()
+  //   const newModule = new NewControlsClass(camera, controlsElement)
+  //   window.controls = newModule
+  //   controlsModule = newModule
+  //   controlsModule.update(0)
 
-    if (NewControlsClass === OrbitControls) {
-      let cam = pilotDrone.position.clone()
-      newModule.target.set(cam.x, cam.y, cam.z)
-    }
-  })
+  //   if (NewControlsClass === OrbitControls) {
+  //     let cam = pilotDrone.position.clone()
+  //     newModule.target.set(cam.x, cam.y, cam.z)
+  //   }
+  // })
 
   keyboardJS.bind('c', e => {
     console.log(camera.position)
@@ -96,38 +97,44 @@ const initControls = (msg, data) => {
   const fireBullet = e => {
     if (!pilotDrone) return
 
-    const target = selectNearestTargetInSight()
-    if (target === null || target.destroyed) return
-
-    const fire = bullet.clone()
-    fire.position.copy(pilotDrone.position)
-    scene.add(fire)
-
-    const BulletContructor = function () {
-      this.alive = true
-      this.object = fire
-      this.loop = (timestamp, delta) => {
-        if (!this.alive) return
-        const vec = target.position.clone().sub(fire.position)
-        if (vec.length() < 10) {
-          this.alive = false
-          triggerExplosion(target)
-          target.life -= 25
-          hudElement.forceUpdate()
-          if (target.life <= 0) {
-            if (!target.destroyed) {
-              PubSub.publish('x.drones.destroy', target)
-              target.destroyed = true
-            }
-          }
+    if (e.button === 0) { // left click
+      triggerHappy(
+        pilotDrone,
+        () => {
+          let targetVector = camera.getWorldDirection().multiplyScalar(300)
+          const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
+          targetVector = targetVector.add(localY.multiplyScalar(16))
+          return targetVector
         }
-        const newDir = vec.normalize().multiplyScalar(10 * delta / 16.66)
-        fire.position.add(newDir)
-      }
-    }
+      )
+    } else if (e.button === 2) { // right click
+      const target = selectNearestTargetInSight()
+      if (target === null || target.destroyed) return
 
-    const callback = new BulletContructor()
-    PubSub.publish('x.loops.push', callback)
+      const fire = bullet.clone()
+      fire.position.copy(pilotDrone.position)
+      scene.add(fire)
+
+      const BulletContructor = function () {
+        this.alive = true
+        this.object = fire
+        this.loop = (timestamp, delta) => {
+          if (!this.alive) return
+          const vec = target.position.clone().sub(fire.position)
+          if (vec.length() < 10) {
+            this.alive = false
+            triggerExplosion(target)
+            target.life -= 25
+            hudElement.forceUpdate()
+          }
+          const newDir = vec.normalize().multiplyScalar(10 * delta / 16.66)
+          fire.position.add(newDir)
+        }
+      }
+
+      const callback = new BulletContructor()
+      PubSub.publish('x.loops.push', callback)
+    }
   }
   renderer.domElement.addEventListener('mousedown', fireBullet, false)
 }

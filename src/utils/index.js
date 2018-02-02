@@ -1,10 +1,10 @@
 import {camera} from '../index'
 
 function screenXY (vec3) {
-  var vector = vec3.clone()
+  const vector = vec3.clone()
 
-  var widthHalf = (window.innerWidth / 2)
-  var heightHalf = (window.innerHeight / 2)
+  const widthHalf = (window.innerWidth / 2)
+  const heightHalf = (window.innerHeight / 2)
 
   vector.project(camera)
 

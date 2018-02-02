@@ -1,6 +1,8 @@
 import SPE from 'shader-particle-engine/build/SPE'
 import * as THREE from 'three'
 import PubSub from '../events'
+// import {scene} from '../index'
+import {targets} from '../hud'
 
 // GROUPS
 const textureLoader = new THREE.TextureLoader()
@@ -21,6 +23,24 @@ const fireGroupOptions = {
 const pointsGroupOptions = {
   texture: {
     value: textureLoader.load(require('../textures/smokeparticle.png'))
+  },
+  depthTest: true,
+  depthWrite: false,
+  blending: THREE.NormalBlending,
+  maxParticleCount: 100000
+}
+const debrisGroupOptions = {
+  texture: {
+    value: textureLoader.load(require('../textures/spark.png'))
+  },
+  depthTest: true,
+  depthWrite: false,
+  blending: THREE.NormalBlending,
+  maxParticleCount: 100000
+}
+const bulletGroupOptions = {
+  texture: {
+    value: textureLoader.load(require('../textures/bullet.png'))
   },
   depthTest: true,
   depthWrite: false,
@@ -71,15 +91,21 @@ const debrisOptions = {
   },
   duration: 1,
   activeMultiplier: 40,
-
   velocity: {
     value: new THREE.Vector3(100)
   },
   acceleration: {
-    value: new THREE.Vector3(0, -20, 0),
+    value: new THREE.Vector3(0, 0, -20),
     distribution: SPE.distributions.BOX
   },
-  size: { value: 2 },
+  wiggle: 3,
+  size: {
+    value: 2,
+    spread: 5
+  },
+  angle: {
+    spread: Math.PI * 2
+  },
   drag: {
     value: 1
   },
@@ -91,7 +117,7 @@ const debrisOptions = {
       new THREE.Color(0.4, 0.2, 0.1)
     ]
   },
-  opacity: { value: [0.8, 0] }
+  opacity: { value: [1, 1, 0] }
 }
 const fireOptions = {
   particleCount: 20,
@@ -161,20 +187,83 @@ const smokeOptions = {
     value: new THREE.Vector3(4, 2, 5),
     distribution: SPE.distributions.SPHERE
   },
-  size: { value: [20, 40] },
+  size: { value: [20, 60] },
   color: {
     value: new THREE.Color(0.9, 0.9, 0.9)
   },
   opacity: { value: [0.4, 0.4, 0.4, 0] }
 }
 
+const bulletOptions = {
+  particleCount: 35,
+  type: SPE.distributions.BOX,
+  position: {
+    radius: 0.1
+  },
+  maxAge: {
+    value: 1
+  },
+  duration: 1,
+  activeMultiplier: 1,
+  velocity: {
+    value: new THREE.Vector3(100)
+  },
+  acceleration: {
+    value: 0
+  },
+  wiggle: 30,
+  size: {
+    value: 1
+  },
+  color: {
+    value: [
+      new THREE.Color(1, 1, 1),
+      new THREE.Color(1, 1, 0)
+    ]
+  },
+  opacity: { value: 1 }
+}
+
+const sparkOptions = {
+  particleCount: 10,
+  type: SPE.distributions.SPHERE,
+  position: {
+    radius: 0.1
+  },
+  maxAge: {
+    value: 0.3
+  },
+  duration: 0.3,
+  activeMultiplier: 1000,
+  velocity: {
+    value: new THREE.Vector3(100)
+  },
+  acceleration: {
+    value: 0
+  },
+  wiggle: 30,
+  size: {
+    value: [1.5, 0.5, 0.2]
+  },
+  color: {
+    value: [
+      new THREE.Color(1, 1, 1),
+      new THREE.Color(1, 1, 0)
+    ]
+  },
+  opacity: { value: 1 }
+}
+
 const flashGroup = new SPE.Group(fireGroupOptions)
 const fireGroup = new SPE.Group(fireGroupOptions)
 
-const debrisGroup = new SPE.Group(pointsGroupOptions)
+const debrisGroup = new SPE.Group(debrisGroupOptions)
 const shockGroup = new SPE.Group(pointsGroupOptions)
 const mistGroup = new SPE.Group(pointsGroupOptions)
 const smokeGroup = new SPE.Group(pointsGroupOptions)
+
+const bulletGroup = new SPE.Group(bulletGroupOptions)
+const sparkGroup = new SPE.Group(debrisGroupOptions)
 
 const poolSize = 100
 const createNew = false
@@ -187,13 +276,18 @@ shockGroup.addPool(poolSize, shockwaveOptions, createNew)
 mistGroup.addPool(poolSize, mistOptions, createNew)
 smokeGroup.addPool(poolSize, smokeOptions, createNew)
 
+bulletGroup.addPool(poolSize, bulletOptions, createNew)
+sparkGroup.addPool(poolSize, sparkOptions, createNew)
+
 const groups = [
   flashGroup,
   fireGroup,
   debrisGroup,
   shockGroup,
   mistGroup,
-  smokeGroup
+  smokeGroup,
+  bulletGroup,
+  sparkGroup
 ]
 // avoid artifacts with the ocean
 groups.forEach(group => { group.mesh.renderOrder = 2 })
@@ -203,7 +297,7 @@ groups.forEach(group => { group.mesh.frustumCulled = false })
 
 window.smokeGroup = smokeGroup
 
-const triggerSingleEmitter = (group, target, follow = false) => {
+const triggerSingleEmitter = (group, target, follow = false, velocityFunction) => {
   const emitter = group.getFromPool()
 
   if (emitter === null) {
@@ -212,9 +306,62 @@ const triggerSingleEmitter = (group, target, follow = false) => {
   }
 
   emitter.position.value = target.position.clone()
+  if (velocityFunction) {
+    emitter.velocity.value = velocityFunction()
+  }
+
+  let initialPositions
+  // paramsArray vec4( alive, age, maxAge, wiggle )
+  let params
+  let velocities
+  let positions
+  let collisions
+  const chunkReducer = (chunkSize) =>
+    (ar, it, i) => {
+      const ix = Math.floor(i / chunkSize)
+      if (!ar[ix]) ar[ix] = []
+      ar[ix].push(it)
+      return ar
+    }
 
   const loop = {
-    loop: () => { emitter.position.value = target.position.clone() },
+    loop: () => {
+      emitter.position.value = target.position.clone()
+      if (velocityFunction) {
+        emitter.velocity.value = velocityFunction()
+        initialPositions = emitter.attributes.position.typedArray.array.slice(
+          emitter.attributeOffset * 3,
+          (emitter.activationEnd) * 3
+        ).reduce(chunkReducer(3), [])
+        velocities = emitter.attributes.velocity.typedArray.array.slice(
+          emitter.attributeOffset * 3,
+          (emitter.activationEnd) * 3
+        ).reduce(chunkReducer(3), [])
+        params = emitter.paramsArray.slice(
+          emitter.attributeOffset * 4,
+          (emitter.activationEnd) * 4
+        ).reduce(chunkReducer(4), [])
+        positions = params.map((param, i) => {
+          return param[0]
+            ? new THREE.Vector3(...initialPositions[i]).add(
+                new THREE.Vector3(...velocities[i]).multiplyScalar(param[1])
+              )
+            : null
+        }).filter(position => position != null)
+        collisions = positions.map(pos => {
+          return targets.map(target =>
+            [target, pos, target.position.clone().sub(pos).length()]
+          ).filter(ar => ar[2] < 7)
+        }).reduce((ar, it) => ar.concat(it), [])
+        if (collisions.length) {
+          console.log(collisions.length)
+          collisions.forEach(ar => {
+            triggerSmallExplosion({position: ar[1]})
+            ar[0].life -= 5
+          })
+        }
+      }
+    },
     alive: true,
     id: target.id
   }
@@ -223,6 +370,7 @@ const triggerSingleEmitter = (group, target, follow = false) => {
     PubSub.subscribe('x.drones.destroy', (msg, drone) => {
       if (drone.id !== target.id) return
       loop.alive = false
+      emitter.disable()
     })
   }
 
@@ -232,7 +380,7 @@ const triggerSingleEmitter = (group, target, follow = false) => {
     emitter.disable()
     if (follow) { loop.alive = false }
     group.releaseIntoPool(emitter)
-  }, (Math.max(emitter.duration, (emitter.maxAge.value + emitter.maxAge.spread))) * 1000)
+  }, (emitter.duration + emitter.maxAge.value + emitter.maxAge.spread) * 1000)
 }
 
 const triggerExplosion = (target) => {
@@ -243,4 +391,12 @@ const triggerExplosion = (target) => {
   triggerSingleEmitter(mistGroup, target)
 }
 
-export {groups as particleGroups, triggerExplosion}
+const triggerSmallExplosion = (target) => {
+  triggerSingleEmitter(sparkGroup, target)
+}
+
+const triggerHappy = (target, vectorFunction) => {
+  triggerSingleEmitter(bulletGroup, target, true, vectorFunction)
+}
+
+export {groups as particleGroups, triggerExplosion, triggerHappy}

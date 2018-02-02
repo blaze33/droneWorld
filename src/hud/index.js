@@ -9,6 +9,7 @@ let hudHorizon
 let hudFocal
 let targets = []
 const targetsInSight = new Set()
+const screenCenter = new Vector2(window.innerWidth / 2, window.innerHeight / 2)
 
 class HUD extends Component {
   componentDidMount () {
@@ -22,11 +23,36 @@ class HUD extends Component {
         <div id='pointer' />
         <div id='focal' />
         <div id='horizon' />
+        <svg className='vector'>
+          <path d={`M ${screenCenter.x} ${screenCenter.y}
+                    v 20 v -40
+                    h -15 h 30 h -15 v 20
+                    h -10 h 20 h -10 v 20
+                    h -15 h 30 h -15
+                    `}
+            strokeWidth='1'
+            stroke='#0f0'
+            fill='transparent' />
+          {targets.map(target => (
+            target.gunHud
+            ? (<path
+              key={target.id}
+              d={`M ${target.hudPosition.x} ${target.hudPosition.y}
+                  l ${target.direction.x} ${target.direction.y}
+                  l 5 5 l -10 -10 l 5 5 l -5 5 l 10 -10`}
+              strokeWidth='1'
+              stroke='orange'
+              fill='transparent' />)
+            : null
+          ))}
+        </svg>
         <div id='targets'>
           {targets.map(target => (
             <div className='target' key={target.id} id={'target-' + target.id}>
               <div className='life' style={{width: target.life / 100 * 20}} />
               <div className='arrow' />
+              <div className='distance' />
+              <div className='name' />
             </div>
           ))}
         </div>
@@ -40,10 +66,13 @@ const registerTarget = (msg, target) => {
   hudElement.forceUpdate()
   const targetElement = document.getElementById('target-' + target.id)
   const arrow = targetElement.querySelector('.arrow')
-  const screenCenter = new Vector2(window.innerWidth / 2, window.innerHeight / 2)
+  const distance = targetElement.querySelector('.distance')
+  const name = targetElement.querySelector('.name')
   let hudPosition
-  let targetDistance
+  let targetDistance2D
+  let targetDistance3D
   let targetVector
+  let targetDirection
   this.zone = 400
   const targetLoop = (timestamp, delta) => {
     if (!hudElement.mounted) return
@@ -57,27 +86,45 @@ const registerTarget = (msg, target) => {
       targetElement.style.borderColor = 'orange'
       arrow.style.borderBottomColor = 'orange'
     }
+    target.hudPosition = hudPosition
     targetVector = new Vector2(hudPosition.x, hudPosition.y).sub(screenCenter)
     if (targetVector.length() > this.zone) {
       targetVector.normalize().multiplyScalar(this.zone)
     }
     arrow.style.opacity = 0.8 * (1 - (this.zone - targetVector.length()) / 50)
+    targetDistance3D = camera.position.clone().sub(target.position).length()
+    distance.innerHTML = targetDistance3D.toFixed(0)
+    distance.style.color = targetDistance3D < 300 ? '#0f0' : 'orange'
+    name.innerHTML = 'drone-' + target.id
     targetElement.style.transform = `
-      translateX(${targetVector.x - 10 + screenCenter.x}px)
-      translateY(${targetVector.y - 10 + screenCenter.y}px)
-      scale(${1.1 - Math.min(0.2, camera.position.clone().sub(target.position).length() / 2000)})
+      translateX(${targetVector.x + screenCenter.x}px)
+      translateY(${targetVector.y + screenCenter.y}px)
+      scale(${1.1 - Math.min(0.2, targetDistance3D / 2000)})
     `
     arrow.style.transform = `
       translateY(2px)
       rotate(${targetVector.angle() / Math.PI * 180 + 90}deg)
     `
-    targetDistance = targetVector.length()
-    if (!target.destroyed && targetElement.style.borderColor === 'orange' && targetDistance < 75) {
+    targetDistance2D = targetVector.length()
+    if (!target.destroyed && targetElement.style.borderColor === 'orange' && targetDistance2D < 75) {
       targetElement.style.borderColor = '#0f0'
       targetsInSight.add(target)
     } else {
       targetsInSight.delete(target)
     }
+    if (targetDistance2D < this.zone * 0.8) {
+      targetDirection = screenXYclamped(
+        target.position.clone().add(target.velocity.clone().multiplyScalar(targetDistance3D / 300))
+      )
+      target.gunHud = true
+      target.direction = {
+        x: targetDirection.x - (targetVector.x + screenCenter.x),
+        y: targetDirection.y - (targetVector.y + screenCenter.y)
+      }
+    } else {
+      target.gunHud = false
+    }
+    hudElement.forceUpdate()
   }
   targetLoop.id = target.id
   const destroyTarget = (msg, targetToDestroy) => {
@@ -132,4 +179,4 @@ const hudElement = ReactDOM.render(
   document.getElementById('hud')
 )
 
-export {selectNearestTargetInSight, hudElement}
+export {selectNearestTargetInSight, hudElement, targets}

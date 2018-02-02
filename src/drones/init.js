@@ -1,6 +1,7 @@
 import {Vector3} from 'three'
 import {scene, camera, loops} from '../index'
 import PubSub from '../events'
+import {triggerExplosion} from '../particles'
 
 let droneFactory = {
   ready: false
@@ -65,7 +66,8 @@ const spawnDrone = (circle = true, phase = 0) => {
   const drone = droneFactory()
   drone.life = 100
   scene.add(drone)
-  const droneLoop = (timestamp) => {
+  drone.lastPosition = drone.position.clone()
+  const droneLoop = (timestamp, delta) => {
     if (!drone) return
     const radius = 300
     if (circle) {
@@ -77,6 +79,15 @@ const spawnDrone = (circle = true, phase = 0) => {
     } else {
       drone.position.copy(camera.position.clone()
         .add(camera.getWorldDirection().multiplyScalar(100)))
+    }
+    drone.velocity = drone.position.clone().sub(drone.lastPosition).multiplyScalar(1000 / delta)
+    drone.lastPosition = drone.position.clone()
+    if (drone.life <= 0) {
+      if (!drone.destroyed) {
+        PubSub.publish('x.drones.destroy', drone)
+        drone.destroyed = true
+        triggerExplosion(drone)
+      }
     }
   }
   PubSub.publish('x.hud.register.target', drone)

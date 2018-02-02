@@ -43,13 +43,49 @@ body {
 
 .hud .target {
   position: fixed;
-  left: 0;
-  top: 0;
+  left: -12px;
+  top: -12px;
   width: 20px;
   height: 20px;
   border: 2px solid #0f0;
   border-radius: 20px;
   color: #0f0;
+}
+
+.hud .target .name {
+  position: absolute;
+  top: -1.1em;
+  left: 50%;
+  width: 250px;
+  color: #0f0;
+  font-size: 1em;
+  font-family: monospace;
+  font-weight: bold;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.hud .target .distance {
+  position: absolute;
+  top: 1.9em;
+  left: 50%;
+  width: 50px;
+  color: #0f0;
+  font-size: 1em;
+  font-family: monospace;
+  font-weight: bold;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.hud .vector {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
 }
 
 .hud .target .arrow {
