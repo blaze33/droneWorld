@@ -27,7 +27,7 @@ class HUD extends Component {
           <path d={`M ${screenCenter.x} ${screenCenter.y}
                     v 20 v -40
                     h -15 h 30 h -15 v 20
-                    h -10 h 20 h -10 v 20
+                    h -5 h 10 h -5 v 20
                     h -15 h 30 h -15
                     `}
             strokeWidth='1'
