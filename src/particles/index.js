@@ -354,7 +354,6 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction) =
           ).filter(ar => ar[2] < 7)
         }).reduce((ar, it) => ar.concat(it), [])
         if (collisions.length) {
-          console.log(collisions.length)
           collisions.forEach(ar => {
             triggerSmallExplosion({position: ar[1]})
             ar[0].life -= 5
