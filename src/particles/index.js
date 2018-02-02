@@ -364,7 +364,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
         collisions = []
         positions.forEach(pos => {
           targetsInFront.forEach(target => {
-            if (target.position.clone().sub(pos).length() < 7) {
+            if (target.position.clone().sub(pos).length() < 10) {
               collisions.push([target, pos])
             }
           })
