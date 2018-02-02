@@ -133,7 +133,6 @@ const registerTarget = (msg, target) => {
     } else {
       target.gunHud = false
     }
-    hudElement.forceUpdate()
   }
   targetLoop.id = target.id
   const destroyTarget = (msg, targetToDestroy) => {
@@ -164,6 +163,7 @@ const hudLoop = (timestamp) => {
   } else {
     hudFocal.style.boxShadow = ''
   }
+  hudElement.forceUpdate()
 }
 
 PubSub.subscribe('x.hud.mounted', () => {
