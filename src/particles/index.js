@@ -204,11 +204,11 @@ const bulletOptions = {
   maxAge: {
     value: 1
   },
-  duration: 1,
+  duration: null,
   activeMultiplier: 1,
   velocity: {
     value: new THREE.Vector3(100),
-    spread: new THREE.Vector3(10, 10, 10)
+    spread: new THREE.Vector3(20, 20, 20)
   },
   acceleration: {
     value: 0
@@ -371,6 +371,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
         })
         if (collisions.length) {
           collisions.forEach(ar => {
+            PubSub.publish('x.sound.impact', ar[0])
             triggerSmallExplosion({position: ar[1]})
             ar[0].life -= 5
           })
@@ -391,11 +392,13 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
 
   emitter.enable()
 
-  setTimeout(() => {
-    emitter.disable()
-    if (follow) { loop.alive = false }
-    group.releaseIntoPool(emitter)
-  }, (emitter.duration + emitter.maxAge.value + emitter.maxAge.spread) * 1000)
+  if (emitter.duration) {
+    setTimeout(() => {
+      emitter.disable()
+      if (follow) { loop.alive = false }
+      group.releaseIntoPool(emitter)
+    }, (emitter.duration + emitter.maxAge.value + emitter.maxAge.spread) * 1000)
+  }
 
   return emitter
 }
