@@ -2,7 +2,7 @@ import SPE from 'shader-particle-engine/build/SPE'
 import * as THREE from 'three'
 import PubSub from '../events'
 // import {scene} from '../index'
-import {targets} from '../hud'
+import {targetsInFront} from '../hud'
 
 // GROUPS
 const textureLoader = new THREE.TextureLoader()
@@ -348,11 +348,14 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction) =
               )
             : null
         }).filter(position => position != null)
-        collisions = positions.map(pos => {
-          return targets.map(target =>
-            [target, pos, target.position.clone().sub(pos).length()]
-          ).filter(ar => ar[2] < 7)
-        }).reduce((ar, it) => ar.concat(it), [])
+        collisions = []
+        positions.forEach(pos => {
+          targetsInFront.forEach(target => {
+            if (target.position.clone().sub(pos).length() < 7) {
+              collisions.push([target, pos])
+            }
+          })
+        })
         if (collisions.length) {
           collisions.forEach(ar => {
             triggerSmallExplosion({position: ar[1]})

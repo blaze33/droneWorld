@@ -9,6 +9,7 @@ let hudHorizon
 let hudFocal
 let targets = []
 const targetsInSight = new Set()
+const targetsInFront = new Set()
 const screenCenter = new Vector2(window.innerWidth / 2, window.innerHeight / 2)
 
 class HUD extends Component {
@@ -112,6 +113,11 @@ const registerTarget = (msg, target) => {
     } else {
       targetsInSight.delete(target)
     }
+    if (!target.destroyed && targetDistance2D < this.zone - 10) {
+      targetsInFront.add(target)
+    } else {
+      targetsInFront.delete(target)
+    }
     if (targetDistance2D < this.zone * 0.8) {
       targetDirection = screenXYclamped(
         target.position.clone().add(target.velocity.clone().multiplyScalar(
@@ -181,4 +187,4 @@ const hudElement = ReactDOM.render(
   document.getElementById('hud')
 )
 
-export {selectNearestTargetInSight, hudElement, targets}
+export {selectNearestTargetInSight, hudElement, targets, targetsInFront, targetsInSight}
