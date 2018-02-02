@@ -103,7 +103,7 @@ const initControls = (msg, data) => {
         () => {
           let targetVector = camera.getWorldDirection().multiplyScalar(500)
           const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
-          targetVector = targetVector.add(localY.multiplyScalar(16))
+          targetVector = targetVector.add(localY.multiplyScalar(24))
           return targetVector
         }
       )
