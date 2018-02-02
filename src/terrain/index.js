@@ -1,9 +1,7 @@
 import {
-  TextureLoader,
   Mesh,
   BufferAttribute,
-  BufferGeometry,
-  RepeatWrapping
+  BufferGeometry
 } from 'three'
 import {renderer, scene, options} from '../index'
 // import SimplifyModifier from '../modules/meshSimplify'
@@ -11,8 +9,7 @@ import Worker from './terrain.worker.js'
 import {Material} from './shaders/material'
 import {MaterialBasic} from './shaders/materialBasic'
 
-const textureLoader = new TextureLoader().setCrossOrigin('anonymous')
-
+// const textureLoader = new TextureLoader().setCrossOrigin('anonymous')
 // const spectralTexture = textureLoader.load(
 //   'https://raw.githubusercontent.com/d3/d3-scale-chromatic/master/img/Spectral.png'
 // )
