@@ -114,7 +114,9 @@ const registerTarget = (msg, target) => {
     }
     if (targetDistance2D < this.zone * 0.8) {
       targetDirection = screenXYclamped(
-        target.position.clone().add(target.velocity.clone().multiplyScalar(targetDistance3D / 300))
+        target.position.clone().add(target.velocity.clone().multiplyScalar(
+          Math.min(1, targetDistance3D / 300)
+        ))
       )
       target.gunHud = true
       target.direction = {
