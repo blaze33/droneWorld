@@ -1,4 +1,5 @@
 import {
+  AudioListener,
   Audio,
   PositionalAudio,
   AudioLoader
@@ -22,6 +23,9 @@ const audioMapper = sound => {
 }
 
 const setupSound = () => {
+  camera.listener = new AudioListener()
+  camera.add(camera.listener)
+
   impacts.map(audioMapper)
   gatling.map(audioMapper)
 
