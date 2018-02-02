@@ -17,26 +17,6 @@ const textureLoader = new TextureLoader().setCrossOrigin('anonymous')
 //   'https://raw.githubusercontent.com/d3/d3-scale-chromatic/master/img/Spectral.png'
 // )
 
-const rockTexture = textureLoader.load(require('../textures/Rock_08_UV_H_CM_1.jpg'))
-const rockTextureNormal = textureLoader.load(require('../textures/Rock_08_UV_H_CM_1_normal.jpg'))
-const grassTexture = textureLoader.load(require('../textures/GrassGreenTexture0003.jpg'))
-const grassTextureNormal = textureLoader.load(require('../textures/GrassGreenTexture0003_normal.jpg'))
-const grassTexture2 = textureLoader.load(require('../textures/Grass_01_UV_H_CM_1.jpg'))
-const icyTexture = textureLoader.load(require('../textures/snow_scuffed_ground_1.jpg'))
-const snowTexture = textureLoader.load(require('../textures/Snow_01_UV_H_CM_1.jpg'))
-rockTexture.wrapS = rockTexture.wrapT = RepeatWrapping
-rockTextureNormal.wrapS = rockTextureNormal.wrapT = RepeatWrapping
-grassTexture.wrapS = grassTexture.wrapT = RepeatWrapping
-grassTextureNormal.wrapS = grassTextureNormal.wrapT = RepeatWrapping
-grassTexture2.wrapS = grassTexture2.wrapT = RepeatWrapping
-icyTexture.wrapS = icyTexture.wrapT = RepeatWrapping
-snowTexture.wrapS = snowTexture.wrapT = RepeatWrapping
-
-grassTexture.repeat.set(20, 20)
-grassTextureNormal.repeat.set(20, 20)
-rockTexture.repeat.set(20, 20)
-rockTextureNormal.repeat.set(20, 20)
-
 const spectralMaterial = MaterialBasic
 
 // cf. http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#ECMAScript_.28JavaScript.2FActionScript.2C_etc..29
