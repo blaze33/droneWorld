@@ -167,7 +167,7 @@ const flashOptions = {
     spread: new THREE.Vector3(30),
     distribution: SPE.distributions.SPHERE
   },
-  size: { value: [2, 20, 20, 20] },
+  size: { value: [40, 20, 20, 20] },
   maxAge: { value: 2 },
   activeMultiplier: 2000,
   // opacity: { value: [0.5, 0.25, 0, 0] }
