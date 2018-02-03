@@ -115,6 +115,7 @@ const initControls = (msg, data) => {
           if (vec.length() < 10) {
             this.alive = false
             triggerExplosion(target)
+            PubSub.publish('x.drones.explosion', target)
             target.life -= 25
             hudElement.forceUpdate()
           }
