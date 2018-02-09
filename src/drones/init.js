@@ -1,4 +1,7 @@
-import {Vector3} from 'three'
+import {
+  Vector3,
+  Clock
+} from 'three'
 import {scene, camera, loops} from '../index'
 import PubSub from '../events'
 import {triggerExplosion} from '../particles'
@@ -37,6 +40,7 @@ PubSub.subscribe('x.assets.drone.loaded', initDroneFactory)
 
 const buildPilotDrone = () => {
   const pilotDrone = droneFactory()
+  pilotDrone.gunClock = new Clock(false)
   scene.add(pilotDrone)
   let localY
   let targetPosition

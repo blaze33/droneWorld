@@ -98,6 +98,7 @@ const initControls = (msg, data) => {
 
     if (e.button === 0) { // left click
       PubSub.publish('x.drones.gun.start', pilotDrone)
+      pilotDrone.gunClock.start()
     } else if (e.button === 2) { // right click
       const target = selectNearestTargetInSight()
       if (target === null || target.destroyed) return
@@ -130,7 +131,10 @@ const initControls = (msg, data) => {
   }
   renderer.domElement.addEventListener('mousedown', fireBullet, false)
   renderer.domElement.addEventListener('mouseup', (e) => {
-    if (e.button === 0) PubSub.publish('x.drones.gun.stop', pilotDrone)
+    if (e.button === 0) {
+      PubSub.publish('x.drones.gun.stop', pilotDrone)
+      pilotDrone.gunClock.stop()
+    }
   }, false)
 }
 PubSub.subscribe('x.drones.pilotDrone.loaded', initControls)

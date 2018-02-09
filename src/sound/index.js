@@ -11,7 +11,9 @@ const audioLoader = new AudioLoader()
 
 const impacts = [
   {url: require('./impact1.ogg')},
-  {url: require('./impact2.ogg')}
+  {url: require('./impact2.ogg')},
+  {url: require('./impact3.ogg')},
+  {url: require('./impact4.ogg')}
 ]
 
 const gatling = [
@@ -19,7 +21,8 @@ const gatling = [
 ]
 
 const explosions = [
-  {url: require('./explosion1.ogg')}
+  {url: require('./explosion1.ogg')},
+  {url: require('./explosion2.ogg')}
 ]
 
 const audioMapper = sound => {
@@ -46,10 +49,11 @@ const setupSound = () => {
   })
 
   const playExplosion = (msg, drone) => {
-    if (!explosions[0].buffer) return
+    const n = Math.floor(Math.random() * explosions.length)
+    if (!explosions[n].buffer) return
     const sound = new PositionalAudio(camera.listener)
-    sound.setBuffer(explosions[0].buffer)
-    sound.setRefDistance(100)
+    sound.setBuffer(explosions[n].buffer)
+    sound.setRefDistance(500)
     drone.add(sound)
     sound.play()
     // drone.remove(sound) // necessary ?

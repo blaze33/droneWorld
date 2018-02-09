@@ -370,7 +370,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
               pos,
               pos.clone().add(new THREE.Vector3(...velocities[i]).multiplyScalar(delta / 1000))
             )
-            closestDistance = bulletLine.closestPointToPoint(target.position).sub(target.position).length()
+            closestDistance = bulletLine.closestPointToPoint(target.position, true).sub(target.position).length()
             if (closestDistance < 10) {
               collisions.push([target, pos])
             }
@@ -433,7 +433,7 @@ PubSub.subscribe('x.drones.gun.start', (msg, drone) => {
 })
 
 PubSub.subscribe('x.drones.gun.stop', (msg, drone) => {
-  drone.gunEmitter.disable()
+  if (drone.gunEmitter) drone.gunEmitter.disable()
 })
 
 export {groups as particleGroups, triggerExplosion}

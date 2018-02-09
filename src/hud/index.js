@@ -8,13 +8,37 @@ import {scene, camera} from '../index'
 let hudHorizon
 let hudFocal
 let targets = []
+let pilotDrone
 const targetsInSight = new Set()
 const targetsInFront = new Set()
 const screenCenter = new Vector2(window.innerWidth / 2, window.innerHeight / 2)
 
 class HUD extends Component {
+  constructor (props) {
+    super(props)
+    this.state = {time: 0, gunHeat: 0}
+  }
+
   componentDidMount () {
     PubSub.publish('x.hud.mounted')
+  }
+
+  gunHeat () {
+    if (!pilotDrone || !pilotDrone.gunClock.running) {
+      return Math.max(0, this.state.gunHeat - 0.01)
+    }
+    const delta = pilotDrone.gunClock.getDelta()
+    const gunHeat = this.state.gunHeat + delta / 1.5
+    if (gunHeat >= 1) PubSub.publish('x.drones.gun.stop', pilotDrone)
+    return Math.min(gunHeat, 1)
+  }
+
+  update (timestamp) {
+    const gunHeat = this.gunHeat()
+    this.setState({
+      time: timestamp,
+      gunHeat
+    })
   }
 
   render () {
@@ -34,6 +58,34 @@ class HUD extends Component {
             strokeWidth='1'
             stroke='#0f0'
             fill='transparent' />
+          <circle
+            cx={screenCenter.x} cy={screenCenter.y} r={90}
+            stroke='#666' opacity={0.8} strokeWidth='10' fill='transparent'
+            strokeDasharray='140 1000' transform={`rotate(135 ${screenCenter.x} ${screenCenter.y})`}
+            strokeLinecap='round'
+          />
+          <circle
+            cx={screenCenter.x} cy={screenCenter.y} r={90}
+            stroke='#0f0' opacity={0.8} strokeWidth='10' fill='transparent'
+            strokeDasharray='140 1000' transform={`rotate(135 ${screenCenter.x} ${screenCenter.y})`}
+            strokeLinecap='round'
+          />
+          <circle
+            cx={screenCenter.x} cy={screenCenter.y} r={90}
+            stroke='#666' opacity={0.8} strokeWidth='10' fill='transparent'
+            strokeDasharray='140 1000'
+            strokeLinecap='round' transform={`rotate(225 ${screenCenter.x} ${screenCenter.y}) translate(${screenCenter.x * 2}, 0) scale(-1, 1)`}
+          />
+          {
+            this.state.gunHeat
+            ? (<circle
+              cx={screenCenter.x} cy={screenCenter.y} r={90}
+              stroke='orange' opacity={0.8} strokeWidth='10' fill='transparent'
+              strokeDasharray={`${this.state.gunHeat * 140} 1000`}
+              strokeLinecap='round' transform={`rotate(225 ${screenCenter.x} ${screenCenter.y}) translate(${screenCenter.x * 2}, 0) scale(-1, 1)`}
+              />)
+            : null
+          }
           {targets.map(target => (
             target.gunHud
             ? (<path
@@ -167,7 +219,7 @@ const hudLoop = (timestamp) => {
   } else {
     hudFocal.style.boxShadow = ''
   }
-  hudElement.forceUpdate()
+  hudElement.update(timestamp)
 }
 
 PubSub.subscribe('x.hud.mounted', () => {
@@ -175,6 +227,10 @@ PubSub.subscribe('x.hud.mounted', () => {
   hudFocal = document.getElementById('focal')
   PubSub.publish('x.loops.push', hudLoop)
   hudElement.mounted = true
+})
+
+PubSub.subscribe('x.drones.pilotDrone.loaded', (msg, data) => {
+  pilotDrone = data.pilotDrone
 })
 
 const selectNearestTargetInSight = () => {
