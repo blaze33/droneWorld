@@ -100,10 +100,10 @@ const initControls = (msg, data) => {
       PubSub.publish('x.drones.gun.start', pilotDrone)
       pilotDrone.gunClock.start()
     } else if (e.button === 2) { // right click
-      PubSub.publish('x.drones.missile.start', pilotDrone)
       const target = selectNearestTargetInSight()
       if (target === null || target.destroyed) return
 
+      PubSub.publish('x.drones.missile.start', pilotDrone)
       const fire = bullet.clone()
       fire.position.copy(pilotDrone.position)
       scene.add(fire)
