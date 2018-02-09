@@ -394,6 +394,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
       if (drone.id !== target.id) return
       loop.alive = false
       emitter.disable()
+      group.releaseIntoPool(emitter)
     })
   }
 

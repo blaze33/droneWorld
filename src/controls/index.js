@@ -100,6 +100,7 @@ const initControls = (msg, data) => {
       PubSub.publish('x.drones.gun.start', pilotDrone)
       pilotDrone.gunClock.start()
     } else if (e.button === 2) { // right click
+      PubSub.publish('x.drones.missile.start', pilotDrone)
       const target = selectNearestTargetInSight()
       if (target === null || target.destroyed) return
 
@@ -116,6 +117,7 @@ const initControls = (msg, data) => {
           if (vec.length() < 10) {
             this.alive = false
             triggerExplosion(target)
+            PubSub.publish('x.drones.missile.stop', pilotDrone)
             PubSub.publish('x.drones.explosion', target)
             target.life -= 25
             hudElement.forceUpdate()

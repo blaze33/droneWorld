@@ -16,8 +16,9 @@ const impacts = [
   {url: require('./impact4.ogg')}
 ]
 
-const gatling = [
-  {url: require('./gatling.ogg')}
+const weapons = [
+  {url: require('./gatling.ogg')},
+  {url: require('./missile.ogg')}
 ]
 
 const explosions = [
@@ -34,7 +35,7 @@ const setupSound = () => {
   camera.add(camera.listener)
 
   impacts.map(audioMapper)
-  gatling.map(audioMapper)
+  weapons.map(audioMapper)
   explosions.map(audioMapper)
 
   PubSub.subscribe('x.sound.impact', (msg, drone) => {
@@ -63,13 +64,23 @@ const setupSound = () => {
 
   const gatlingSound = new Audio(camera.listener)
   PubSub.subscribe('x.drones.gun.start', (msg, drone) => {
-    if (!gatling[0].buffer) return
-    gatlingSound.setBuffer(gatling[0].buffer)
+    if (!weapons[0].buffer) return
+    gatlingSound.setBuffer(weapons[0].buffer)
     gatlingSound.setLoop(true)
     gatlingSound.play()
   })
   PubSub.subscribe('x.drones.gun.stop', (msg, drone) => {
     gatlingSound.stop()
+  })
+
+  const missileSound = new Audio(camera.listener)
+  PubSub.subscribe('x.drones.missile.start', (msg, drone) => {
+    if (!weapons[1].buffer) return
+    missileSound.setBuffer(weapons[1].buffer)
+    missileSound.play()
+  })
+  PubSub.subscribe('x.drones.missile.stop', (msg, drone) => {
+    missileSound.stop()
   })
 }
 
