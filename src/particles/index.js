@@ -323,6 +323,8 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
   let velocities
   let positions
   let collisions
+  let bulletLine
+  let closestDistance
   const chunkReducer = (chunkSize) =>
     (ar, it, i) => {
       const ix = Math.floor(i / chunkSize)
@@ -330,9 +332,8 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
       ar[ix].push(it)
       return ar
     }
-
   const loop = {
-    loop: () => {
+    loop: (timestamp, delta) => {
       if (offset) {
         emitter.position.value = target.position.clone().add(
           camera.getWorldDirection().multiplyScalar(5)
@@ -360,11 +361,17 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
                 new THREE.Vector3(...velocities[i]).multiplyScalar(param[1])
               )
             : null
-        }).filter(position => position != null)
+        })
         collisions = []
-        positions.forEach(pos => {
-          targetsInFront.forEach(target => {
-            if (target.position.clone().sub(pos).length() < 10) {
+        positions.forEach((pos, i) => {
+          if (pos === null) return
+          targetsInFront.forEach((target) => {
+            bulletLine = new THREE.Line3(
+              pos,
+              pos.clone().add(new THREE.Vector3(...velocities[i]).multiplyScalar(delta / 1000))
+            )
+            closestDistance = bulletLine.closestPointToPoint(target.position).sub(target.position).length()
+            if (closestDistance < 10) {
               collisions.push([target, pos])
             }
           })
