@@ -34,7 +34,7 @@ class HUD extends Component {
   }
 
   lockLevel () {
-    if (!pilotDrone || targetsInSight.size === 0) {
+    if (targetsInSight.size === 0) {
       return Math.max(0, this.state.lockLevel - 0.02)
     }
     const times = []
@@ -42,7 +42,7 @@ class HUD extends Component {
       const delta = target.lockClock.getDelta()
       times.push(this.state.lockLevel + delta / 2)
     })
-    return Math.min(Math.max(times), 1)
+    return Math.min(Math.max(...times), 1)
   }
 
   update (timestamp) {
