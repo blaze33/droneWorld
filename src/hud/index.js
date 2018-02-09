@@ -16,7 +16,7 @@ const screenCenter = new Vector2(window.innerWidth / 2, window.innerHeight / 2)
 class HUD extends Component {
   constructor (props) {
     super(props)
-    this.state = {time: 0, gunHeat: 0}
+    this.state = {time: 0, gunHeat: 0, lockLevel: 0}
   }
 
   componentDidMount () {
@@ -33,11 +33,26 @@ class HUD extends Component {
     return Math.min(gunHeat, 1)
   }
 
+  lockLevel () {
+    if (!pilotDrone || targetsInSight.size === 0) {
+      return Math.max(0, this.state.lockLevel - 0.02)
+    }
+    const times = []
+    targetsInSight.forEach(target => {
+      const delta = target.lockClock.getDelta()
+      times.push(this.state.lockLevel + delta / 2)
+    })
+    return Math.min(Math.max(times), 1)
+  }
+
   update (timestamp) {
     const gunHeat = this.gunHeat()
+    const lockLevel = this.lockLevel()
     this.setState({
       time: timestamp,
-      gunHeat
+      gunHeat,
+      lockLevel,
+      lock: lockLevel === 1
     })
   }
 
@@ -64,12 +79,16 @@ class HUD extends Component {
             strokeDasharray='140 1000' transform={`rotate(135 ${screenCenter.x} ${screenCenter.y})`}
             strokeLinecap='round'
           />
-          <circle
-            cx={screenCenter.x} cy={screenCenter.y} r={90}
-            stroke='#0f0' opacity={0.8} strokeWidth='10' fill='transparent'
-            strokeDasharray='140 1000' transform={`rotate(135 ${screenCenter.x} ${screenCenter.y})`}
-            strokeLinecap='round'
-          />
+          {
+            this.state.lockLevel
+            ? (<circle
+              cx={screenCenter.x} cy={screenCenter.y} r={90}
+              stroke='#0f0' opacity={0.8} strokeWidth='10' fill='transparent'
+              strokeDasharray={`${this.state.lockLevel * 140} 1000`}
+              transform={`rotate(135 ${screenCenter.x} ${screenCenter.y})`}
+              strokeLinecap='round'
+            />) : null
+          }
           <circle
             cx={screenCenter.x} cy={screenCenter.y} r={90}
             stroke='#666' opacity={0.8} strokeWidth='10' fill='transparent'
@@ -165,8 +184,10 @@ const registerTarget = (msg, target) => {
     if (!target.destroyed && targetElement.style.borderColor === 'orange' && targetDistance2D < 75) {
       targetElement.style.borderColor = '#0f0'
       targetsInSight.add(target)
+      if (!target.lockClock.running) target.lockClock.start()
     } else {
       targetsInSight.delete(target)
+      target.lockClock.stop()
     }
     if (!target.destroyed && targetDistance2D < this.zone - 10) {
       targetsInFront.add(target)
@@ -214,7 +235,7 @@ const hudLoop = (timestamp) => {
   const pitch = camera.up.dot(camera.getWorldDirection())
   const rollAngleDegree = rollAngle / Math.PI * 180
   hudHorizon.style.transform = `translateX(-50%) translateY(${pitch * window.innerHeight / 2}px) rotate(${rollAngleDegree}deg)`
-  if (targetsInSight.size > 0) {
+  if (hudElement.state.lock) {
     hudFocal.style.boxShadow = '0 0 75px #0f0'
   } else {
     hudFocal.style.boxShadow = ''
@@ -233,8 +254,12 @@ PubSub.subscribe('x.drones.pilotDrone.loaded', (msg, data) => {
   pilotDrone = data.pilotDrone
 })
 
+PubSub.subscribe('x.drones.missile.start', (msg, pilotDrone) => {
+  hudElement.setState(state => ({...state, lockLevel: 0, lock: false}))
+})
+
 const selectNearestTargetInSight = () => {
-  if (targetsInSight.size === 0) return null
+  if (targetsInSight.size === 0 || !hudElement.state.lock) return null
   const distances = []
   targetsInSight.forEach(target =>
     distances.push([camera.position.distanceTo(target.position), target])

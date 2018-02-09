@@ -68,6 +68,7 @@ PubSub.subscribe('x.drones.factory.ready', buildPilotDrone)
 
 const spawnDrone = (circle = true, phase = 0) => {
   const drone = droneFactory()
+  drone.lockClock = new Clock(false)
   drone.life = 100
   scene.add(drone)
   drone.lastPosition = drone.position.clone()
