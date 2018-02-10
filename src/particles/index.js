@@ -182,7 +182,6 @@ const smokeOptions = {
     spread: new THREE.Vector3(1, 1, 1)
   },
   maxAge: { value: 10 },
-  duration: 10,
   // activeMultiplier: 2000,
   velocity: {
     value: new THREE.Vector3(4, 2, 5),
@@ -412,12 +411,18 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
 }
 
 const triggerExplosion = (target) => {
-  triggerSingleEmitter(smokeGroup, target, true)
   triggerSingleEmitter(flashGroup, target)
   triggerSingleEmitter(fireGroup, target)
   triggerSingleEmitter(debrisGroup, target)
   triggerSingleEmitter(mistGroup, target)
 }
+
+const triggerSmoke = (target) => {
+  if (target.smoking) return
+  target.smoking = true
+  triggerSingleEmitter(smokeGroup, target, true)
+}
+PubSub.subscribe('x.drones.smoke.start', (msg, drone) => triggerSmoke(drone))
 
 const triggerSmallExplosion = (target) => {
   triggerSingleEmitter(sparkGroup, target)
