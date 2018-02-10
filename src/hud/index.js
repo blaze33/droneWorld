@@ -11,7 +11,10 @@ let targets = []
 let pilotDrone
 const targetsInSight = new Set()
 const targetsInFront = new Set()
-const screenCenter = new Vector2(window.innerWidth / 2, window.innerHeight / 2)
+let screenCenter = new Vector2(window.innerWidth / 2, window.innerHeight / 2)
+PubSub.subscribe('x.screen.resized', (msg, rendererSize) => {
+  screenCenter = new Vector2(rendererSize.width / 2, rendererSize.height / 2)
+})
 
 class HUD extends Component {
   constructor (props) {

@@ -1,3 +1,5 @@
+import PubSub from '../events'
+
 const WindowResize = function (renderer, camera, dimension) {
   dimension = dimension || function () { return { width: window.innerWidth, height: window.innerHeight } }
   var callback = function () {
@@ -8,6 +10,8 @@ const WindowResize = function (renderer, camera, dimension) {
         // update the camera
     camera.aspect = rendererSize.width / rendererSize.height
     camera.updateProjectionMatrix()
+
+    PubSub.publish('x.screen.resized', rendererSize)
   }
     // bind the resize event
   window.addEventListener('resize', callback, false)
