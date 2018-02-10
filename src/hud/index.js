@@ -32,7 +32,11 @@ class HUD extends Component {
     }
     const delta = pilotDrone.gunClock.getDelta()
     const gunHeat = this.state.gunHeat + delta / 1.5
-    if (gunHeat >= 1) PubSub.publish('x.drones.gun.stop', pilotDrone)
+    if (gunHeat >= 1) {
+      PubSub.publish('x.drones.gun.stop', pilotDrone)
+      PubSub.publish('x.camera.shake.stop')
+      pilotDrone.gunClock.stop()
+    }
     return Math.min(gunHeat, 1)
   }
 

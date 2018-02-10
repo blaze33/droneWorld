@@ -193,12 +193,25 @@ particleGroups.forEach(group => scene.add(group.mesh))
 // scene.add( helper );
 
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
+let shakeCamera = false
+let shakeAmplitude = 1
+PubSub.subscribe('x.camera.shake.start', (msg, value = 1) => (shakeCamera = true))
+PubSub.subscribe('x.camera.shake.stop', () => (shakeCamera = false))
 
 let loops = [
   tileBuilder,
   () => lensFlare.position.copy(sunPosition),
   (timestamp, delta) => {
     particleGroups.forEach(group => group.tick(delta / 1000))
+  },
+  () => {
+    if (shakeCamera) {
+      camera.position.add({
+        x: (Math.random() - 0.5) * shakeAmplitude,
+        y: (Math.random() - 0.5) * shakeAmplitude,
+        z: (Math.random() - 0.5) * shakeAmplitude
+      })
+    }
   }
 ]
 const removeLoop = (loop) => {
