@@ -126,7 +126,8 @@ const RendererController = function () {
   }
 }
 const rendererController = new RendererController()
-rendererFolder.add(rendererController, 'low')
+const lowController = rendererFolder.add(rendererController, 'low')
+lowController.name('low (default)')
 rendererFolder.add(rendererController, 'lowShadow')
 rendererFolder.add(rendererController, 'lowShadowDoF')
 rendererFolder.add(rendererController, 'high')
