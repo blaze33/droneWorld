@@ -103,10 +103,10 @@ const initControls = (msg, data) => {
       const target = selectNearestTargetInSight()
       if (target === null || target.destroyed) return
 
-      PubSub.publish('x.drones.missile.start', pilotDrone)
       const fire = bullet.clone()
       fire.position.copy(pilotDrone.position)
       scene.add(fire)
+      PubSub.publish('x.drones.missile.start', fire)
 
       const BulletContructor = function () {
         this.alive = true
@@ -117,7 +117,7 @@ const initControls = (msg, data) => {
           if (vec.length() < 10) {
             this.alive = false
             triggerExplosion(target)
-            PubSub.publish('x.drones.missile.stop', pilotDrone)
+            PubSub.publish('x.drones.missile.stop', fire)
             PubSub.publish('x.drones.explosion', target)
             target.life -= 25
             hudElement.forceUpdate()

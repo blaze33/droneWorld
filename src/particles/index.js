@@ -194,6 +194,24 @@ const smokeOptions = {
   opacity: { value: [0.4, 0.4, 0.4, 0] }
 }
 
+const smokeLightOptions = {
+  particleCount: 1000,
+  position: {
+    spread: new THREE.Vector3(1, 1, 1)
+  },
+  maxAge: { value: 5 },
+  // activeMultiplier: 2000,
+  velocity: {
+    value: new THREE.Vector3(4, 2, 5),
+    distribution: SPE.distributions.SPHERE
+  },
+  size: { value: [5, 10] },
+  color: {
+    value: new THREE.Color(1, 1, 1)
+  },
+  opacity: { value: [0.4, 0.4, 0.4, 0] }
+}
+
 const bulletOptions = {
   particleCount: 35,
   type: SPE.distributions.BOX,
@@ -261,6 +279,7 @@ const debrisGroup = new SPE.Group(debrisGroupOptions)
 const shockGroup = new SPE.Group(pointsGroupOptions)
 const mistGroup = new SPE.Group(pointsGroupOptions)
 const smokeGroup = new SPE.Group(pointsGroupOptions)
+const smokeLightGroup = new SPE.Group(pointsGroupOptions)
 
 const bulletGroup = new SPE.Group(bulletGroupOptions)
 const sparkGroup = new SPE.Group(debrisGroupOptions)
@@ -275,6 +294,7 @@ debrisGroup.addPool(poolSize, debrisOptions, createNew)
 shockGroup.addPool(poolSize, shockwaveOptions, createNew)
 mistGroup.addPool(poolSize, mistOptions, createNew)
 smokeGroup.addPool(poolSize, smokeOptions, createNew)
+smokeLightGroup.addPool(poolSize, smokeLightOptions, createNew)
 
 bulletGroup.addPool(poolSize, bulletOptions, createNew)
 sparkGroup.addPool(poolSize, sparkOptions, createNew)
@@ -286,6 +306,7 @@ const groups = [
   shockGroup,
   mistGroup,
   smokeGroup,
+  smokeLightGroup,
   bulletGroup,
   sparkGroup
 ]
@@ -423,6 +444,17 @@ const triggerSmoke = (target) => {
   triggerSingleEmitter(smokeGroup, target, true)
 }
 PubSub.subscribe('x.drones.smoke.start', (msg, drone) => triggerSmoke(drone))
+
+const triggerLightSmoke = (target) => {
+  if (target.smoking) return
+  target.smoking = true
+  const smokeEmitter = triggerSingleEmitter(smokeLightGroup, target, true)
+  PubSub.subscribe('x.drones.missile.stop', (msg, missile) => {
+    smokeEmitter.disable()
+    smokeLightGroup.releaseIntoPool(smokeEmitter)
+  })
+}
+PubSub.subscribe('x.drones.missile.start', (msg, missile) => triggerLightSmoke(missile))
 
 const triggerSmallExplosion = (target) => {
   triggerSingleEmitter(sparkGroup, target)
