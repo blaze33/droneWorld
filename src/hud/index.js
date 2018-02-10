@@ -197,7 +197,7 @@ const registerTarget = (msg, target) => {
     } else {
       targetsInFront.delete(target)
     }
-    if (targetDistance2D < this.zone * 0.8) {
+    if (hudPosition.z <= 1 && targetDistance2D < this.zone * 0.8) {
       targetDirection = screenXYclamped(
         target.position.clone().add(target.velocity.clone().multiplyScalar(
           Math.min(1,
