@@ -1,23 +1,31 @@
 import SPE from 'shader-particle-engine/build/SPE'
-import * as THREE from 'three'
+import {
+  TextureLoader,
+  Vector2,
+  AdditiveBlending,
+  NormalBlending,
+  Vector3,
+  Color,
+  Line3
+} from 'three'
 import PubSub from '../events'
 // import {scene} from '../index'
 import {targetsInFront} from '../hud'
 import {camera} from '../index'
 
 // GROUPS
-const textureLoader = new THREE.TextureLoader()
+const textureLoader = new TextureLoader()
 const fireGroupOptions = {
   texture: {
     value: textureLoader.load(require('../textures/Explosion_002_Tile_8x8_256x256.png')),
-    frames: new THREE.Vector2(8, 8),
+    frames: new Vector2(8, 8),
     // value: textureLoader.load(require('../textures/sprite-explosion2.png')),
-    // frames: new THREE.Vector2(5, 5),
+    // frames: new Vector2(5, 5),
     loop: 1
   },
   depthTest: true,
   depthWrite: false,
-  blending: THREE.AdditiveBlending,
+  blending: AdditiveBlending,
   scale: 600,
   maxParticleCount: 100000
 }
@@ -27,7 +35,7 @@ const pointsGroupOptions = {
   },
   depthTest: true,
   depthWrite: false,
-  blending: THREE.NormalBlending,
+  blending: NormalBlending,
   maxParticleCount: 100000
 }
 const debrisGroupOptions = {
@@ -36,7 +44,7 @@ const debrisGroupOptions = {
   },
   depthTest: true,
   depthWrite: false,
-  blending: THREE.NormalBlending,
+  blending: NormalBlending,
   maxParticleCount: 100000
 }
 const bulletGroupOptions = {
@@ -45,7 +53,7 @@ const bulletGroupOptions = {
   },
   depthTest: true,
   depthWrite: false,
-  blending: THREE.NormalBlending,
+  blending: NormalBlending,
   maxParticleCount: 100000
 }
 
@@ -55,7 +63,7 @@ const shockwaveOptions = {
   type: SPE.distributions.DISC,
   position: {
     radius: 5,
-    spread: new THREE.Vector3(5)
+    spread: new Vector3(5)
   },
   maxAge: {
     value: 2,
@@ -65,18 +73,18 @@ const shockwaveOptions = {
   activeMultiplier: 2000,
 
   velocity: {
-    value: new THREE.Vector3(40)
+    value: new Vector3(40)
   },
   rotation: {
-    axis: new THREE.Vector3(0, 0, 1),
+    axis: new Vector3(0, 0, 1),
     angle: Math.PI * 0.5,
     static: true
   },
   size: { value: 2 },
   color: {
     value: [
-      new THREE.Color(0.4, 0.2, 0.1),
-      new THREE.Color(0.2, 0.2, 0.2)
+      new Color(0.4, 0.2, 0.1),
+      new Color(0.2, 0.2, 0.2)
     ]
   },
   opacity: { value: [0.5, 0.2, 0] }
@@ -93,10 +101,10 @@ const debrisOptions = {
   duration: 1,
   activeMultiplier: 40,
   velocity: {
-    value: new THREE.Vector3(100)
+    value: new Vector3(100)
   },
   acceleration: {
-    value: new THREE.Vector3(0, 0, -20),
+    value: new Vector3(0, 0, -20),
     distribution: SPE.distributions.BOX
   },
   wiggle: 3,
@@ -112,10 +120,10 @@ const debrisOptions = {
   },
   color: {
     value: [
-      new THREE.Color(1, 1, 1),
-      new THREE.Color(1, 1, 0),
-      new THREE.Color(1, 0, 0),
-      new THREE.Color(0.4, 0.2, 0.1)
+      new Color(1, 1, 1),
+      new Color(1, 1, 0),
+      new Color(1, 0, 0),
+      new Color(0.4, 0.2, 0.1)
     ]
   },
   opacity: { value: [1, 1, 0] }
@@ -130,13 +138,13 @@ const fireOptions = {
   duration: 1,
   activeMultiplier: 20,
   velocity: {
-    value: new THREE.Vector3(10)
+    value: new Vector3(10)
   },
   size: { value: [20, 100] },
   color: {
     value: [
-      new THREE.Color(0.5, 0.1, 0.05),
-      new THREE.Color(0.2, 0.2, 0.2)
+      new Color(0.5, 0.1, 0.05),
+      new Color(0.2, 0.2, 0.2)
     ]
   },
   opacity: { value: [0.5, 0.35, 0.1, 0] }
@@ -144,28 +152,28 @@ const fireOptions = {
 const mistOptions = {
   particleCount: 100,
   position: {
-    spread: new THREE.Vector3(15, 15, 15),
+    spread: new Vector3(15, 15, 15),
     distribution: SPE.distributions.SPHERE
   },
   maxAge: { value: 2 },
   duration: 1,
   activeMultiplier: 2000,
   velocity: {
-    value: new THREE.Vector3(8, 3, 10),
+    value: new Vector3(8, 3, 10),
     distribution: SPE.distributions.SPHERE
   },
   size: { value: 40 },
   color: {
-    value: new THREE.Color(0.2, 0.2, 0.2)
+    value: new Color(0.2, 0.2, 0.2)
   },
   opacity: { value: [0, 0, 0.4, 0] }
 }
 const flashOptions = {
   duration: 1,
   particleCount: 50,
-  position: { spread: new THREE.Vector3(5, 5, 5) },
+  position: { spread: new Vector3(5, 5, 5) },
   velocity: {
-    spread: new THREE.Vector3(30),
+    spread: new Vector3(30),
     distribution: SPE.distributions.SPHERE
   },
   size: { value: [40, 20, 20, 20] },
@@ -179,17 +187,17 @@ const flashOptions = {
 const smokeOptions = {
   particleCount: 1000,
   position: {
-    spread: new THREE.Vector3(1, 1, 1)
+    spread: new Vector3(1, 1, 1)
   },
   maxAge: { value: 10 },
   // activeMultiplier: 2000,
   velocity: {
-    value: new THREE.Vector3(4, 2, 5),
+    value: new Vector3(4, 2, 5),
     distribution: SPE.distributions.SPHERE
   },
   size: { value: [20, 60] },
   color: {
-    value: new THREE.Color(0.9, 0.9, 0.9)
+    value: new Color(0.9, 0.9, 0.9)
   },
   opacity: { value: [0.4, 0.4, 0.4, 0] }
 }
@@ -197,17 +205,17 @@ const smokeOptions = {
 const smokeLightOptions = {
   particleCount: 1000,
   position: {
-    spread: new THREE.Vector3(1, 1, 1)
+    spread: new Vector3(1, 1, 1)
   },
   maxAge: { value: 5 },
   // activeMultiplier: 2000,
   velocity: {
-    value: new THREE.Vector3(4, 2, 5),
+    value: new Vector3(4, 2, 5),
     distribution: SPE.distributions.SPHERE
   },
   size: { value: [5, 10] },
   color: {
-    value: new THREE.Color(1, 1, 1)
+    value: new Color(1, 1, 1)
   },
   opacity: { value: [0.4, 0.4, 0.4, 0] }
 }
@@ -224,8 +232,8 @@ const bulletOptions = {
   duration: null,
   activeMultiplier: 1,
   velocity: {
-    value: new THREE.Vector3(100),
-    spread: new THREE.Vector3(20, 20, 20)
+    value: new Vector3(100),
+    spread: new Vector3(20, 20, 20)
   },
   acceleration: {
     value: 0
@@ -235,8 +243,8 @@ const bulletOptions = {
   },
   color: {
     value: [
-      new THREE.Color(1, 1, 1),
-      new THREE.Color(1, 1, 0)
+      new Color(1, 1, 1),
+      new Color(1, 1, 0)
     ]
   },
   opacity: { value: 1 }
@@ -254,7 +262,7 @@ const sparkOptions = {
   duration: 0.3,
   activeMultiplier: 1000,
   velocity: {
-    value: new THREE.Vector3(100)
+    value: new Vector3(100)
   },
   acceleration: {
     value: 0
@@ -265,8 +273,8 @@ const sparkOptions = {
   },
   color: {
     value: [
-      new THREE.Color(1, 1, 1),
-      new THREE.Color(1, 1, 0)
+      new Color(1, 1, 1),
+      new Color(1, 1, 0)
     ]
   },
   opacity: { value: 1 }
@@ -377,8 +385,8 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
         ).reduce(chunkReducer(4), [])
         positions = params.map((param, i) => {
           return param[0]
-            ? new THREE.Vector3(...initialPositions[i]).add(
-                new THREE.Vector3(...velocities[i]).multiplyScalar(param[1])
+            ? new Vector3(...initialPositions[i]).add(
+                new Vector3(...velocities[i]).multiplyScalar(param[1])
               )
             : null
         })
@@ -386,9 +394,9 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
         positions.forEach((pos, i) => {
           if (pos === null) return
           targetsInFront.forEach((target) => {
-            bulletLine = new THREE.Line3(
+            bulletLine = new Line3(
               pos,
-              pos.clone().add(new THREE.Vector3(...velocities[i]).multiplyScalar(delta / 1000))
+              pos.clone().add(new Vector3(...velocities[i]).multiplyScalar(delta / 1000))
             )
             closestDistance = bulletLine.closestPointToPoint(target.position, true).sub(target.position).length()
             if (closestDistance < 10) {
@@ -463,7 +471,7 @@ const triggerSmallExplosion = (target) => {
 PubSub.subscribe('x.drones.gun.start', (msg, drone) => {
   const velocityFunction = () => {
     let targetVector = camera.getWorldDirection().multiplyScalar(500)
-    const localY = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
+    const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
     targetVector = targetVector.add(localY.multiplyScalar(24))
     return targetVector
   }
