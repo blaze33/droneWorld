@@ -471,7 +471,10 @@ PubSub.subscribe('x.drones.gun.start', (msg, drone) => {
 })
 
 PubSub.subscribe('x.drones.gun.stop', (msg, drone) => {
-  if (drone.gunEmitter) drone.gunEmitter.disable()
+  if (drone.gunEmitter) {
+    drone.gunEmitter.disable()
+    bulletGroup.releaseIntoPool(drone.gunEmitter)
+  }
 })
 
 export {groups as particleGroups, triggerExplosion}
