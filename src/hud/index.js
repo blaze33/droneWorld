@@ -81,7 +81,7 @@ class HUD extends Component {
             stroke='#0f0'
             fill='transparent' />
           <circle
-            cx={screenCenter.x} cy={screenCenter.y} r={90}
+            cx={screenCenter.x} cy={screenCenter.y} r={160}
             stroke='#666' opacity={0.8} strokeWidth='10' fill='transparent'
             strokeDasharray='140 1000' transform={`rotate(135 ${screenCenter.x} ${screenCenter.y})`}
             strokeLinecap='round'
@@ -89,7 +89,7 @@ class HUD extends Component {
           {
             this.state.lockLevel
             ? (<circle
-              cx={screenCenter.x} cy={screenCenter.y} r={90}
+              cx={screenCenter.x} cy={screenCenter.y} r={160}
               stroke='#0f0' opacity={0.8} strokeWidth='10' fill='transparent'
               strokeDasharray={`${this.state.lockLevel * 140} 1000`}
               transform={`rotate(135 ${screenCenter.x} ${screenCenter.y})`}
@@ -97,7 +97,7 @@ class HUD extends Component {
             />) : null
           }
           <circle
-            cx={screenCenter.x} cy={screenCenter.y} r={90}
+            cx={screenCenter.x} cy={screenCenter.y} r={160}
             stroke='#666' opacity={0.8} strokeWidth='10' fill='transparent'
             strokeDasharray='140 1000'
             strokeLinecap='round' transform={`rotate(225 ${screenCenter.x} ${screenCenter.y}) translate(${screenCenter.x * 2}, 0) scale(-1, 1)`}
@@ -105,7 +105,7 @@ class HUD extends Component {
           {
             this.state.gunHeat
             ? (<circle
-              cx={screenCenter.x} cy={screenCenter.y} r={90}
+              cx={screenCenter.x} cy={screenCenter.y} r={160}
               stroke='orange' opacity={0.8} strokeWidth='10' fill='transparent'
               strokeDasharray={`${this.state.gunHeat * 140} 1000`}
               strokeLinecap='round' transform={`rotate(225 ${screenCenter.x} ${screenCenter.y}) translate(${screenCenter.x * 2}, 0) scale(-1, 1)`}
@@ -118,7 +118,9 @@ class HUD extends Component {
               key={target.id}
               d={`M ${target.hudPosition.x} ${target.hudPosition.y}
                   l ${target.direction.x} ${target.direction.y}
-                  l 5 5 l -10 -10 l 5 5 l -5 5 l 10 -10`}
+                  ${target === this.state.gunTarget ? `
+                    l 5 5 l -10 -10 l 5 5 l -5 5 l 10 -10
+                    ` : ''}`}
               strokeWidth='1'
               stroke='orange'
               fill='transparent' />)
@@ -154,6 +156,7 @@ const registerTarget = (msg, target) => {
   let targetVector3D
   let targetDirection
   this.zone = 400
+  this.focalSize = 150
   this.gunRange = 500
   const targetLoop = (timestamp, delta) => {
     if (!hudElement.mounted) return
@@ -188,7 +191,7 @@ const registerTarget = (msg, target) => {
       rotate(${targetVector2D.angle() / Math.PI * 180 + 90}deg)
     `
     targetDistance2D = targetVector2D.length()
-    if (!target.destroyed && targetElement.style.borderColor === 'orange' && targetDistance2D < 75) {
+    if (!target.destroyed && targetElement.style.borderColor === 'orange' && targetDistance2D < this.focalSize) {
       targetElement.style.borderColor = '#0f0'
       targetsInSight.add(target)
       if (!target.lockClock.running) target.lockClock.start()
@@ -247,6 +250,7 @@ const hudLoop = (timestamp) => {
   } else {
     hudFocal.style.boxShadow = ''
   }
+  hudElement.setState(state => ({...state, gunTarget: selectNearestGunTarget()}))
   hudElement.update(timestamp)
 }
 
@@ -275,9 +279,23 @@ const selectNearestTargetInSight = () => {
   return distances[0][1]
 }
 
+const selectNearestGunTarget = () => {
+  if (targetsInSight.size === 0) return null
+  const distances = []
+  targetsInSight.forEach(target =>
+    distances.push([
+      new Vector2(target.hudPosition.x, target.hudPosition.y)
+        .sub(screenCenter)
+        .add(new Vector2(target.direction.x, target.direction.y)).length(),
+      target])
+  )
+  distances.sort((a, b) => a[0] > b[0])
+  return distances[0][1]
+}
+
 const hudElement = ReactDOM.render(
   <HUD />,
   document.getElementById('hud')
 )
 
-export {selectNearestTargetInSight, hudElement, targets, targetsInFront, targetsInSight}
+export {selectNearestTargetInSight, selectNearestGunTarget, hudElement, targets, targetsInFront, targetsInSight}

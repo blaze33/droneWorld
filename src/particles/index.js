@@ -10,7 +10,7 @@ import {
 } from 'three'
 import PubSub from '../events'
 // import {scene} from '../index'
-import {targetsInFront} from '../hud'
+import {targetsInFront, selectNearestGunTarget} from '../hud'
 import {camera} from '../index'
 
 // GROUPS
@@ -469,10 +469,16 @@ const triggerSmallExplosion = (target) => {
 }
 
 PubSub.subscribe('x.drones.gun.start', (msg, drone) => {
+  const target = selectNearestGunTarget()
+  let targetVector
   const velocityFunction = () => {
-    let targetVector = camera.getWorldDirection().multiplyScalar(500)
-    const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
-    targetVector = targetVector.add(localY.multiplyScalar(24))
+    if (target !== null && target.gunHud) {
+      targetVector = target.position.clone().sub(camera.position).add(target.velocity)
+    } else {
+      targetVector = camera.getWorldDirection().multiplyScalar(500)
+      const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
+      targetVector = targetVector.add(localY.multiplyScalar(24))
+    }
     return targetVector
   }
   drone.gunEmitter = triggerSingleEmitter(bulletGroup, drone, true, velocityFunction, true)
