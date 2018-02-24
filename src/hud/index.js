@@ -83,7 +83,7 @@ class HUD extends Component {
           <circle
             cx={screenCenter.x} cy={screenCenter.y} r={160}
             stroke='#666' opacity={0.8} strokeWidth='10' fill='transparent'
-            strokeDasharray='140 1000' transform={`rotate(135 ${screenCenter.x} ${screenCenter.y})`}
+            strokeDasharray='140 1000' transform={`rotate(155 ${screenCenter.x} ${screenCenter.y})`}
             strokeLinecap='round'
           />
           {
@@ -92,7 +92,7 @@ class HUD extends Component {
               cx={screenCenter.x} cy={screenCenter.y} r={160}
               stroke='#0f0' opacity={0.8} strokeWidth='10' fill='transparent'
               strokeDasharray={`${this.state.lockLevel * 140} 1000`}
-              transform={`rotate(135 ${screenCenter.x} ${screenCenter.y})`}
+              transform={`rotate(155 ${screenCenter.x} ${screenCenter.y})`}
               strokeLinecap='round'
             />) : null
           }
@@ -100,7 +100,7 @@ class HUD extends Component {
             cx={screenCenter.x} cy={screenCenter.y} r={160}
             stroke='#666' opacity={0.8} strokeWidth='10' fill='transparent'
             strokeDasharray='140 1000'
-            strokeLinecap='round' transform={`rotate(225 ${screenCenter.x} ${screenCenter.y}) translate(${screenCenter.x * 2}, 0) scale(-1, 1)`}
+            strokeLinecap='round' transform={`rotate(205 ${screenCenter.x} ${screenCenter.y}) translate(${screenCenter.x * 2}, 0) scale(-1, 1)`}
           />
           {
             this.state.gunHeat
@@ -108,7 +108,7 @@ class HUD extends Component {
               cx={screenCenter.x} cy={screenCenter.y} r={160}
               stroke='orange' opacity={0.8} strokeWidth='10' fill='transparent'
               strokeDasharray={`${this.state.gunHeat * 140} 1000`}
-              strokeLinecap='round' transform={`rotate(225 ${screenCenter.x} ${screenCenter.y}) translate(${screenCenter.x * 2}, 0) scale(-1, 1)`}
+              strokeLinecap='round' transform={`rotate(205 ${screenCenter.x} ${screenCenter.y}) translate(${screenCenter.x * 2}, 0) scale(-1, 1)`}
               />)
             : null
           }
