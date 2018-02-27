@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 import {screenXYclamped} from '../utils'
 import PubSub from '../events'
 import {scene, camera} from '../index'
+import Crosshair from './crosshair'
 
 let hudHorizon
 let hudFocal
@@ -71,15 +72,12 @@ class HUD extends Component {
         <div id='focal' />
         <div id='horizon' />
         <svg className='vector'>
-          <path d={`M ${screenCenter.x} ${screenCenter.y}
-                    v 20 v -40
-                    h -15 h 30 h -15 v 20
-                    h -5 h 10 h -5 v 20
-                    h -15 h 30 h -15
-                    `}
-            strokeWidth='1'
+          <Crosshair size='30' x={screenCenter.x} y={screenCenter.y}
+            fill='transparent'
             stroke='#0f0'
-            fill='transparent' />
+            strokeWidth='17'
+            opacity='0.8'
+          />
           <circle
             cx={screenCenter.x} cy={screenCenter.y} r={160}
             stroke='#666' opacity={0.8} strokeWidth='10' fill='transparent'
@@ -114,16 +112,26 @@ class HUD extends Component {
           }
           {targets.map(target => (
             target.gunHud
-            ? (<path
-              key={target.id}
-              d={`M ${target.hudPosition.x} ${target.hudPosition.y}
-                  l ${target.direction.x} ${target.direction.y}
-                  ${target === this.state.gunTarget ? `
-                    l 5 5 l -10 -10 l 5 5 l -5 5 l 10 -10
-                    ` : ''}`}
-              strokeWidth='1'
-              stroke='orange'
-              fill='transparent' />)
+            ? (<g>
+              <path
+                key={target.id}
+                d={`M ${target.hudPosition.x} ${target.hudPosition.y}
+                    l ${target.direction.x} ${target.direction.y}`}
+                strokeWidth='1'
+                stroke={target === this.state.gunTarget ? '#0f0' : 'orange'}
+                fill='transparent' />
+              {target === this.state.gunTarget ? (
+                <Crosshair size='30'
+                  x={target.hudPosition.x + target.direction.x}
+                  y={target.hudPosition.y + target.direction.y}
+                  fill='#0f0'
+                  fillOpacity='0.6'
+                  stroke='#0f0'
+                  strokeWidth='17'
+                  strokeOpacity='1'
+                />
+              ) : null}
+            </g>)
             : null
           ))}
         </svg>
