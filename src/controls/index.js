@@ -3,7 +3,7 @@ import nipplejs from 'nipplejs'
 import lock from 'pointer-lock'
 import {mobileAndTabletcheck} from '../utils/isMobile'
 import FlyControls from '../modules/FlyControls'
-import {OrbitControls} from '../modules/OrbitControls'
+// import {OrbitControls} from '../modules/OrbitControls'
 import {triggerExplosion} from '../particles'
 import PubSub from '../events'
 import {scene, camera, renderer} from '../index'
@@ -16,13 +16,11 @@ import {selectNearestTargetInSight, hudElement} from '../hud'
 
 let controlsModule
 let controlsElement
-let isMobile = false
+let isMobile = mobileAndTabletcheck()
 let controlsInitialized = false
 const initControls = (msg, data) => {
   if (controlsInitialized) return
-  if (mobileAndTabletcheck()) {
-    isMobile = true
-
+  if (isMobile) {
     document.getElementById('touchPane').style.display = 'block'
     const touchPaneLeft = window.document.getElementsByClassName('touchPaneLeft')[0]
     const nippleLook = nipplejs.create({
@@ -42,7 +40,7 @@ const initControls = (msg, data) => {
     const buttonX = document.getElementById('buttonX')
     const pressX = (event) => {
       event.target.style.opacity = 0.5
-      fireBullet()
+      fireBullet({button: 2})
       setTimeout(() => { event.target.style.opacity = 0.3 }, 250)
     }
     buttonX.addEventListener('click', pressX, false)
