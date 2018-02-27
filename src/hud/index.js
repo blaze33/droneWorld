@@ -112,9 +112,8 @@ class HUD extends Component {
           }
           {targets.map(target => (
             target.gunHud
-            ? (<g>
+            ? (<g key={target.id}>
               <path
-                key={target.id}
                 d={`M ${target.hudPosition.x} ${target.hudPosition.y}
                     l ${target.direction.x} ${target.direction.y}`}
                 strokeWidth='1'
