@@ -13,9 +13,10 @@ let currentKeysArray = []
 window.tiles = tiles
 window.pngs = pngs
 
+let camVec = new Vector3()
 const tileBuilder = (timestamp) => {
   const cameraPosition = camera.position
-  const camVec = camera.getWorldDirection()
+  camVec = camera.getWorldDirection(camVec)
   let targetPosition = cameraPosition.clone()
 
   targetPosition = targetPosition.add(camVec.multiplyScalar(400 * Math.max(1, Math.abs(cameraPosition.z) / 400)))

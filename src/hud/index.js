@@ -242,6 +242,7 @@ const registerTarget = (msg, target) => {
 }
 PubSub.subscribe('x.hud.register.target', registerTarget)
 
+const camVec = new Vector3()
 const hudLoop = (timestamp) => {
   const localX = new Vector3(1, 0, 0).applyQuaternion(camera.quaternion)
   const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
@@ -249,7 +250,7 @@ const hudLoop = (timestamp) => {
     Math.PI / 2 - camera.up.angleTo(localX) * Math.sign(camera.up.dot(localY))
   )
   camera.rollAngle = rollAngle
-  const pitch = camera.up.dot(camera.getWorldDirection())
+  const pitch = camera.up.dot(camera.getWorldDirection(camVec))
   const rollAngleDegree = rollAngle / Math.PI * 180
   hudHorizon.style.transform = `translateX(-50%) translateY(${pitch * window.innerHeight / 2}px) rotate(${rollAngleDegree}deg)`
   if (hudElement.state.lock) {
