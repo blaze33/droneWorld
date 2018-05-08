@@ -1,3 +1,18 @@
+## DroneWorld
+
+Blog entries:
+
+- [GameDev with three.js on the modern web 🚀🎆](https://blog.openbloc.fr/gamedev-with-three-js-on-the-modern-web/)
+- [Three.js & 3D interactive animations: a tutorial](https://blog.openbloc.fr/a-simple-and-flexible-render-loop-in-three-js/)
+
+[Test the game in your brower](https://lab.openbloc.fr/droneWorld/)
+
+[Stay tuned for future updates on twitter with @maxmre](https://twitter.com/maxmre)
+
+<img align="center" src="https://cdn.openbloc.fr/2018/04/Capture-du-2018-04-19-01-46-13.png" />
+
+## Create React App default README below
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
