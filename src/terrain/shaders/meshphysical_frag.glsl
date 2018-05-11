@@ -64,7 +64,8 @@ vec4 physicalColor(sampler2D map, sampler2D normalMap, float roughness, float me
 	#include <alphatest_fragment>
 	#include <roughnessmap_fragment>
 	#include <metalnessmap_fragment>
-	#include <normal_fragment>
+	#include <normal_fragment_begin>
+	#include <normal_fragment_maps>
 	#include <emissivemap_fragment>
 
 	// accumulation
