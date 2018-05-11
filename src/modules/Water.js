@@ -159,7 +159,7 @@ const Water = function (geometry, options) {
       ShaderChunk[ 'packing' ],
       ShaderChunk[ 'bsdfs' ],
       ShaderChunk[ 'fog_pars_fragment' ],
-      ShaderChunk[ 'lights_pars' ],
+      ShaderChunk[ 'lights_pars_begin' ],
       ShaderChunk[ 'shadowmap_pars_fragment' ],
       ShaderChunk[ 'shadowmask_pars_fragment' ],
 
