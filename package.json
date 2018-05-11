@@ -43,7 +43,7 @@
     "react": "^16.2.0",
     "react-dev-utils": "^4.2.1",
     "react-dom": "^16.2.0",
-    "shader-particle-engine": "git+ssh://git@github.com:blaze33/ShaderParticleEngine.git",
+    "shader-particle-engine": "git+ssh://git@github.com:blaze33/ShaderParticleEngine.git#d2df4b8a9ee97af8f282daa61911e47cff86d488",
     "stats.js": "^0.17.0",
     "style-loader": "0.19.1",
     "sw-precache-webpack-plugin": "0.11.4",

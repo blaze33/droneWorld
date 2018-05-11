@@ -6453,11 +6453,11 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-"shader-particle-engine@git+ssh://git@github.com:blaze33/ShaderParticleEngine.git":
+"shader-particle-engine@git+ssh://git@github.com:blaze33/ShaderParticleEngine.git#d2df4b8a9ee97af8f282daa61911e47cff86d488":
   version "1.0.6"
-  resolved "git+ssh://git@github.com:blaze33/ShaderParticleEngine.git#0a7c22b5ec5cfc6c7b46518d7c1ebe88213d9d6c"
+  resolved "git+ssh://git@github.com:blaze33/ShaderParticleEngine.git#d2df4b8a9ee97af8f282daa61911e47cff86d488"
   dependencies:
-    three "^0.89.0"
+    three "^0.92.0"
 
 shebang-command@^1.2.0:
   version "1.2.0"
@@ -6909,10 +6909,6 @@ text-table@0.2.0, text-table@^0.2.0, text-table@~0.2.0:
 three.terrain.js@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/three.terrain.js/-/three.terrain.js-1.5.0.tgz#5f1179081e5051d3f992597d1630c689ccc432c2"
-
-three@^0.89.0:
-  version "0.89.0"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.89.0.tgz#4442d819a6168871b8d2cb37ad12a24310c170f5"
 
 three@^0.92.0:
   version "0.92.0"
