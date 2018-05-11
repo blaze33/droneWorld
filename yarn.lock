@@ -6453,7 +6453,7 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-"shader-particle-engine@git+ssh://git@github.com:blaze33/ShaderParticleEngine.git":
+"shader-particle-engine@git+ssh://git@github.com:blaze33/ShaderParticleEngine.git#0a7c22b5ec5cfc6c7b46518d7c1ebe88213d9d6c":
   version "1.0.6"
   resolved "git+ssh://git@github.com:blaze33/ShaderParticleEngine.git#0a7c22b5ec5cfc6c7b46518d7c1ebe88213d9d6c"
   dependencies:
