@@ -1,4 +1,4 @@
-import GLTFLoader from '../modules/GLTFLoader'
+import {GLTFLoader} from '../modules'
 import PubSub from '../events'
 
 var loader = new GLTFLoader()
