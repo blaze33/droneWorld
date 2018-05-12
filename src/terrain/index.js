@@ -14,7 +14,7 @@ import {MaterialBasic} from './shaders/materialBasic'
 //   'https://raw.githubusercontent.com/d3/d3-scale-chromatic/master/img/Spectral.png'
 // )
 
-const spectralMaterial = MaterialBasic
+const materialBasic = MaterialBasic()
 
 // cf. http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#ECMAScript_.28JavaScript.2FActionScript.2C_etc..29
 const long2tile = (lon, zoom) => {
@@ -69,10 +69,7 @@ const buildTileFromWorker = event => {
   geometry.addAttribute('uv', new BufferAttribute(uv, 2))
   geometry.setIndex(new BufferAttribute(index, 1))
 
-  // standard shader material
-  // const material = spectralMaterial({}, {heightmap: {value: heightTexture}})
-
-  const terrainMaterial = options.PBR ? material : spectralMaterial()
+  const terrainMaterial = options.PBR ? material : materialBasic
   const plane = new Mesh(geometry, terrainMaterial)
 
   plane.key = event.data.key
