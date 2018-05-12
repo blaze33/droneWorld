@@ -56,7 +56,7 @@ varying vec3 vNormal2;
 	// Per-Pixel Tangent Space Normal Mapping
 	// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html
 
-	vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm , sampler2D normalMap) {
+	vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm) {
 
 		// Workaround for Adreno 3XX dFd*( vec3 ) bug. See #9988
 
@@ -95,36 +95,8 @@ vec4 physicalColor(sampler2D map, sampler2D normalMap, float roughness, float me
 	#include <alphatest_fragment>
 	#include <roughnessmap_fragment>
 	#include <metalnessmap_fragment>
-	// #include <normal_fragment>
-	#ifdef FLAT_SHADED
-
-		// Workaround for Adreno/Nexus5 not able able to do dFdx( vViewPosition ) ...
-
-		vec3 fdx = vec3( dFdx( vViewPosition.x ), dFdx( vViewPosition.y ), dFdx( vViewPosition.z ) );
-		vec3 fdy = vec3( dFdy( vViewPosition.x ), dFdy( vViewPosition.y ), dFdy( vViewPosition.z ) );
-		vec3 normal = normalize( cross( fdx, fdy ) );
-
-	#else
-
-		vec3 normal = normalize( vNormal );
-
-		#ifdef DOUBLE_SIDED
-
-			normal = normal * ( float( gl_FrontFacing ) * 2.0 - 1.0 );
-
-		#endif
-
-	#endif
-
-	#ifdef USE_NORMALMAP
-
-		normal = perturbNormal2Arb( -vViewPosition, normal , normalMap);
-
-	#elif defined( USE_BUMPMAP )
-
-		normal = perturbNormalArb( -vViewPosition, normal, dHdxy_fwd() );
-
-	#endif
+	#include <normal_fragment_begin>
+	#include <normal_fragment_maps>
 
 	#include <emissivemap_fragment>
 
@@ -180,13 +152,7 @@ void main() {
 	#include <tonemapping_fragment>
 	#include <encodings_fragment>
 
-	//  FOG
-	// #include <fog_fragment>
-	// reflectVec = refract( cameraToVertex, worldNormal, 1.0 );
-	// vec4 fogColor = textureCube( envMap, vec3( flipEnvMap * reflectVec.x, reflectVec.yz ) );
-	// float fogFactor = whiteCompliment( exp2( - fogDensity * fogDensity * fogDepth * fogDepth * LOG2 ) );
-	// fogFactor = mix(fogFactor, fogFactor / 10.0, smoothstep(100.0, 300.0, vWorldPosition.z));
-	// gl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor.rgb, fogFactor );
+	#include <fog_fragment>
 
 	#include <premultiplied_alpha_fragment>
 	#include <dithering_fragment>
