@@ -41,7 +41,8 @@ varying vec3 vNormal2;
 #include <fog_pars_fragment>
 #include <bsdfs>
 #include <cube_uv_reflection_fragment>
-#include <lights_pars>
+#include <lights_pars_begin>
+#include <lights_pars_maps>
 #include <lights_physical_pars_fragment>
 #include <shadowmap_pars_fragment>
 #include <bumpmap_pars_fragment>
@@ -63,12 +64,15 @@ vec4 physicalColor(sampler2D map, sampler2D normalMap, float roughness, float me
 	#include <alphatest_fragment>
 	#include <roughnessmap_fragment>
 	#include <metalnessmap_fragment>
-	#include <normal_fragment>
+	#include <normal_fragment_begin>
+	#include <normal_fragment_maps>
 	#include <emissivemap_fragment>
 
 	// accumulation
 	#include <lights_physical_fragment>
-	#include <lights_template>
+	#include <lights_fragment_begin>
+	#include <lights_fragment_maps>
+	#include <lights_fragment_end>
 
 	// modulation
 	#include <aomap_fragment>

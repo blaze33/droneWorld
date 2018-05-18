@@ -326,6 +326,8 @@ groups.forEach(group => { group.mesh.frustumCulled = false })
 
 window.smokeGroup = smokeGroup
 
+let camVec = new Vector3()
+
 const triggerSingleEmitter = (group, target, follow = false, velocityFunction, offset = false) => {
   const emitter = group.getFromPool()
 
@@ -336,7 +338,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
 
   if (offset) {
     emitter.position.value = target.position.clone().add(
-      camera.getWorldDirection().multiplyScalar(5)
+      camera.getWorldDirection(camVec).multiplyScalar(5)
     )
   } else {
     emitter.position.value = target.position.clone()
@@ -353,6 +355,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
   let collisions
   let bulletLine
   let closestDistance
+  const targetVec3 = new Vector3()
   const chunkReducer = (chunkSize) =>
     (ar, it, i) => {
       const ix = Math.floor(i / chunkSize)
@@ -364,7 +367,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
     loop: (timestamp, delta) => {
       if (offset) {
         emitter.position.value = target.position.clone().add(
-          camera.getWorldDirection().multiplyScalar(5)
+          camera.getWorldDirection(camVec).multiplyScalar(5)
         )
       } else {
         emitter.position.value = target.position.clone()
@@ -398,7 +401,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
               pos,
               pos.clone().add(new Vector3(...velocities[i]).multiplyScalar(delta / 1000))
             )
-            closestDistance = bulletLine.closestPointToPoint(target.position, true).sub(target.position).length()
+            closestDistance = bulletLine.closestPointToPoint(target.position, true, targetVec3).sub(target.position).length()
             if (closestDistance < 10) {
               collisions.push([target, pos])
             }
@@ -408,7 +411,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
           collisions.forEach(ar => {
             PubSub.publish('x.sound.impact', ar[0])
             triggerSmallExplosion({position: ar[1]})
-            ar[0].life -= 5
+            ar[0].userData.life -= 5
           })
         }
       }
@@ -475,7 +478,7 @@ PubSub.subscribe('x.drones.gun.start', (msg, drone) => {
     if (target !== null && target.gunHud) {
       targetVector = target.position.clone().sub(camera.position).add(target.velocity)
     } else {
-      targetVector = camera.getWorldDirection().multiplyScalar(500)
+      targetVector = camera.getWorldDirection(camVec).multiplyScalar(500)
       const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
       targetVector = targetVector.add(localY.multiplyScalar(24))
     }

@@ -45,9 +45,9 @@ const buildPilotDrone = () => {
   let localY
   let targetPosition
   let targetPositionFinal
-  let camVec
+  let camVec = new Vector3()
   const pilotDroneLoop = () => {
-    camVec = camera.getWorldDirection()
+    camVec = camera.getWorldDirection(camVec)
     targetPosition = camera.position.clone()
       .add(camVec.multiplyScalar(20))
     localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
@@ -69,9 +69,10 @@ PubSub.subscribe('x.drones.factory.ready', buildPilotDrone)
 const spawnDrone = (circle = true, phase = 0) => {
   const drone = droneFactory()
   drone.lockClock = new Clock(false)
-  drone.life = 100
+  drone.userData.life = 100
   scene.add(drone)
   drone.lastPosition = drone.position.clone()
+  let camVec = new Vector3()
   const droneLoop = (timestamp, delta) => {
     if (!drone) return
     const radius = 300
@@ -83,14 +84,14 @@ const spawnDrone = (circle = true, phase = 0) => {
       )
     } else {
       drone.position.copy(camera.position.clone()
-        .add(camera.getWorldDirection().multiplyScalar(100)))
+        .add(camera.getWorldDirection(camVec).multiplyScalar(100)))
     }
     drone.velocity = drone.position.clone().sub(drone.lastPosition).multiplyScalar(1000 / delta)
     drone.lastPosition = drone.position.clone()
-    if (!drone.destroyed && drone.life <= 50) {
+    if (!drone.destroyed && drone.userData.life <= 50) {
       PubSub.publish('x.drones.smoke.start', drone)
     }
-    if (!drone.destroyed && drone.life <= 0) {
+    if (!drone.destroyed && drone.userData.life <= 0) {
       PubSub.publish('x.drones.destroy', drone)
       drone.destroyed = true
       triggerExplosion(drone)
