@@ -411,7 +411,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
           collisions.forEach(ar => {
             PubSub.publish('x.sound.impact', ar[0])
             triggerSmallExplosion({position: ar[1]})
-            ar[0].life -= 5
+            ar[0].userData.life -= 5
           })
         }
       }

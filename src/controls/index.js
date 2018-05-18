@@ -118,7 +118,7 @@ const initControls = (msg, data) => {
             triggerExplosion(target)
             PubSub.publish('x.drones.missile.stop', fire)
             PubSub.publish('x.drones.explosion', target)
-            target.life -= 25
+            target.userData.life -= 25
             hudElement.forceUpdate()
           }
           const newDir = vec.normalize().multiplyScalar(10 * delta / 16.66)

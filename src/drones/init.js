@@ -69,7 +69,7 @@ PubSub.subscribe('x.drones.factory.ready', buildPilotDrone)
 const spawnDrone = (circle = true, phase = 0) => {
   const drone = droneFactory()
   drone.lockClock = new Clock(false)
-  drone.life = 100
+  drone.userData.life = 100
   scene.add(drone)
   drone.lastPosition = drone.position.clone()
   let camVec = new Vector3()
@@ -88,10 +88,10 @@ const spawnDrone = (circle = true, phase = 0) => {
     }
     drone.velocity = drone.position.clone().sub(drone.lastPosition).multiplyScalar(1000 / delta)
     drone.lastPosition = drone.position.clone()
-    if (!drone.destroyed && drone.life <= 50) {
+    if (!drone.destroyed && drone.userData.life <= 50) {
       PubSub.publish('x.drones.smoke.start', drone)
     }
-    if (!drone.destroyed && drone.life <= 0) {
+    if (!drone.destroyed && drone.userData.life <= 0) {
       PubSub.publish('x.drones.destroy', drone)
       drone.destroyed = true
       triggerExplosion(drone)
