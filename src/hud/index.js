@@ -1,6 +1,7 @@
 import {Vector2, Vector3} from 'three'
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
+import clone from 'clone'
 import {screenXYclamped} from '../utils'
 import PubSub from '../events'
 import {scene, camera} from '../index'
@@ -65,6 +66,10 @@ class HUD extends Component {
   }
 
   render () {
+    const targetsData = targets.map(target => Object.assign(
+      clone(target.userData),
+      {id: target.id}
+    ))
     return (
       <div>
         <div id='limiter' />
@@ -135,12 +140,12 @@ class HUD extends Component {
           ))}
         </svg>
         <div id='targets'>
-          {targets.map(target => (
-            <div className='target' key={target.id} id={'target-' + target.id}>
+          {targetsData.map(target => (
+            <div className='target' key={target.id} id={'target-' + target.id} style={target.hud.element.style}>
               <div className='life' style={{width: target.life / 100 * 20}} />
-              <div className='arrow' />
-              <div className='distance' />
-              <div className='name' />
+              <div className='arrow' style={target.hud.arrow.style} />
+              <div className='distance'>{target.hud.distance.innerHTML}</div>
+              <div className='name'>drone-{target.id}</div>
             </div>
           ))}
         </div>
@@ -151,11 +156,11 @@ class HUD extends Component {
 
 const registerTarget = (msg, target) => {
   targets.push(target)
-  hudElement.forceUpdate()
-  const targetElement = document.getElementById('target-' + target.id)
-  const arrow = targetElement.querySelector('.arrow')
-  const distance = targetElement.querySelector('.distance')
-  const name = targetElement.querySelector('.name')
+  target.userData.hud = {
+    element: {style: {}},
+    arrow: {style: {}},
+    distance: {style: {}}
+  }
   let hudPosition
   let targetDistance2D
   let targetDistance3D
@@ -171,35 +176,34 @@ const registerTarget = (msg, target) => {
     if (hudPosition.z > 1) {
       hudPosition.x = window.innerWidth - hudPosition.x
       hudPosition.y = window.innerHeight - 10
-      targetElement.style.borderColor = 'red'
-      arrow.style.borderBottomColor = 'red'
+      target.userData.hud.element.style.borderColor = 'red'
+      target.userData.hud.arrow.style.borderBottomColor = 'red'
     } else {
-      targetElement.style.borderColor = 'orange'
-      arrow.style.borderBottomColor = 'orange'
+      target.userData.hud.element.style.borderColor = 'orange'
+      target.userData.hud.arrow.style.borderBottomColor = 'orange'
     }
     target.hudPosition = hudPosition
     targetVector2D = new Vector2(hudPosition.x, hudPosition.y).sub(screenCenter)
     if (targetVector2D.length() > this.zone) {
       targetVector2D.normalize().multiplyScalar(this.zone)
     }
-    arrow.style.opacity = 0.8 * (1 - (this.zone - targetVector2D.length()) / 50)
+    target.userData.hud.arrow.style.opacity = 0.8 * (1 - (this.zone - targetVector2D.length()) / 50)
     targetVector3D = camera.position.clone().sub(target.position)
     targetDistance3D = targetVector3D.length()
-    distance.innerHTML = targetDistance3D.toFixed(0)
-    distance.style.color = targetDistance3D < this.gunRange ? '#0f0' : 'orange'
-    name.innerHTML = 'drone-' + target.id
-    targetElement.style.transform = `
+    target.userData.hud.distance.innerHTML = targetDistance3D.toFixed(0)
+    target.userData.hud.distance.style.color = targetDistance3D < this.gunRange ? '#0f0' : 'orange'
+    target.userData.hud.element.style.transform = `
       translateX(${targetVector2D.x + screenCenter.x}px)
       translateY(${targetVector2D.y + screenCenter.y}px)
       scale(${1.1 - Math.min(0.2, targetDistance3D / 2000)})
     `
-    arrow.style.transform = `
+    target.userData.hud.arrow.style.transform = `
       translateY(2px)
       rotate(${targetVector2D.angle() / Math.PI * 180 + 90}deg)
     `
     targetDistance2D = targetVector2D.length()
-    if (!target.destroyed && targetElement.style.borderColor === 'orange' && targetDistance2D < this.focalSize) {
-      targetElement.style.borderColor = '#0f0'
+    if (!target.destroyed && target.userData.hud.element.style.borderColor === 'orange' && targetDistance2D < this.focalSize) {
+      target.userData.hud.arrow.style.borderBottomColor = '#0f0'
       targetsInSight.add(target)
       if (!target.lockClock.running) target.lockClock.start()
     } else {
