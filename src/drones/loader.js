@@ -12,7 +12,6 @@ const loadDroneAssets = () => {
     // called when the resource is loaded
     function (gltf) {
       droneMesh = gltf.scene.children[0]
-      console.log(droneMesh)
       PubSub.publish('x.assets.drone.loaded', {mesh: droneMesh})
     }
   )
