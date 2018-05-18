@@ -7,8 +7,6 @@ import PubSub from '../events'
 import {scene, camera} from '../index'
 import Crosshair from './crosshair'
 
-let hudHorizon
-let hudFocal
 let targets = []
 let pilotDrone
 const targetsInSight = new Set()
@@ -17,6 +15,8 @@ let screenCenter = new Vector2(window.innerWidth / 2, window.innerHeight / 2)
 PubSub.subscribe('x.screen.resized', (msg, rendererSize) => {
   screenCenter = new Vector2(rendererSize.width / 2, rendererSize.height / 2)
 })
+let horizonStyle
+let focalStyle
 
 class HUD extends Component {
   constructor (props) {
@@ -54,10 +54,11 @@ class HUD extends Component {
     return Math.min(Math.max(...times), 1)
   }
 
-  update (timestamp) {
+  update (timestamp, newState) {
     const gunHeat = this.gunHeat()
     const lockLevel = this.lockLevel()
     this.setState({
+      ...newState,
       time: timestamp,
       gunHeat,
       lockLevel,
@@ -74,8 +75,8 @@ class HUD extends Component {
       <div>
         <div id='limiter' />
         <div id='pointer' />
-        <div id='focal' />
-        <div id='horizon' />
+        <div id='focal' style={this.state.focalStyle} />
+        <div id='horizon' style={this.state.horizonStyle} />
         <svg className='vector'>
           <Crosshair size='30' x={screenCenter.x} y={screenCenter.y}
             fill='transparent'
@@ -247,28 +248,32 @@ const registerTarget = (msg, target) => {
 PubSub.subscribe('x.hud.register.target', registerTarget)
 
 const camVec = new Vector3()
+let localX
+let localY
+let rollAngle
+let pitch
+let rollAngleDegree
 const hudLoop = (timestamp) => {
-  const localX = new Vector3(1, 0, 0).applyQuaternion(camera.quaternion)
-  const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
-  const rollAngle = (
+  localX = new Vector3(1, 0, 0).applyQuaternion(camera.quaternion)
+  localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
+  rollAngle = (
     Math.PI / 2 - camera.up.angleTo(localX) * Math.sign(camera.up.dot(localY))
   )
   camera.rollAngle = rollAngle
-  const pitch = camera.up.dot(camera.getWorldDirection(camVec))
-  const rollAngleDegree = rollAngle / Math.PI * 180
-  hudHorizon.style.transform = `translateX(-50%) translateY(${pitch * window.innerHeight / 2}px) rotate(${rollAngleDegree}deg)`
-  if (hudElement.state.lock) {
-    hudFocal.style.boxShadow = '0 0 75px #0f0'
-  } else {
-    hudFocal.style.boxShadow = ''
+  pitch = camera.up.dot(camera.getWorldDirection(camVec))
+  rollAngleDegree = rollAngle / Math.PI * 180
+  horizonStyle = {
+    transform: `translateX(-50%) translateY(${pitch * window.innerHeight / 2}px) rotate(${rollAngleDegree}deg)`
   }
-  hudElement.setState(state => ({...state, gunTarget: selectNearestGunTarget()}))
-  hudElement.update(timestamp)
+  if (hudElement.state.lock) {
+    focalStyle = {boxShadow: '0 0 75px #0f0'}
+  } else {
+    focalStyle = {boxShadow: ''}
+  }
+  hudElement.update(timestamp, {horizonStyle, focalStyle, gunTarget: selectNearestGunTarget()})
 }
 
 PubSub.subscribe('x.hud.mounted', () => {
-  hudHorizon = document.getElementById('horizon')
-  hudFocal = document.getElementById('focal')
   PubSub.publish('x.loops.push', hudLoop)
   hudElement.mounted = true
 })
