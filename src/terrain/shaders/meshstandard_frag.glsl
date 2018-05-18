@@ -127,7 +127,6 @@ void main() {
 	float flatness = dot(normal, vec3(0.0, 0.0, 1.0));
 	vec4 colorTerrain = mix(
 		rockColor,
-		// rockColor,
 		grassColor,
 		smoothstep(0.6, 0.7, flatness)
 	);
