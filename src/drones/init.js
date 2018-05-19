@@ -97,6 +97,11 @@ const spawnDrone = (circle = true, phase = 0) => {
       triggerExplosion(drone)
     }
   }
+  PubSub.subscribe('x.drones.destroy', (msg, deadDrone) => {
+    if (deadDrone.id === drone.id) {
+      PubSub.publish('x.loops.remove', droneLoop)
+    }
+  })
   PubSub.publish('x.hud.register.target', drone)
   loops.push(droneLoop)
 }

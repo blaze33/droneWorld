@@ -429,6 +429,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
     })
   }
 
+  emitter.loop = loop
   emitter.enable()
 
   if (emitter.duration) {
@@ -461,6 +462,7 @@ const triggerLightSmoke = (target) => {
   target.smoking = true
   const smokeEmitter = triggerSingleEmitter(smokeLightGroup, target, true)
   PubSub.subscribe('x.drones.missile.stop', (msg, missile) => {
+    smokeEmitter.loop.alive = false
     smokeEmitter.disable()
     smokeLightGroup.releaseIntoPool(smokeEmitter)
   })
@@ -489,6 +491,7 @@ PubSub.subscribe('x.drones.gun.start', (msg, drone) => {
 
 PubSub.subscribe('x.drones.gun.stop', (msg, drone) => {
   if (drone.gunEmitter) {
+    drone.gunEmitter.loop.alive = false
     drone.gunEmitter.disable()
     bulletGroup.releaseIntoPool(drone.gunEmitter)
   }

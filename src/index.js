@@ -215,7 +215,7 @@ let loops = [
   }
 ]
 const removeLoop = (loop) => {
-  loops = loops.filter(item => item.id !== loop.id)
+  loops = loops.filter(item => item !== loop)
 }
 PubSub.subscribe('x.loops.remove', (msg, loop) => removeLoop(loop))
 PubSub.subscribe('x.loops.push', (msg, loop) => loops.push(loop))
