@@ -9,6 +9,7 @@ varying vec3 vViewPosition;
 #endif
 
 varying vec3 vNormal2;
+varying float flatness;
 
 #include <common>
 #include <uv_pars_vertex>
@@ -54,5 +55,6 @@ void main() {
 	#include <shadowmap_vertex>
 	#include <fog_vertex>
 
-	vNormal2 = normal;
+	vNormal2 = normalize(normal);
+	flatness = dot(normal, vec3(0.0, 0.0, 1.0));
 }

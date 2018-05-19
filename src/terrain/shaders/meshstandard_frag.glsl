@@ -19,6 +19,7 @@ uniform sampler2D rockTextureNormal;
 varying vec3 vViewPosition;
 varying vec3 vWorldPosition;
 varying vec3 vNormal2;
+varying float flatness;
 
 #ifndef FLAT_SHADED
 
@@ -122,9 +123,6 @@ void main() {
 
 	vec4 grassColor = physicalColor(map, normalMap, roughness, metalness);
 	vec4 rockColor = physicalColor(rockTexture, rockTextureNormal, 0.4, 0.15);
-	vec3 normal = normalize( vNormal2 );
-	// normal = perturbNormal2Arb( -vViewPosition, normal );
-	float flatness = dot(normal, vec3(0.0, 0.0, 1.0));
 	vec4 colorTerrain = mix(
 		rockColor,
 		grassColor,
