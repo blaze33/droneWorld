@@ -50,6 +50,7 @@ const buildPilotDrone = () => {
   let camVec = new Vector3()
   const raycaster = new Raycaster()
   const downVector = new Vector3(0, 0, -1)
+  const offsetVector = new Vector3(0, 0, 100)
   let terrainTiles
   let lastTimestamp = 0
   const pilotDroneLoop = (timestamp) => {
@@ -70,12 +71,12 @@ const buildPilotDrone = () => {
     // altitude computation
     if (timestamp - lastTimestamp > 200) {
       lastTimestamp = timestamp
-      raycaster.set(pilotDrone.position, downVector)
+      raycaster.set(pilotDrone.position.clone().add(offsetVector), downVector)
       terrainTiles = raycaster.intersectObjects(scene.children.filter(child => {
         return camera.userData.terrainKeysUnder.includes(child.key) || child.userData.isWater
       }))
       if (terrainTiles.length > 0) {
-        pilotDrone.userData.altitude = terrainTiles[0].distance
+        pilotDrone.userData.altitude = terrainTiles[0].distance - offsetVector.length()
       }
     }
   }
