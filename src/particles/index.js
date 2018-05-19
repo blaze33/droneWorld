@@ -27,7 +27,7 @@ const fireGroupOptions = {
   depthWrite: false,
   blending: AdditiveBlending,
   scale: 600,
-  maxParticleCount: 100000
+  maxParticleCount: 25000
 }
 const pointsGroupOptions = {
   texture: {
@@ -36,7 +36,7 @@ const pointsGroupOptions = {
   depthTest: true,
   depthWrite: false,
   blending: NormalBlending,
-  maxParticleCount: 100000
+  maxParticleCount: 25000
 }
 const debrisGroupOptions = {
   texture: {
@@ -45,7 +45,7 @@ const debrisGroupOptions = {
   depthTest: true,
   depthWrite: false,
   blending: NormalBlending,
-  maxParticleCount: 100000
+  maxParticleCount: 25000
 }
 const bulletGroupOptions = {
   texture: {
@@ -54,7 +54,7 @@ const bulletGroupOptions = {
   depthTest: true,
   depthWrite: false,
   blending: NormalBlending,
-  maxParticleCount: 100000
+  maxParticleCount: 25000
 }
 
 // EMITTERS
@@ -292,7 +292,7 @@ const smokeLightGroup = new SPE.Group(pointsGroupOptions)
 const bulletGroup = new SPE.Group(bulletGroupOptions)
 const sparkGroup = new SPE.Group(debrisGroupOptions)
 
-const poolSize = 100
+const poolSize = 25
 const createNew = false
 
 flashGroup.addPool(poolSize, flashOptions, createNew)
