@@ -4,14 +4,12 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
-    "alea": "^0.0.9",
-    "autoprefixer": "7.2.3",
-    "babel-cli": "^6.26.0",
+    "autoprefixer": "7.1.6",
     "babel-core": "6.26.0",
-    "babel-eslint": "8.1.2",
-    "babel-jest": "22.0.4",
+    "babel-eslint": "7.2.3",
+    "babel-jest": "20.0.3",
     "babel-loader": "7.1.2",
-    "babel-preset-react-app": "^3.1.0",
+    "babel-preset-react-app": "^3.1.1",
     "babel-runtime": "6.26.0",
     "case-sensitive-paths-webpack-plugin": "2.1.1",
     "chalk": "2.3.0",
@@ -19,14 +17,15 @@
     "css-loader": "0.28.7",
     "dat.gui": "^0.6.5",
     "dotenv": "4.0.0",
+    "dotenv-expand": "4.2.0",
     "es6-tween": "^5.0.5",
-    "eslint": "^3.19.0",
-    "eslint-config-react-app": "^2.0.1",
-    "eslint-loader": "^1.8.0",
+    "eslint": "4.10.0",
+    "eslint-config-react-app": "^2.1.0",
+    "eslint-loader": "1.9.0",
     "eslint-plugin-flowtype": "2.40.1",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-jsx-a11y": "^5.0.1",
-    "eslint-plugin-react": "^7.1.0",
+    "eslint-plugin-import": "2.8.0",
+    "eslint-plugin-jsx-a11y": "5.1.1",
+    "eslint-plugin-react": "7.4.0",
     "extract-text-webpack-plugin": "3.0.2",
     "file-loader": "1.1.6",
     "fs-extra": "5.0.0",
@@ -41,9 +40,11 @@
     "promise": "8.0.1",
     "pubsub-js": "^1.5.8",
     "query-string": "^5.0.1",
-    "react": "^16.2.0",
-    "react-dev-utils": "^4.2.1",
-    "react-dom": "^16.2.0",
+    "raf": "3.4.0",
+    "react": "^16.3.2",
+    "react-dev-utils": "^5.0.1",
+    "react-dom": "^16.3.2",
+    "resolve": "1.6.0",
     "shader-particle-engine": "git+ssh://git@github.com:blaze33/ShaderParticleEngine.git#d2df4b8a9ee97af8f282daa61911e47cff86d488",
     "stats.js": "^0.17.0",
     "style-loader": "0.19.1",
@@ -70,24 +71,24 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "src/**/*.{js,jsx}"
+      "src/**/*.{js,jsx,mjs}"
     ],
     "setupFiles": [
       "<rootDir>/config/polyfills.js"
     ],
     "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.js?(x)",
-      "<rootDir>/src/**/?(*.)(spec|test).js?(x)"
+      "<rootDir>/src/**/__tests__/**/*.{js,jsx,mjs}",
+      "<rootDir>/src/**/?(*.)(spec|test).{js,jsx,mjs}"
     ],
     "testEnvironment": "node",
     "testURL": "http://localhost",
     "transform": {
-      "^.+\\.(js|jsx)$": "<rootDir>/node_modules/babel-jest",
+      "^.+\\.(js|jsx|mjs)$": "<rootDir>/node_modules/babel-jest",
       "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
-      "^(?!.*\\.(js|jsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+      "^(?!.*\\.(js|jsx|mjs|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
     },
     "transformIgnorePatterns": [
-      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$"
     ],
     "moduleNameMapper": {
       "^react-native$": "react-native-web"
@@ -98,7 +99,8 @@
       "json",
       "web.jsx",
       "jsx",
-      "node"
+      "node",
+      "mjs"
     ]
   },
   "babel": {
