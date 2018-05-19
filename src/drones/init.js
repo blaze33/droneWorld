@@ -1,6 +1,7 @@
 import {
   Vector3,
-  Clock
+  Clock,
+  Raycaster
 } from 'three'
 import {scene, camera, loops} from '../index'
 import PubSub from '../events'
@@ -41,12 +42,17 @@ PubSub.subscribe('x.assets.drone.loaded', initDroneFactory)
 const buildPilotDrone = () => {
   const pilotDrone = droneFactory()
   pilotDrone.gunClock = new Clock(false)
+  pilotDrone.userData.altitude = 0
   scene.add(pilotDrone)
   let localY
   let targetPosition
   let targetPositionFinal
   let camVec = new Vector3()
-  const pilotDroneLoop = () => {
+  const raycaster = new Raycaster()
+  const downVector = new Vector3(0, 0, -1)
+  let terrainTiles
+  let lastTimestamp = 0
+  const pilotDroneLoop = (timestamp) => {
     camVec = camera.getWorldDirection(camVec)
     targetPosition = camera.position.clone()
       .add(camVec.multiplyScalar(20))
@@ -60,6 +66,18 @@ const buildPilotDrone = () => {
     pilotDrone.rotation.x += droneController.x
     pilotDrone.rotation.y += droneController.y
     pilotDrone.rotation.z += droneController.z
+
+    // altitude computation
+    if (timestamp - lastTimestamp > 200) {
+      lastTimestamp = timestamp
+      raycaster.set(pilotDrone.position, downVector)
+      terrainTiles = raycaster.intersectObjects(scene.children.filter(child => {
+        return camera.userData.terrainKeysUnder.includes(child.key) || child.userData.isWater
+      }))
+      if (terrainTiles.length > 0) {
+        pilotDrone.userData.altitude = terrainTiles[0].distance
+      }
+    }
   }
   loops.push(pilotDroneLoop)
   PubSub.publish('x.drones.pilotDrone.loaded', {pilotDrone})

@@ -182,6 +182,7 @@ water.rotation.z = -Math.PI / 2
 water.position.z = 43
 gui.__folders['Sun, sky and ocean'].add(water.position, 'z', 0, 200, 1)
 water.receiveShadow = true
+water.userData.isWater = true
 window.water = water
 scene.add(water)
 // ##########################

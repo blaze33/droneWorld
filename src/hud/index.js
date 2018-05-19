@@ -77,6 +77,7 @@ class HUD extends Component {
         <div id='pointer' />
         <div id='focal' style={this.state.focalStyle} />
         <div id='horizon' style={this.state.horizonStyle} />
+        <div id='messages'>{pilotDrone ? pilotDrone.userData.altitude.toFixed(0) : 0} m</div>
         <svg className='vector'>
           <Crosshair size='30' x={screenCenter.x} y={screenCenter.y}
             fill='transparent'

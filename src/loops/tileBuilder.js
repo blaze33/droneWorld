@@ -97,6 +97,7 @@ const tileBuilder = (timestamp) => {
 
     const visibleKeysString = visibleKeysArray.map(k => k.toString())
     const currentKeysString = currentKeysArray.map(k => k.toString())
+    camera.userData.terrainKeysUnder = visibleKeysString.slice(0, 4)
     const newKeys = visibleKeysString.filter(x => currentKeysString.indexOf(x) < 0)
     // const oldKeys = currentKeysString.filter(x => visibleKeysString.indexOf(x) < 0)
 
