@@ -201,7 +201,6 @@ PubSub.subscribe('x.camera.shake.start', (msg, value = 1) => (shakeCamera = true
 PubSub.subscribe('x.camera.shake.stop', () => (shakeCamera = false))
 
 let loops = [
-  tileBuilder,
   () => lensFlare.position.copy(sunPosition),
   (timestamp, delta) => {
     particleGroups.forEach(group => group.tick(delta / 1000))
