@@ -60,6 +60,7 @@ camera.up = new Vector3(0, 0, 1)
 camera.position.set(-70, 175, 345)
 camera.lookAt(0, -400, 0)
 camera.rollAngle = 0
+camera.userData = {terrainKeysUnder: []}
 
 setupSound()
 
