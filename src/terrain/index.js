@@ -68,6 +68,7 @@ const buildTileFromWorker = event => {
   geometry.addAttribute('normal', new BufferAttribute(normals, 3))
   geometry.addAttribute('uv', new BufferAttribute(uv, 2))
   geometry.setIndex(new BufferAttribute(index, 1))
+  geometry.computeBoundingSphere()
   geometry.computeBoundingBox()
 
   const terrainMaterial = options.PBR ? material : materialBasic
