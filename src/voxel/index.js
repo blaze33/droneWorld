@@ -5,10 +5,15 @@ import {Octree} from '../modules'
 import PubSub from '../events'
 import {scene} from '../index'
 import * as voxel from 'voxel'
-import * as VoxelMesh from 'voxel-mesh'
-import {GreedyMesh} from './greedy'
+import {MaterialBasic} from '../terrain/shaders/materialBasic'
+
 // const voxel = require('voxel')
 import SimplexNoise from 'simplex-noise'
+
+require('three/examples/js/MarchingCubes.js')
+
+const MarchingCubes = global.THREE.MarchingCubes
+
 const octree = new Octree({
                 // uncomment below to see the octree (may kill the fps)
                 // scene: scene,
@@ -92,84 +97,34 @@ heightmap(10, 356, 356).then(png => {
   PubSub.publish('x.voxel.init', map)
 })
 
-const vertexShader = `precision highp float;
-    uniform mat4 modelViewMatrix;
-    uniform mat4 projectionMatrix;
-    attribute vec3 position;
-    attribute vec3 offset;
-    attribute vec2 uv;
-    attribute vec4 orientation;
-    attribute vec3 color;
-    varying vec3 color2;
-    varying vec2 vUv;
-    void main() {
-      vec3 vPosition = position;
-      vec3 vcV = cross( orientation.xyz, vPosition );
-      vPosition = vcV * ( 2.0 * orientation.w ) + ( cross( orientation.xyz, vcV ) * 2.0 + vPosition );
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4( offset + vPosition, 1.0 );
-      color2 = color;
-    }`
-
-const fragmentShader = `precision highp float;
-    uniform sampler2D map;
-    varying vec2 vUv;
-    varying vec3 color2;
-    void main() {
-      // gl_FragColor = texture2D( map, vUv );
-      gl_FragColor.rgb = color2;
-      gl_FragColor.a = 1.0;
-    }`
-
 const initMap = (msg, map) => {
-  console.log(map)
-  const generator = (i, j, k) => {
-    return Math.random() < 0.1 ? Math.random() * 0xffffff : 0
-  }
   const noise = new SimplexNoise('seed')
   let noiseValue
   const positions = []
-  const orientations = []
-  const colors = []
-  const voxels = voxel.generate([0, 0, 0], [64, 64, 64], function (x, y, z) {
-    noiseValue = noise.noise3D(x / 32, y / 32, z / 32)
+  voxel.generate([0, 0, 0], [128, 128, 128], function (x, y, z) {
+    noiseValue = noise.noise3D(x / 64, y / 64, z / 64)
     if (noiseValue < -0.7) {
-      positions.push(x, y, z)
-      orientations.push(0, 0, 0, 0)
-      colors.push(...(new THREE.Color(Math.random() * 0xffffff).toArray()))
+      positions.push(90)
+    } else {
+      positions.push(60)
     }
-    // return noiseValue < -0.7 ? Math.random() * 0xffffff : 0
   })
-  console.log(colors)
+  console.log(positions)
 
-  // scene.add(mesh)
+  // generate geometry
+  const effect = new MarchingCubes(128, new THREE.MeshNormalMaterial(), true, true)
+  effect.field = new Float32Array(positions, 3)
+  effect.position.set(0, 0, 0)
+  effect.scale.set(1000, 1000, 1000)
 
-  const geometry = new THREE.InstancedBufferGeometry()
-  var bufferGeometry = new THREE.BoxBufferGeometry(2, 2, 2)
-  geometry.index = bufferGeometry.index
-  geometry.attributes.position = bufferGeometry.attributes.position
-  geometry.attributes.uv = bufferGeometry.attributes.uv
-  // geometry.maxInstancedCount = 10 // set so its initalized for dat.GUI, will be set in first draw otherwise
-
-  const offsetAttribute = new THREE.InstancedBufferAttribute(new Float32Array(positions), 3)
-  const orientationAttribute = new THREE.InstancedBufferAttribute(new Float32Array(orientations), 4)
-
-  geometry.addAttribute('offset', offsetAttribute)
-  geometry.addAttribute('orientation', orientationAttribute)
-  geometry.addAttribute('color', new THREE.InstancedBufferAttribute(new Float32Array(colors), 3))
-  console.log(geometry)
-  var material = new THREE.RawShaderMaterial({
-
-    uniforms: {
-      map: { value: new THREE.TextureLoader().load(require('../textures/crate-texture-128.jpg')) }
-    },
-    vertexShader,
-    fragmentShader
-
-  })
-  var mesh = new THREE.Mesh(geometry, material)
-  mesh.frustumCulled = false
-  scene.add(mesh)
+  console.log(effect)
+  const geom = effect.generateGeometry()
+  console.log(geom)
+  geom.scale(700, 700, 700)
+  geom.computeFaceNormals()
+  geom.computeVertexNormals()
+  scene.add(new THREE.Mesh(geom, new THREE.MeshNormalMaterial({flatShading: true, fog: false})))
+  // scene.add(new THREE.Mesh(geom, MaterialBasic({}, {})))
 }
 PubSub.subscribe('x.voxel.init', initMap)
 
