@@ -36,6 +36,7 @@ import PubSub from './events'
 import setupDrones from './drones'
 import './controls'
 import setupSound from './sound'
+import {octree} from './voxel'
 
 const queryStringOptions = queryString.parse(window.location.search)
 const options = {
@@ -57,8 +58,8 @@ window.cube = cubeCamera
 cubeCamera.up.set(0, 0, 1)
 
 camera.up = new Vector3(0, 0, 1)
-camera.position.set(-70, 175, 345)
-camera.lookAt(0, -400, 0)
+camera.position.set(-70, 0, 50)
+camera.lookAt(0, 0, 0)
 camera.rollAngle = 0
 camera.userData = {terrainKeysUnder: []}
 
@@ -77,6 +78,7 @@ renderer.shadowMap.type = PCFSoftShadowMap
 renderer.shadowMap.autoUpdate = true
 renderer.physicallyCorrectLights = true
 renderer.toneMapping = Uncharted2ToneMapping
+renderer.logarithmicDepthBuffer = true
 
 renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
