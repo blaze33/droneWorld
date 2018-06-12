@@ -42,7 +42,6 @@ import './controls'
 import setupSound from './sound'
 import {octree} from './voxel'
 
-import { BlurPass, GodRaysPass} from 'postprocessing'
 import {
   EffectComposer,
   ShaderPass,
