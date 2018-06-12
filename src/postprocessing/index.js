@@ -9,6 +9,8 @@ import RenderPass from './RenderPass'
 import initDoF from './dof'
 import lensFlare from './lensflares'
 
+import {motionBlurShader} from './MotionBlur'
+
 export {
   BokehShader,
   CopyShader,
@@ -20,5 +22,7 @@ export {
   ShaderPass,
 
   initDoF,
-  lensFlare
+  lensFlare,
+
+  motionBlurShader
 }
