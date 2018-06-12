@@ -131,9 +131,9 @@ const RendererController = function () {
 const rendererController = new RendererController()
 const lowController = rendererFolder.add(rendererController, 'low')
 lowController.name('low (default)')
-rendererFolder.add(rendererController, 'lowShadow')
-rendererFolder.add(rendererController, 'lowShadowDoF')
-rendererFolder.add(rendererController, 'high')
+// rendererFolder.add(rendererController, 'lowShadow')
+// rendererFolder.add(rendererController, 'lowShadowDoF')
+// rendererFolder.add(rendererController, 'high')
 scene.fog = new FogExp2(0x91abb5, 0.0005)
 
 const drone = new Mesh(
