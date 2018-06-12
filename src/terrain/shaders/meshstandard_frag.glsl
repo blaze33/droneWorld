@@ -18,6 +18,7 @@ uniform sampler2D rockTextureNormal;
 
 varying vec3 vViewPosition;
 varying vec3 vWorldPosition;
+varying vec2 vNoise;
 varying vec3 vNormal2;
 varying float flatness;
 
@@ -57,7 +58,7 @@ varying float flatness;
 	// Per-Pixel Tangent Space Normal Mapping
 	// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html
 
-	vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm) {
+	vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm, vec2 vUv1, vec2 vUv2, vec2 vUv3) {
 
 		// Workaround for Adreno 3XX dFd*( vec3 ) bug. See #9988
 
@@ -70,7 +71,17 @@ varying float flatness;
 		vec3 T = normalize( -q0 * st1.s + q1 * st0.s );
 		vec3 N = normalize( surf_norm );
 
-		vec3 mapN = texture2D( normalMap, vUv ).xyz * 2.0 - 1.0;
+		vec3 mapN1 = texture2D( normalMap, vUv1 ).xyz;
+		vec3 mapN2 = texture2D( normalMap, vUv2 ).xyz;
+		vec3 mapN3 = texture2D( normalMap, vUv3 ).xyz;
+		vec3 black = vec3(0.0, 0.0, 0.0);
+		vec3 mapN = (
+			mix(black, mapN1, pow(N.z, 2.5)) +
+			mix(black, mapN2, pow(N.y, 2.5)) +
+			mix(black, mapN3, pow(N.x, 2.5))
+		);
+		// return mapN;
+		mapN = mapN * 2.0 - 1.0;
 		mapN.xy = normalScale * mapN.xy;
 		mat3 tsn = mat3( S, T, N );
 		return normalize( tsn * mapN );
@@ -85,21 +96,48 @@ varying float flatness;
 #include <clipping_planes_pars_fragment>
 
 vec4 physicalColor(sampler2D map, sampler2D normalMap, float roughness, float metalness) {
+
+	// return vec4(vUv, 0.0, 1.0);
+	// return vec4(clamp(vNormal2.z, 0.0, 1.0), 0.0, 0.0, 1.0);
+	// return vec4(cos(vWorldPosition.xyz / 5.0) * 0.5 + 0.5, 1.0);
 	vec4 diffuseColor = vec4( diffuse, opacity );
 	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
 	vec3 totalEmissiveRadiance = emissive;
 
+	vec2 vUvXY = vec2(mod(vWorldPosition.x, 100.0) / 100.0, mod(vWorldPosition.y, 100.0) / 100.0 );
+	vec2 vUvXZ = vec2(mod(vWorldPosition.x, 100.0) / 100.0 , mod(vWorldPosition.z, 100.0) / 100.0 );
+	vec2 vUvYZ = vec2(mod(vWorldPosition.y, 100.0) / 100.0 , mod(vWorldPosition.z, 100.0) / 100.0 );
+
+	vec3 mixer = clamp(abs(vNormal2), 0.0, 1.0);
+
 	#include <logdepthbuf_fragment>
-	#include <map_fragment>
+
+	// #include <map_fragment>
+	vec4 texelColorXY = texture2D( map, vUvXY );
+	vec4 texelColorXZ = texture2D( map, vUvXZ );
+	vec4 texelColorYZ = texture2D( map, vUvYZ );
+	vec4 black = vec4(0.0, 0.0, 0.0, 1.0);
+	vec4 texelColor = (
+		mix(black, texelColorXY, pow(mixer.z, 2.5)) +
+		mix(black, texelColorXZ, pow(mixer.y, 2.5)) +
+		mix(black, texelColorYZ, pow(mixer.x, 2.5))
+	);
+	// texelColor = texelColorXY;
+
+	texelColor = mapTexelToLinear( texelColor );
+	diffuseColor *= texelColor;
+	// return diffuseColor;
+
 	#include <color_fragment>
 	#include <alphamap_fragment>
 	#include <alphatest_fragment>
 	#include <roughnessmap_fragment>
 	#include <metalnessmap_fragment>
 	#include <normal_fragment_begin>
-	#include <normal_fragment_maps>
-
-	#include <emissivemap_fragment>
+	// #include <normal_fragment_maps>
+	// normal = perturbNormal2Arb( -vViewPosition, normal , vUvXY, vUvXZ, vUvYZ);
+	// return vec4(normal, 1.0);
+	// #include <emissivemap_fragment>
 
 	// accumulation
 	#include <lights_physical_fragment>
@@ -108,7 +146,7 @@ vec4 physicalColor(sampler2D map, sampler2D normalMap, float roughness, float me
 	#include <lights_fragment_end>
 
 	// modulation
-	#include <aomap_fragment>
+	// #include <aomap_fragment>
 
 	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;
 	// #include <specularmap_fragment>
@@ -126,7 +164,8 @@ void main() {
 	vec4 colorTerrain = mix(
 		rockColor,
 		grassColor,
-		smoothstep(0.6, 0.7, flatness)
+		smoothstep(0.15, 0.3, flatness * vNoise.x + flatness * vNoise.y)
+		// smoothstep(vNoise.x, vNoise.y, flatness)
 	);
 	gl_FragColor = colorTerrain;
 	// gl_FragColor = vec4(vec3(vWorldPosition.z/100.0), 1.0);
@@ -154,6 +193,6 @@ void main() {
 	#include <premultiplied_alpha_fragment>
 	#include <dithering_fragment>
 
-	// gl_FragColor = vec4(normal, 1.0);
+	// gl_FragColor = vec4(flatness, flatness, flatness, 1.0);
 
 }
