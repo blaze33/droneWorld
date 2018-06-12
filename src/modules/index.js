@@ -24,7 +24,7 @@ const Octree = global.THREE.Octree
 const BlendShader = global.THREE.BlendShader
 const CopyShader = global.THREE.CopyShader
 
-const BokehShader2 = global.THREE.BokehShader2
+const BokehShader = global.THREE.BokehShader
 const EffectComposer = global.THREE.EffectComposer
 const ShaderPass = global.THREE.ShaderPass
 const RenderPass = global.THREE.RenderPass
@@ -41,7 +41,7 @@ export {
   BlendShader,
   CopyShader,
 
-  BokehShader2,
+  BokehShader,
   EffectComposer,
   ShaderPass,
   RenderPass,
