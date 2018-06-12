@@ -4,6 +4,7 @@ import {
   PerspectiveCamera,
   CubeCamera,
   Vector3,
+  Matrix4,
   WebGLRenderer,
   PCFSoftShadowMap,
   Uncharted2ToneMapping,
@@ -11,6 +12,8 @@ import {
   Mesh,
   SphereBufferGeometry,
   MeshBasicMaterial,
+  WebGLRenderTarget,
+  DepthTexture,
 
   // Water imports
   PlaneBufferGeometry,
@@ -28,7 +31,8 @@ import {initLights, dirLight} from './lights'
 import {tileBuilder} from './loops/tileBuilder'
 import {
   initDoF,
-  lensFlare
+  lensFlare,
+  motionBlurShader
 } from './postprocessing'
 import {material} from './terrain'
 import {particleGroups} from './particles'
@@ -37,6 +41,17 @@ import setupDrones from './drones'
 import './controls'
 import setupSound from './sound'
 import {octree} from './voxel'
+
+import { BlurPass, GodRaysPass} from 'postprocessing'
+import {
+  EffectComposer,
+  ShaderPass,
+  RenderPass,
+  SavePass,
+  CopyShader,
+  BlendShader,
+  GlitchPass
+} from './modules'
 
 const queryStringOptions = queryString.parse(window.location.search)
 const options = {
@@ -48,7 +63,6 @@ if (options.PBR) {
   // PBR material needs an envMap
   options.postprocessing = true
 }
-console.log(options)
 
 const scene = new Scene()
 let camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1e6)
@@ -58,7 +72,7 @@ window.cube = cubeCamera
 cubeCamera.up.set(0, 0, 1)
 
 camera.up = new Vector3(0, 0, 1)
-camera.position.set(-70, 0, 50)
+camera.position.set(-500, 0, 400)
 camera.lookAt(0, 0, 0)
 camera.rollAngle = 0
 camera.userData = {terrainKeysUnder: []}
@@ -182,7 +196,7 @@ const water = new Water(
 
 water.up.set(0, 0, 1)
 water.rotation.z = -Math.PI / 2
-water.position.z = 43
+water.position.z = -600
 gui.__folders['Sun, sky and ocean'].add(water.position, 'z', 0, 200, 1)
 water.receiveShadow = true
 water.userData.isWater = true
@@ -214,6 +228,11 @@ let loops = [
         y: (Math.random() - 0.5) * shakeAmplitude,
         z: (Math.random() - 0.5) * shakeAmplitude
       })
+      glitch.enabled = true
+      motionPass.renderToScreen = false
+    } else {
+      glitch.enabled = false
+      motionPass.renderToScreen = true
     }
   }
 ]
@@ -244,6 +263,32 @@ renderer.setPixelRatio(1.0)
 const stats = new Stats()
 document.body.appendChild(stats.dom)
 
+// ###################################
+// EFFECTS
+const composer = new EffectComposer(renderer)
+
+// define a render target with a depthbuffer
+const target = new WebGLRenderTarget(window.innerWidth, window.innerHeight)
+target.depthBuffer = true
+target.depthTexture = new DepthTexture()
+
+// add a motion blur pass
+const motionPass = new ShaderPass(motionBlurShader)
+motionPass.renderToScreen = false
+composer.addPass(motionPass)
+
+// define variables used by the motion blur pass
+let previousMatrixWorldInverse = new Matrix4()
+let previousProjectionMatrix = new Matrix4()
+let previousCameraPosition = new Vector3()
+let tmpMatrix = new Matrix4()
+
+// add a glitch pass
+const glitch = new GlitchPass()
+glitch.renderToScreen = true
+composer.addPass(glitch)
+// ###################################
+
 let play = true
 PubSub.subscribe('x.toggle.play', () => { play = !play })
 
@@ -267,7 +312,28 @@ var mainLoop = (timestamp) => {
       dofEffect.renderDepth()
       dofEffect.composer.render()
     } else {
-      renderer.render(scene, camera)
+      // render scene and depthbuffer to the render target
+      renderer.render(scene, camera, target)
+
+      // update motion blur shader uniforms
+      motionPass.material.uniforms.tColor.value = target.texture
+      motionPass.material.uniforms.tDepth.value = target.depthTexture
+      motionPass.material.uniforms.velocityFactor.value = 1
+      motionPass.material.uniforms.delta.value = delta
+      // tricky part to compute the clip-to-world and world-to-clip matrices
+      motionPass.material.uniforms.clipToWorldMatrix.value
+        .getInverse(camera.matrixWorldInverse).multiply(tmpMatrix.getInverse(camera.projectionMatrix))
+      motionPass.material.uniforms.previousWorldToClipMatrix.value
+        .copy(previousProjectionMatrix.multiply(previousMatrixWorldInverse))
+      motionPass.material.uniforms.cameraMove.value.copy(camera.position).sub(previousCameraPosition)
+
+      // render the postprocessing passes
+      composer.render(delta)
+
+      // save some values for the next render pass
+      previousMatrixWorldInverse.copy(camera.matrixWorldInverse)
+      previousProjectionMatrix.copy(camera.projectionMatrix)
+      previousCameraPosition.copy(camera.position)
     }
 
     // if (dirLight.shadow && dirLight.shadow.map) {
