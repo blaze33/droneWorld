@@ -8,7 +8,7 @@ import {
   RenderPass,
   BokehShader,
   ShaderPass
-} from './'
+} from '../modules'
 
 const effectController = {
   shaderFocus: true,
