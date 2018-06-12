@@ -7556,7 +7556,7 @@ three@0.56.0:
   version "0.56.0"
   resolved "https://registry.yarnpkg.com/three/-/three-0.56.0.tgz#8c47c58b8294e86528c66de04aa70c968715bd31"
 
-three@0.X.X, three@^0.92.0:
+three@0.92.0, three@0.X.X, three@^0.92.0:
   version "0.92.0"
   resolved "https://registry.yarnpkg.com/three/-/three-0.92.0.tgz#8d3d1f5af890e62da7f4cb45d20c09fa51057dcd"
 
