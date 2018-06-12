@@ -8,9 +8,28 @@ require('three/examples/js/Octree.js')
 
 require('three/examples/js/objects/Lensflare.js')
 
+require('three/examples/js/shaders/BokehShader2.js')
+require('three/examples/js/shaders/CopyShader.js')
+require('three/examples/js/shaders/BlendShader.js')
+require('three/examples/js/postprocessing/EffectComposer.js')
+require('three/examples/js/postprocessing/ShaderPass.js')
+require('three/examples/js/postprocessing/RenderPass.js')
+require('three/examples/js/postprocessing/SavePass.js')
+require('three/examples/js/shaders/DigitalGlitch.js')
+require('three/examples/js/postprocessing/GlitchPass.js')
+
 const GLTFLoader = global.THREE.GLTFLoader
 const Sky = global.THREE.Sky
 const Octree = global.THREE.Octree
+const BlendShader = global.THREE.BlendShader
+const CopyShader = global.THREE.CopyShader
+
+const BokehShader2 = global.THREE.BokehShader2
+const EffectComposer = global.THREE.EffectComposer
+const ShaderPass = global.THREE.ShaderPass
+const RenderPass = global.THREE.RenderPass
+const SavePass = global.THREE.SavePass
+const GlitchPass = global.THREE.GlitchPass
 
 const Lensflare = global.THREE.Lensflare
 const LensflareElement = global.THREE.LensflareElement
@@ -18,7 +37,16 @@ const LensflareElement = global.THREE.LensflareElement
 export {
   GLTFLoader,
   Sky,
-  Octree
+  Octree,
+  BlendShader,
+  CopyShader,
+
+  BokehShader2,
+  EffectComposer,
+  ShaderPass,
+  RenderPass,
+  SavePass,
+  GlitchPass,
 
   Lensflare,
   LensflareElement
