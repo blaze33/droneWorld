@@ -92,40 +92,65 @@ const heightmap = (z, x, y) => {
 
 let map
 
-heightmap(10, 356, 356).then(png => {
-  map = ndarray(png.heightmap, [256, 256])
-  PubSub.publish('x.voxel.init', map)
-})
+// heightmap(10, 356, 356).then(png => {
+//   map = ndarray(png.heightmap, [256, 256])
+//   PubSub.publish('x.voxel.init', map)
+// })
 
 const initMap = (msg, map) => {
-  const noise = new SimplexNoise('seed')
+  const noise = new SimplexNoise('123')
   let noiseValue
-  const positions = []
-  voxel.generate([0, 0, 0], [128, 128, 128], function (x, y, z) {
-    noiseValue = noise.noise3D(x / 64, y / 64, z / 64)
-    if (noiseValue < -0.7) {
-      positions.push(90)
-    } else {
-      positions.push(60)
-    }
-  })
-  console.log(positions)
-
-  // generate geometry
+  let height
+  let geometry
+  const positions = new Float32Array(128 * 128 * 128)
+  let x
+  let y
+  let mesh
   const effect = new MarchingCubes(128, new THREE.MeshNormalMaterial(), true, true)
-  effect.field = new Float32Array(positions, 3)
-  effect.position.set(0, 0, 0)
-  effect.scale.set(1000, 1000, 1000)
+  effect.isolation = 0
+  let noiseValue1
+  let noiseValue2
+  let noiseValue3
+  const generateVoxels = (i, j) => {
+    voxel.generate([0, 0, 0], [128, 128, 128], function (x, y, z, n) {
+      noiseValue1 = noise.noise3D(x / 8, y / 8, z / 8) * 0.2
+      noiseValue2 = noise.noise3D(x / 32, y / 32, z / 32) * 0.5
+      noiseValue3 = noise.noise3D(x / 64, y / 64, z / 64)
+      // positions[n] = noiseValue < -0.5 ? 90 : 70
+      positions[n] = -(z - 64) / 128 * 5 + noiseValue1 + noiseValue2 + noiseValue3
+    })
+    // console.log(positions)
+    // generate geometry
+    effect.field = positions
+    geometry = effect.generateGeometry()
+    geometry.scale(700, 700, 700)
+    geometry.mergeVertices()
+    geometry.computeBoundingBox()
+    geometry.computeVertexNormals()
+    geometry.computeFaceNormals()
+    // geometry.addGroup(0, geometry.attributes.position.count, 0)
+    // console.log(geometry)
+    // geometry = new THREE.Geometry().fromBufferGeometry(geometry)
+    geometry = new THREE.BufferGeometry().fromGeometry(geometry)
 
-  console.log(effect)
-  const geom = effect.generateGeometry()
-  console.log(geom)
-  geom.scale(700, 700, 700)
-  geom.computeFaceNormals()
-  geom.computeVertexNormals()
-  scene.add(new THREE.Mesh(geom, new THREE.MeshNormalMaterial({flatShading: true, fog: false})))
-  // scene.add(new THREE.Mesh(geom, MaterialBasic({}, {})))
+    // console.log(geometry)
+    return new THREE.Mesh(geometry, MaterialBasic())
+    // return new THREE.Mesh(geometry, material)
+  }
+  for (var i = 0; i < 1; i++) {
+    x = 1400 * i
+    for (var j = 0; j < 1; j++) {
+      y = 1400 * j
+      // console.log(i, j, x, y)
+      mesh = generateVoxels(i, j)
+      mesh.position.set(x, y, 0)
+      scene.add(mesh)
+      // console.log(mesh)
+
+      // const vnh = new THREE.VertexNormalsHelper(mesh, 5)
+      // scene.add(vnh)
+    }
+  }
 }
-PubSub.subscribe('x.voxel.init', initMap)
-
+PubSub.subscribe('x.loops.loaded', initMap)
 export {octree}
