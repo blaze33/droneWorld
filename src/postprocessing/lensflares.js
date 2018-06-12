@@ -4,7 +4,7 @@ import {
 import {
     Lensflare,
     LensflareElement
-} from '../modules/Lensflare'
+} from '../modules'
 
 const textureLoader = new TextureLoader()
 const textureFlare3 = textureLoader.load(require('../textures/lensflare/lensflare3.png'))
