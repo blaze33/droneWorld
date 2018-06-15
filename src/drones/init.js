@@ -78,6 +78,9 @@ const buildPilotDrone = () => {
       if (terrainTiles.length > 0) {
         pilotDrone.userData.altitude = terrainTiles[0].distance - offsetVector.length()
       }
+      if (pilotDrone.userData.altitude < 5) {
+        PubSub.publish('x.drones.explode.pilotDrone', pilotDrone)
+      }
     }
   }
   loops.push(pilotDroneLoop)

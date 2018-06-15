@@ -449,6 +449,7 @@ const triggerExplosion = (target) => {
   triggerSingleEmitter(debrisGroup, target)
   triggerSingleEmitter(mistGroup, target)
 }
+PubSub.subscribe('x.drones.explode', (msg, drone) => triggerExplosion(drone))
 
 const triggerSmoke = (target) => {
   if (target.smoking) return

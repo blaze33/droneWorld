@@ -10,7 +10,8 @@ import {scene, camera, renderer} from '../index'
 import {
   Mesh,
   SphereBufferGeometry,
-  MeshPhongMaterial
+  MeshPhongMaterial,
+  Vector3
 } from 'three'
 import {selectNearestTargetInSight, hudElement} from '../hud'
 
@@ -140,5 +141,11 @@ const initControls = (msg, data) => {
   }, false)
 }
 PubSub.subscribe('x.drones.pilotDrone.loaded', initControls)
+
+PubSub.subscribe('x.drones.explode.pilotDrone', () => {
+  controlsModule.acceleration = 0
+  controlsModule.velocity = new Vector3(0, 0, 60)
+  setTimeout(() => { controlsModule.acceleration = 60 }, 2000)
+})
 
 export default controlsModule
