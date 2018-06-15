@@ -473,12 +473,16 @@ const triggerSmallExplosion = (target) => {
   triggerSingleEmitter(sparkGroup, target)
 }
 
+let tmpVec1 = new Vector3()
+let targetVector = new Vector3()
 PubSub.subscribe('x.drones.gun.start', (msg, drone) => {
   const target = selectNearestGunTarget()
-  let targetVector
   const velocityFunction = () => {
     if (target !== null && target.gunHud) {
-      targetVector = target.position.clone().sub(camera.position).add(target.velocity)
+      tmpVec1.copy(target.position).sub(drone.position)
+      tmpVec1.add(target.velocity.clone().multiplyScalar(tmpVec1.length() / 500))
+      tmpVec1.normalize().multiplyScalar(500)
+      targetVector.copy(tmpVec1)
     } else {
       targetVector = camera.getWorldDirection(camVec).multiplyScalar(500)
       const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
