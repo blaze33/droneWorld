@@ -264,16 +264,22 @@ document.body.appendChild(stats.dom)
 
 // ###################################
 // EFFECTS
-const composer = new EffectComposer(renderer)
-
 // define a render target with a depthbuffer
 const target = new WebGLRenderTarget(window.innerWidth, window.innerHeight)
 target.depthBuffer = true
 target.depthTexture = new DepthTexture()
 
+const composer = new EffectComposer(renderer, target)
+
+// initial render pass
+const renderPass = new RenderPass(scene, camera)
+composer.addPass(renderPass)
+
 // add a motion blur pass
-const motionPass = new ShaderPass(motionBlurShader)
-motionPass.renderToScreen = false
+const motionPass = new ShaderPass(motionBlurShader, 'tColor')
+motionPass.renderToScreen = true
+motionPass.material.uniforms.tDepth.value = target.depthTexture
+motionPass.material.uniforms.velocityFactor.value = 1
 composer.addPass(motionPass)
 
 // define variables used by the motion blur pass
@@ -311,13 +317,7 @@ var mainLoop = (timestamp) => {
       dofEffect.renderDepth()
       dofEffect.composer.render()
     } else {
-      // render scene and depthbuffer to the render target
-      renderer.render(scene, camera, target)
-
       // update motion blur shader uniforms
-      motionPass.material.uniforms.tColor.value = target.texture
-      motionPass.material.uniforms.tDepth.value = target.depthTexture
-      motionPass.material.uniforms.velocityFactor.value = 1
       motionPass.material.uniforms.delta.value = delta
       // tricky part to compute the clip-to-world and world-to-clip matrices
       motionPass.material.uniforms.clipToWorldMatrix.value
