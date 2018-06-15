@@ -142,9 +142,9 @@ const initControls = (msg, data) => {
 }
 PubSub.subscribe('x.drones.pilotDrone.loaded', initControls)
 
-PubSub.subscribe('x.drones.explode.pilotDrone', () => {
+PubSub.subscribe('x.drones.collision.terrain.pilotDrone', (msg, terrainNormal) => {
   controlsModule.acceleration = 0
-  controlsModule.velocity = new Vector3(0, 0, 60)
+  controlsModule.velocity = controlsModule.velocity.clone().multiplyScalar(-1).add(new Vector3(0, 25, 0))
   setTimeout(() => { controlsModule.acceleration = 60 }, 2000)
 })
 

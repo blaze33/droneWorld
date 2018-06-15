@@ -77,9 +77,11 @@ const buildPilotDrone = () => {
       }))
       if (terrainTiles.length > 0) {
         pilotDrone.userData.altitude = terrainTiles[0].distance - offsetVector.length()
+        pilotDrone.userData.groundNormal = terrainTiles[0].face.normal
       }
       if (pilotDrone.userData.altitude < 5) {
         PubSub.publish('x.drones.explode.pilotDrone', pilotDrone)
+        PubSub.publish('x.drones.collision.terrain.pilotDrone', pilotDrone.userData.groundNormal)
       }
     }
   }
