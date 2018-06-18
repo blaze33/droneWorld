@@ -142,10 +142,14 @@ const initControls = (msg, data) => {
 }
 PubSub.subscribe('x.drones.pilotDrone.loaded', initControls)
 
+let tmpVec = new Vector3()
 PubSub.subscribe('x.drones.collision.terrain.pilotDrone', (msg, terrainNormal) => {
   controlsModule.acceleration = 0
-  controlsModule.velocity = controlsModule.velocity.clone().multiplyScalar(-1).add(new Vector3(0, 25, 0))
-  setTimeout(() => { controlsModule.acceleration = 60 }, 2000)
+  tmpVec.copy(controlsModule.velocity).applyQuaternion(camera.quaternion)
+  tmpVec.reflect(terrainNormal)
+  tmpVec.add(camera.position)
+  controlsModule.velocity = camera.worldToLocal(tmpVec)
+  setTimeout(() => { controlsModule.acceleration = 60 }, 1000)
 })
 
 export default controlsModule
