@@ -7,7 +7,6 @@ import {scene} from '../index'
 import * as voxel from 'voxel'
 import {MaterialBasic} from '../terrain/shaders/materialBasic'
 
-// const voxel = require('voxel')
 import SimplexNoise from 'simplex-noise'
 
 require('three/examples/js/MarchingCubes.js')
@@ -30,74 +29,7 @@ const octree = new Octree({
   overlapPct: 0.15
 })
 
-// cf. http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#ECMAScript_.28JavaScript.2FActionScript.2C_etc..29
-const long2tile = (lon, zoom) => {
-  return (lon + 180) / 360 * Math.pow(2, zoom)
-}
-const lat2tile = (lat, zoom) => {
-  return (
-    (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom)
-  )
-}
-const offset = {y: 45.8671, x: 7.3087}
-const chamonix = {x: long2tile(offset.x, 10), y: lat2tile(offset.y, 10)}
-const offsetAtZ = (z) => {
-  return {
-    x: chamonix.x / Math.pow(2, 10 - z),
-    y: chamonix.y / Math.pow(2, 10 - z)
-  }
-}
-
-const tilesElevationURL = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium'
-
-const pngToHeight = (array) => {
-  const heightmap = new Int16Array(256 * 256)
-  let ij = 0
-  let rgba = 0
-  let altitude
-  for (let i = 0; i < 256; i++) {
-    for (let j = 0; j < 256; j++) {
-      ij = i + 256 * j
-      rgba = ij * 4
-      altitude = array[rgba] * 256.0 + array[rgba + 1] + array[rgba + 2] / 256.0 - 32768.0
-      heightmap[ij] = altitude
-      // if (j === 0) { console.log(heightmap[ij], altitude) }
-    }
-  }
-  return heightmap
-}
-const offsetCoords = (z, x, y) => {
-  const maxTile = Math.pow(2, z)
-  const offset = offsetAtZ(z)
-  const fetchedX = Math.floor(x + offset.x)
-  const fetchedY = Math.floor(y + offset.y)
-  x = Math.abs(fetchedX % maxTile)
-  y = Math.abs(fetchedY % maxTile)
-  if (isNaN(z) || isNaN(x) || isNaN(y)) {
-    throw new Error(`cannot fetch tile ${z}/${x}/${y}.png`)
-  }
-  return [z, x, y]
-}
-const heightmap = (z, x, y) => {
-  [z, x, y] = offsetCoords(z, x, y)
-  const tileURL = `${tilesElevationURL}/${z}/${x}/${y}.png`
-  return fetch(tileURL)
-    .then(res => res.arrayBuffer())
-    .then(array => new Uint8Array(UPNG.toRGBA8(UPNG.decode(array))[0]))
-    .then(png => {
-      png.heightmap = pngToHeight(png)
-      return png
-    })
-}
-
-let map
-
-// heightmap(10, 356, 356).then(png => {
-//   map = ndarray(png.heightmap, [256, 256])
-//   PubSub.publish('x.voxel.init', map)
-// })
-
-const initMap = (msg, map) => {
+const initMap = (msg) => {
   const noise = new SimplexNoise('123')
   let noiseValue
   let height
@@ -116,14 +48,13 @@ const initMap = (msg, map) => {
       noiseValue1 = noise.noise3D(x / 8, y / 8, z / 8) * 0.2
       noiseValue2 = noise.noise3D(x / 32, y / 32, z / 32) * 0.5
       noiseValue3 = noise.noise3D(x / 64, y / 64, z / 64)
-      // positions[n] = noiseValue < -0.5 ? 90 : 70
-      positions[n] = -(z - 64) / 128 * 5 + noiseValue1 + noiseValue2 + noiseValue3
+      positions[n] = -(z - 64) / 128 * 5 + Math.abs(noiseValue1 + noiseValue2 + noiseValue3)
     })
     // console.log(positions)
     // generate geometry
     effect.field = positions
     geometry = effect.generateGeometry()
-    geometry.scale(700, 700, 700)
+    geometry.scale(200, 200, 200)
     geometry.mergeVertices()
     geometry.computeBoundingBox()
     geometry.computeVertexNormals()
