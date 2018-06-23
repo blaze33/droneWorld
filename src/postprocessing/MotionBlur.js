@@ -26,23 +26,13 @@ const motionBlurFragmentShader = `
 
 	uniform float velocityFactor;
 	uniform float delta;
-	uniform float cameraNear;
-	uniform float cameraFar;
-
-	#include <packing>
-
-	float readDepth(sampler2D depthSampler, vec2 coord) {
-		float fragCoordZ = texture2D(depthSampler, coord).x;
-		float viewZ = perspectiveDepthToViewZ(fragCoordZ, cameraNear, cameraFar);
-		return viewZToOrthographicDepth(viewZ, cameraNear, cameraFar);
-	}
 
 	void main() {
 
-		float zOverW = readDepth(tDepth, vUv);
+		float zOverW = texture2D(tDepth, vUv).x;
 
 		// clipPosition is the viewport position at this pixel in the range -1 to 1.
-		vec4 clipPosition = vec4(vUv.x * 2. - 1., vUv.y * 2. - 1., zOverW, 1.);
+		vec4 clipPosition = vec4(vUv.x * 2. - 1., vUv.y * 2. - 1., zOverW * 2. - 1., 1.);
 
 		vec4 worldPosition = clipToWorldMatrix * clipPosition;
 		worldPosition /= worldPosition.w;
@@ -51,7 +41,7 @@ const motionBlurFragmentShader = `
 
 		// Reduce motion blur due to camera translation especially at the screen center.
 		previousClipPosition.xyz -= cameraMove * (
-			.99 - .04 * smoothstep(.3, 1., clamp(length(clipPosition.xy), 0., 1.))
+			1. - smoothstep(.3, 1., clamp(length(clipPosition.xy), 0., 1.))
 		);
 
 		previousClipPosition = previousWorldToClipMatrix * previousClipPosition;
@@ -86,8 +76,6 @@ export const motionBlurShader = {
 
     velocityFactor: { type: 'f', value: 1 },
     delta: { type: 'f', value: 16.67 },
-    cameraNear: { type: 'f', value: 1 },
-    cameraFar: { type: 'f', value: 1e6 },
 
     clipToWorldMatrix: { type: 'm4', value: new Matrix4() },
     previousWorldToClipMatrix: { type: 'm4', value: new Matrix4() },
