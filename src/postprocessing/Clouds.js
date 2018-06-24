@@ -77,21 +77,6 @@ float map(vec3 p){
     return p.z + ((fbm(p*0.03)-0.1) + sin(p.x*0.024 + sin(p.y*.001)*7.)*0.22+0.15 + sin(p.y*0.008)*0.05) / 0.007;
 }
 
-float march(in vec3 ro, in vec3 rd, in vec3 world)
-{
-  float precis = .3;
-  float h= 1.;
-  float d = 0.;
-  float l = length(world - ro);
-  for( int i=0; i<64; i++ )
-  {
-      if( abs(h)<precis || d >= l) break;
-      d += abs(h);
-      h = map(ro+rd*d);
-  }
-  return d;
-}
-
 float getres (in vec3 ro, in vec3 rd, in float z) {
   return map(ro + rd * z);
 }
@@ -123,16 +108,16 @@ float dikomarch(in vec3 ro, in vec3 rd, in vec3 world)
     return d;
 }
 
-vec4 marchV(in vec3 ro, in vec3 rd, in float t, in vec3 bgc, in vec3 world)
+vec4 march(in vec3 ro, in vec3 rd, in vec3 bgc, in vec3 world)
 {
-  float d;
+  float d = 0., t = 0.;
   vec4 rz = vec4( 0.0 );
   float l = length(ro - world);
   float td=.0, w;
 
-  for( int i=0; i<150; i++ )
+  for( int i=0; i<250; i++ )
   {
-    if(rz.a > 0.99 || t > 7000. || t>l) break;
+    if(rz.a > 0.99 || t>l) break;
 
     vec3 pos = ro + t*rd;
     d = map(pos);
@@ -146,7 +131,7 @@ vec4 marchV(in vec3 ro, in vec3 rd, in float t, in vec3 bgc, in vec3 world)
       rz = rz + col*(1.0 - rz.a);
     }
 
-    t += max(1., abs(d));
+    t += max(1., abs(d) * .49);
   }
 
   return clamp(rz, 0., 1.);
@@ -175,15 +160,15 @@ vec4 marchV(in vec3 ro, in vec3 rd, in float t, in vec3 bgc, in vec3 world)
     vec3 color = texture2D(tColor, vUv).rgb;
     vec3 dir = normalize(worldPosition.xyz - cameraPosition);
 
-
     // float rz = dikomarch(cameraPosition, dir, worldPosition.xyz);
     // float rz = march(cameraPosition, dir, worldPosition.xyz);
     // color = vec3(rz/700.);
     // if (rz < 7000.)
     // {
-      vec4 res = marchV(cameraPosition, dir, 1., color, worldPosition.xyz);
+      vec4 res = march(cameraPosition, dir, color, worldPosition.xyz);
       color = color*(1.0-res.w) + res.xyz;
     // }
+    // color = dir;
 
     // color.w = 1.;
     // debug: view depth buffer
