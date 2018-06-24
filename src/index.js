@@ -281,7 +281,7 @@ const motionPass = new ShaderPass(motionBlurShader, 'tColor')
 motionPass.renderToScreen = false
 motionPass.material.uniforms.tDepth.value = target.depthTexture
 motionPass.material.uniforms.velocityFactor.value = 1
-composer.addPass(motionPass)
+// composer.addPass(motionPass)
 
 // define variables used by the motion blur pass
 let previousMatrixWorldInverse = new Matrix4()
@@ -296,7 +296,7 @@ glitch.renderToScreen = false
 
 // volumetric clouds pass
 const clouds = new ShaderPass(CloudsShader, 'tColor')
-clouds.material.uniforms.tDepth.value = composer.renderTarget2.depthTexture
+clouds.material.uniforms.tDepth.value = target.depthTexture
 clouds.renderToScreen = true
 composer.addPass(clouds)
 // ###################################
