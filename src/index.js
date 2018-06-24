@@ -32,7 +32,8 @@ import {tileBuilder} from './loops/tileBuilder'
 import {
   initDoF,
   lensFlare,
-  motionBlurShader
+  motionBlurShader,
+  CloudsShader
 } from './postprocessing'
 import {material} from './terrain'
 import {particleGroups} from './particles'
@@ -228,10 +229,10 @@ let loops = [
         z: (Math.random() - 0.5) * shakeAmplitude
       })
       glitch.enabled = true
-      motionPass.renderToScreen = false
+      // motionPass.renderToScreen = false
     } else {
       glitch.enabled = false
-      motionPass.renderToScreen = true
+      // motionPass.renderToScreen = true
     }
   }
 ]
@@ -277,7 +278,7 @@ composer.addPass(renderPass)
 
 // add a motion blur pass
 const motionPass = new ShaderPass(motionBlurShader, 'tColor')
-motionPass.renderToScreen = true
+motionPass.renderToScreen = false
 motionPass.material.uniforms.tDepth.value = target.depthTexture
 motionPass.material.uniforms.velocityFactor.value = 1
 composer.addPass(motionPass)
@@ -290,8 +291,14 @@ let tmpMatrix = new Matrix4()
 
 // add a glitch pass
 const glitch = new GlitchPass()
-glitch.renderToScreen = true
-composer.addPass(glitch)
+glitch.renderToScreen = false
+// composer.addPass(glitch)
+
+// volumetric clouds pass
+const clouds = new ShaderPass(CloudsShader, 'tColor')
+clouds.material.uniforms.tDepth.value = composer.renderTarget2.depthTexture
+clouds.renderToScreen = true
+composer.addPass(clouds)
 // ###################################
 
 let play = true
@@ -326,6 +333,11 @@ var mainLoop = (timestamp) => {
         .copy(previousProjectionMatrix.multiply(previousMatrixWorldInverse))
       motionPass.material.uniforms.cameraMove.value.copy(camera.position).sub(previousCameraPosition)
 
+      // clouds uniforms
+      clouds.material.uniforms.clipToWorldMatrix.value.copy(motionPass.material.uniforms.clipToWorldMatrix.value)
+      clouds.material.uniforms.cameraPosition.value.copy(camera.position)
+      clouds.material.uniforms.sun.value.copy(dirLight.position).normalize()
+      // console.log(savePass.renderTarget.depthTexture)
       // render the postprocessing passes
       composer.render(delta)
 
