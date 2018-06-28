@@ -20,6 +20,8 @@ require('three/examples/js/postprocessing/GlitchPass.js')
 
 require('three/examples/js/modifiers/SimplifyModifier.js')
 
+require('three/examples/js/MarchingCubes.js')
+
 const GLTFLoader = global.THREE.GLTFLoader
 const Sky = global.THREE.Sky
 const Octree = global.THREE.Octree
@@ -38,6 +40,8 @@ const LensflareElement = global.THREE.LensflareElement
 
 const SimplifyModifier = global.THREE.SimplifyModifier
 
+const MarchingCubes = global.THREE.MarchingCubes
+
 export {
   GLTFLoader,
   Sky,
@@ -55,5 +59,7 @@ export {
   Lensflare,
   LensflareElement,
 
-  SimplifyModifier
+  SimplifyModifier,
+
+  MarchingCubes
 }
