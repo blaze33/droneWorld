@@ -33,7 +33,6 @@ const materialBasic = MaterialBasic()
 const emptyKeys = new Set()
 
 const buildVoxelsFromWorker = (event) => {
-  console.log(event)
   if (!event.data.hasGeometry) {
     emptyKeys.add([event.data.i, event.data.j, event.data.k])
     return

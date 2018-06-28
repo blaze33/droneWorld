@@ -2,22 +2,19 @@
 
 import SimplexNoise from 'simplex-noise'
 import {MarchingCubes, SimplifyModifier} from '../modules'
+import * as THREE from 'three'
 
 const simple = new SimplifyModifier()
 const noise = new SimplexNoise('123')
 
 const generateVoxels = (i, j, k, zMax) => {
+  console.time([i, j, k].toString())
   let n = 0
   let noGeometry = true
   let noiseValue
-  let height
   let geometry
   let dim = 32
   const positions = new Float32Array(dim * dim * dim)
-  let x
-  let y
-  let z
-  let mesh
   const effect = new MarchingCubes(dim, new THREE.MeshNormalMaterial(), true, true)
   effect.isolation = 0
 
@@ -32,7 +29,7 @@ const generateVoxels = (i, j, k, zMax) => {
         noiseValue += noise.noise3D(x / 4, y / 4, z / 4) * 0.015625
         positions[n] = -(z - zMax * (dim - 3) / 2) / (zMax * (dim - 3)) + noiseValue * 0.5
         if (n === 0) continue
-        noGeometry = noGeometry ? Math.sign(positions[n]) == Math.sign(positions[n - 1]) : false
+        noGeometry = noGeometry ? Math.sign(positions[n]) === Math.sign(positions[n - 1]) : false
       }
     }
   }
@@ -74,6 +71,7 @@ const generateVoxels = (i, j, k, zMax) => {
 
   const pos = geometry.attributes.position.array.buffer
   const normals = geometry.attributes.normal.array.buffer
+  console.timeEnd([i, j, k].toString())
   postMessage({
     hasGeometry: true,
     i,

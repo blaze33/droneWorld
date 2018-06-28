@@ -75,6 +75,8 @@ camera.position.set(-500, 0, 400)
 camera.lookAt(0, 0, 0)
 camera.rollAngle = 0
 camera.userData = {terrainKeysUnder: []}
+camera.updateMatrixWorld()
+camera.updateProjectionMatrix()
 
 setupSound()
 
