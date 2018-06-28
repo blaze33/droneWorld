@@ -18,6 +18,8 @@ require('three/examples/js/postprocessing/SavePass.js')
 require('three/examples/js/shaders/DigitalGlitch.js')
 require('three/examples/js/postprocessing/GlitchPass.js')
 
+require('three/examples/js/modifiers/SimplifyModifier.js')
+
 const GLTFLoader = global.THREE.GLTFLoader
 const Sky = global.THREE.Sky
 const Octree = global.THREE.Octree
@@ -34,6 +36,8 @@ const GlitchPass = global.THREE.GlitchPass
 const Lensflare = global.THREE.Lensflare
 const LensflareElement = global.THREE.LensflareElement
 
+const SimplifyModifier = global.THREE.SimplifyModifier
+
 export {
   GLTFLoader,
   Sky,
@@ -49,5 +53,7 @@ export {
   GlitchPass,
 
   Lensflare,
-  LensflareElement
+  LensflareElement,
+
+  SimplifyModifier
 }
