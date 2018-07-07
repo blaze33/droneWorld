@@ -20,7 +20,6 @@ import {
   TextureLoader,
   RepeatWrapping
 } from 'three'
-import Water from './modules/Water'
 import dat from 'dat.gui/build/dat.gui.js'
 import Stats from 'stats.js'
 import queryString from 'query-string'
@@ -32,9 +31,6 @@ import {tileBuilder} from './loops/tileBuilder'
 import {
   initDoF,
   lensFlare,
-  EffectComposer,
-  RenderPass,
-  ShaderPass,
   motionBlurShader
 } from './postprocessing'
 import {material} from './terrain'
@@ -43,6 +39,23 @@ import PubSub from './events'
 import setupDrones from './drones'
 import './controls'
 import setupSound from './sound'
+
+import {
+  EffectComposer,
+  ShaderPass,
+  RenderPass,
+  SavePass,
+  CopyShader,
+  BlendShader,
+  GlitchPass,
+  Water,
+  Reflector
+} from './modules'
+import {
+  WaterShader,
+  UnderwaterShader,
+  WiggleShader
+} from './ocean'
 
 const queryStringOptions = queryString.parse(window.location.search)
 const options = {
@@ -219,6 +232,32 @@ let loops = [
         y: (Math.random() - 0.5) * shakeAmplitude,
         z: (Math.random() - 0.5) * shakeAmplitude
       })
+      glitch.enabled = true
+      motionPass.renderToScreen = false
+    } else {
+      glitch.enabled = false
+      motionPass.renderToScreen = true
+    }
+  },
+  () => scene.children.forEach(child => {
+    if (child instanceof LOD) {
+      child.update(camera)
+    }
+  }),
+  (timestamp, delta) => {
+    if (camera.position.z < water.position.z) {
+      underwaterPass.enabled = true
+      wigglePass.enabled = true
+      water.visible = false
+      underwaterReflector.onBeforeRender(renderer, scene, camera)
+      underwaterPass.material.uniforms.time.value = timestamp / 1000
+      wigglePass.material.uniforms.time.value = timestamp / 1000
+      controls.setAcceleration(30)
+    } else {
+      underwaterPass.enabled = false
+      wigglePass.enabled = false
+      water.visible = true
+      controls.setAcceleration(150)
     }
   }
 ]
@@ -254,6 +293,28 @@ const composer = new EffectComposer(renderer, target)
 // initial render pass
 const renderPass = new RenderPass(scene, camera)
 composer.addPass(renderPass)
+
+// add an underwater shader pass
+const underwaterPass = new ShaderPass(UnderwaterShader)
+underwaterPass.enabled = false
+underwaterPass.material.uniforms.waterLevel.value = water.position.z
+underwaterPass.material.uniforms.tDepth.value = waterTarget.depthTexture
+underwaterPass.material.uniforms.cameraPosition.value = camera.position
+underwaterPass.material.uniforms.tReflectionMap.value = underwaterReflector.getRenderTarget().texture
+underwaterPass.material.uniforms.tReflectionDepth.value = underwaterReflector.getRenderTarget().depthTexture
+let tNormalMap0 = underwaterPass.material.uniforms.tNormalMap0
+let tNormalMap1 = underwaterPass.material.uniforms.tNormalMap1
+tNormalMap0.value = textureLoader.load(require('./textures/Water_1_M_Normal.jpg'))
+tNormalMap1.value = textureLoader.load(require('./textures/Water_2_M_Normal.jpg'))
+tNormalMap0.value.wrapS = tNormalMap0.value.wrapT = RepeatWrapping
+tNormalMap1.value.wrapS = tNormalMap1.value.wrapT = RepeatWrapping
+composer.addPass(underwaterPass)
+window.upass = underwaterPass
+
+// add an underwater wiggle pass
+const wigglePass = new ShaderPass(WiggleShader)
+wigglePass.enabled = false
+composer.addPass(wigglePass)
 
 // add a motion blur pass
 const motionPass = new ShaderPass(motionBlurShader, 'tColor')
