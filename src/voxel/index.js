@@ -6,6 +6,7 @@ import PubSub from '../events'
 import {scene} from '../index'
 import * as voxel from 'voxel'
 import {MaterialBasic} from '../terrain/shaders/materialBasic'
+import {voxelSize, voxelLayers} from './constants'
 
 import Worker from './voxel.worker.js'
 
@@ -37,16 +38,33 @@ const buildVoxelsFromWorker = (event) => {
     emptyKeys.add([event.data.i, event.data.j, event.data.k])
     return
   }
-  const positions = new Float32Array(event.data.pos)
-  const normals = new Float32Array(event.data.normals)
-  const geometry = new THREE.BufferGeometry()
-  geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3))
-  geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3))
-  const mesh = new THREE.Mesh(geometry, materialBasic)
-  mesh.position.set(100 * event.data.i, 100 * event.data.j, 100 * event.data.k)
-  let box = new THREE.BoxHelper(mesh, 0xffff00)
+  const lod = new THREE.LOD()
+  const positions = [
+    new Float32Array(event.data.pos1)
+    // new Float32Array(event.data.pos2)
+  ]
+  const normals = [
+    new Float32Array(event.data.normals1)
+    // new Float32Array(event.data.normals2)
+  ]
+  const indices = [
+    new Uint16Array(event.data.index1)
+    // new Uint16Array(event.data.index2)
+  ]
+  const lodDistances = [0, 200, 500]
+  for (var i = 0; i < 1; i++) {
+    const geometry = new THREE.BufferGeometry()
+    geometry.addAttribute('position', new THREE.BufferAttribute(positions[i], 3))
+    geometry.addAttribute('normal', new THREE.BufferAttribute(normals[i], 3))
+    geometry.setIndex(new THREE.BufferAttribute(indices[i], 1))
+    const mesh = new THREE.Mesh(geometry, materialBasic)
+    // const mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial({wireframe: true}))
+    lod.addLevel(mesh, lodDistances[i])
+  }
+  lod.position.set(voxelSize * event.data.i, voxelSize * event.data.j, voxelSize * event.data.k)
+  let box = new THREE.BoxHelper(lod, 0xffff00)
   scene.add(box)
-  scene.add(mesh)
+  scene.add(lod)
 }
 
 let workerPool = []
@@ -64,7 +82,7 @@ workerPool.postMessage = args => {
 }
 
 const buildVoxels = (i, j, k) => {
-  workerPool.postMessage([i, j, k, 5])
+  workerPool.postMessage([i, j, k, voxelLayers])
 }
 
-export {buildVoxels, emptyKeys}
+export {buildVoxels, emptyKeys, voxelSize}
