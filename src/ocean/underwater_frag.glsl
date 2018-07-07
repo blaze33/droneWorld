@@ -32,7 +32,7 @@ vec3 depthColor = vec3(0.0117, 0.0117, 0.325);
 
 #define TAU 6.28318530718
 #define MAX_ITER 5
-vec3 caustic(vec2 uv, float speed) {
+vec3 caustic(vec2 uv) {
   vec2 p = mod(uv*TAU, TAU)-250.0;
 
   vec2 i = vec2(p);
@@ -40,7 +40,7 @@ vec3 caustic(vec2 uv, float speed) {
   float inten = .005;
 
   for (int n = 0; n < MAX_ITER; n++) {
-    float t = time * speed * (1.0 - (3.5 / float(n+1)));
+    float t = time * (1.0 - (3.5 / float(n+1)));
     i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));
     c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));
   }
@@ -134,7 +134,7 @@ void main() {
 
   if (worldDistance < hitDistance) {
     gl_FragColor = texture2D(tDiffuse, vUv);
-    gl_FragColor.rgb *= caustic(nearestPoint.xy / 10., 2.0 - min(waterDepth / 100., 1.));
+    gl_FragColor.rgb *= caustic(nearestPoint.xy / 10.);
   } else {
 
     // calculate the fresnel term to blend reflection and refraction maps
