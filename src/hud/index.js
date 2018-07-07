@@ -21,7 +21,7 @@ let focalStyle
 class HUD extends Component {
   constructor (props) {
     super(props)
-    this.state = {time: 0, gunHeat: 0, lockLevel: 0}
+    this.state = {time: 0, gunHeat: 0, lockLevel: 0, pilot: null}
   }
 
   componentDidMount () {
@@ -62,7 +62,8 @@ class HUD extends Component {
       time: timestamp,
       gunHeat,
       lockLevel,
-      lock: lockLevel === 1
+      lock: lockLevel === 1,
+      pilot: pilotDrone ? pilotDrone.userData : null
     })
   }
 
@@ -77,7 +78,13 @@ class HUD extends Component {
         <div id='pointer' />
         <div id='focal' style={this.state.focalStyle} />
         <div id='horizon' style={this.state.horizonStyle} />
-        <div id='messages'>{pilotDrone ? pilotDrone.userData.altitude.toFixed(0) : 0} m</div>
+        { this.state.pilot ? (
+          <div id='messages'>
+            <div>{this.state.pilot.altitude.toFixed(0)} m</div>
+            <div>{this.state.pilot.speed.toFixed(0)} µ/s</div>
+          </div>
+          ) : null
+        }
         <svg className='vector'>
           <Crosshair size='30' x={screenCenter.x} y={screenCenter.y}
             fill='transparent'
