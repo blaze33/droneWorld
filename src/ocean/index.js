@@ -49,4 +49,38 @@ const UnderwaterShader = {
   fragmentShader: underwaterFragmentShader
 }
 
-export {WaterShader, UnderwaterShader}
+const WiggleShader = {
+  uniforms: {
+    tDiffuse: { type: 't', value: null },
+    time: {type: 'f', value: 0}
+  },
+  vertexShader: `
+    varying vec2 vUv;
+
+    void main() {
+
+      gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+      vUv = uv;
+
+    }
+  `,
+  fragmentShader: `
+    uniform float time;
+    uniform sampler2D tDiffuse;
+    varying vec2 vUv;
+
+    float frequency = 10.;
+    float amplitude = 0.005;
+
+    void main() {
+      vec2 uv = vUv;
+      float X = vUv.x * frequency + time;
+      float Y = vUv.y * frequency + time;
+      uv.y += cos(X + Y) * amplitude * cos(Y);
+      uv.x += sin(X - Y) * amplitude * sin(Y);
+      gl_FragColor = texture2D(tDiffuse, uv);
+    }
+  `
+}
+
+export {WaterShader, UnderwaterShader, WiggleShader}

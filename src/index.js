@@ -56,7 +56,8 @@ import {
 } from './modules'
 import {
   WaterShader,
-  UnderwaterShader
+  UnderwaterShader,
+  WiggleShader
 } from './ocean'
 
 const queryStringOptions = queryString.parse(window.location.search)
@@ -280,12 +281,15 @@ let loops = [
   (timestamp, delta) => {
     if (camera.position.z < water.position.z) {
       underwaterPass.enabled = true
+      wigglePass.enabled = true
       water.visible = false
       underwaterReflector.onBeforeRender(renderer, scene, camera)
       underwaterPass.material.uniforms.time.value = timestamp / 1000
+      wigglePass.material.uniforms.time.value = timestamp / 1000
       controls.setAcceleration(30)
     } else {
       underwaterPass.enabled = false
+      wigglePass.enabled = false
       water.visible = true
       controls.setAcceleration(150)
     }
@@ -341,6 +345,11 @@ tNormalMap0.value.wrapS = tNormalMap0.value.wrapT = RepeatWrapping
 tNormalMap1.value.wrapS = tNormalMap1.value.wrapT = RepeatWrapping
 composer.addPass(underwaterPass)
 window.upass = underwaterPass
+
+// add an underwater wiggle pass
+const wigglePass = new ShaderPass(WiggleShader)
+wigglePass.enabled = false
+composer.addPass(wigglePass)
 
 // add a motion blur pass
 const motionPass = new ShaderPass(motionBlurShader, 'tColor')
