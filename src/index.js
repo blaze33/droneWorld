@@ -37,7 +37,7 @@ import {material} from './terrain'
 import {particleGroups} from './particles'
 import PubSub from './events'
 import setupDrones from './drones'
-import './controls'
+import controls from './controls'
 import setupSound from './sound'
 
 import {
@@ -239,11 +239,6 @@ let loops = [
       motionPass.renderToScreen = true
     }
   },
-  () => scene.children.forEach(child => {
-    if (child instanceof LOD) {
-      child.update(camera)
-    }
-  }),
   (timestamp, delta) => {
     if (camera.position.z < water.position.z) {
       underwaterPass.enabled = true
@@ -330,9 +325,9 @@ let previousCameraPosition = new Vector3()
 let tmpMatrix = new Matrix4()
 
 // add a glitch pass
-// const glitch = new GlitchPass()
-// glitch.renderToScreen = true
-// composer.addPass(glitch)
+const glitch = new GlitchPass()
+glitch.renderToScreen = true
+composer.addPass(glitch)
 // ###################################
 
 // Start the app

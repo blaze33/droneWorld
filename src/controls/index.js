@@ -15,7 +15,15 @@ import {
 } from 'three'
 import {selectNearestTargetInSight, hudElement} from '../hud'
 
-let controlsModule
+let controls = {
+  module: null,
+  setAcceleration (value) {
+    if (this.module && value !== this.module.acceleration) {
+      this.module.acceleration = value
+      console.log('acceleration set to ', value)
+    }
+  }
+}
 let controlsElement
 let isMobile = mobileAndTabletcheck()
 let controlsInitialized = false
@@ -47,28 +55,28 @@ const initControls = (msg, data) => {
     buttonX.addEventListener('click', pressX, false)
     buttonX.addEventListener('touchstart', pressX, false)
 
-    controlsModule = new FlyControls(camera, touchPaneLeft, nippleLook)
+    controls.module = new FlyControls(camera, touchPaneLeft, nippleLook)
     controlsElement = touchPaneLeft
   } else {
     const pointer = lock(renderer.domElement)
-    controlsModule = new FlyControls(camera, renderer.domElement, undefined, pointer)
+    controls.module = new FlyControls(camera, renderer.domElement, undefined, pointer)
     controlsElement = renderer.domElement
   }
 
-  controlsModule.update(0)
-  PubSub.publish('x.loops.unshift', (timestamp, delta) => controlsModule.update(delta))
+  controls.module.update(0)
+  PubSub.publish('x.loops.unshift', (timestamp, delta) => controls.module.update(delta))
 
   const pilotDrone = data.pilotDrone
 
   // keyboardJS.bind('p', e => {
   //   if (isMobile) { return }
-  //   const NewControlsClass = controlsModule.constructor.name === 'OrbitControls' ? FlyControls : OrbitControls
+  //   const NewControlsClass = controls.module.constructor.name === 'OrbitControls' ? FlyControls : OrbitControls
   //   console.log('controlsClass', NewControlsClass)
-  //   controlsModule.dispose()
+  //   controls.module.dispose()
   //   const newModule = new NewControlsClass(camera, controlsElement)
   //   window.controls = newModule
-  //   controlsModule = newModule
-  //   controlsModule.update(0)
+  //   controls.module = newModule
+  //   controls.module.update(0)
 
   //   if (NewControlsClass === OrbitControls) {
   //     let cam = pilotDrone.position.clone()
@@ -81,8 +89,8 @@ const initControls = (msg, data) => {
   })
 
   keyboardJS.bind('r', e => {
-    if (controlsModule.constructor.name === 'OrbitControls') {
-      controlsModule.autoRotate = !controlsModule.autoRotate
+    if (controls.module.constructor.name === 'OrbitControls') {
+      controls.module.autoRotate = !controls.module.autoRotate
     }
   })
 
@@ -144,12 +152,12 @@ PubSub.subscribe('x.drones.pilotDrone.loaded', initControls)
 
 let tmpVec = new Vector3()
 PubSub.subscribe('x.drones.collision.terrain.pilotDrone', (msg, terrainNormal) => {
-  controlsModule.acceleration = 0
-  tmpVec.copy(controlsModule.velocity).applyQuaternion(camera.quaternion)
+  controls.setAcceleration(0)
+  tmpVec.copy(controls.module.velocity).applyQuaternion(camera.quaternion)
   tmpVec.reflect(terrainNormal)
   tmpVec.add(camera.position)
-  controlsModule.velocity = camera.worldToLocal(tmpVec)
-  setTimeout(() => { controlsModule.acceleration = 60 }, 1000)
+  controls.module.velocity = camera.worldToLocal(tmpVec)
+  setTimeout(() => { controls.setAcceleration(60) }, 1000)
 })
 
-export default controlsModule
+export default controls
