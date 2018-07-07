@@ -76,7 +76,7 @@ let camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1
 camera.up = new Vector3(0, 0, 1)
 camera.position.set(-500, 0, 700)
 camera.position.set(-70, -475, 275)
-camera.position.set(170, -500, 180)
+// camera.position.set(170, -500, 180)
 camera.lookAt(0, 0, 0)
 camera.rollAngle = 0
 camera.userData = {terrainKeysUnder: []}
@@ -186,8 +186,8 @@ const textureLoader = new TextureLoader().setCrossOrigin('anonymous')
 const water = new Water(
   waterGeometry,
   {
-    textureWidth: 1024,
-    textureHeight: 1024,
+    textureWidth: 512,
+    textureHeight: 512,
     color: 0xffffff,
     flowDirection: new Vector2(1, 1),
     scale: 20000 / 15.0,
@@ -217,8 +217,8 @@ window.water = water
 scene.add(water)
 
 const underwaterReflector = new Reflector(waterGeometry, {
-  textureWidth: 1024,
-  textureHeight: 1024,
+  textureWidth: 512,
+  textureHeight: 512,
   clipBias: 0.00001
   // shader: WaterRefractionShader
 })
