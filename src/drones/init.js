@@ -43,7 +43,10 @@ const buildPilotDrone = () => {
   const pilotDrone = droneFactory()
   pilotDrone.gunClock = new Clock(false)
   pilotDrone.userData.altitude = 0
+  pilotDrone.userData.speed = 0
+  pilotDrone.userData.lastPosition = pilotDrone.position.clone()
   scene.add(pilotDrone)
+  window.pilotDrone = pilotDrone
   let localY
   let targetPosition
   let targetPositionFinal
@@ -53,7 +56,7 @@ const buildPilotDrone = () => {
   const offsetVector = new Vector3(0, 0, 100)
   let terrainTiles
   let lastTimestamp = 0
-  const pilotDroneLoop = (timestamp) => {
+  const pilotDroneLoop = (timestamp, delta) => {
     camVec = camera.getWorldDirection(camVec)
     targetPosition = camera.position.clone()
       .add(camVec.multiplyScalar(20))
@@ -67,6 +70,13 @@ const buildPilotDrone = () => {
     pilotDrone.rotation.x += droneController.x
     pilotDrone.rotation.y += droneController.y
     pilotDrone.rotation.z += droneController.z
+
+    // velocity computation
+    pilotDrone.userData.velocity = pilotDrone.position.clone()
+      .sub(pilotDrone.userData.lastPosition)
+      .multiplyScalar(1000 / delta)
+    pilotDrone.userData.speed = pilotDrone.userData.velocity.length()
+    pilotDrone.userData.lastPosition.copy(pilotDrone.position)
 
     // altitude computation
     if (timestamp - lastTimestamp > 200) {
