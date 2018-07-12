@@ -1,70 +1,38 @@
-import UPNG from 'upng-js'
-import ndarray from 'ndarray'
 import * as THREE from 'three'
-import {Octree, SimplifyModifier} from '../modules'
 import PubSub from '../events'
 import {scene} from '../index'
-import * as voxel from 'voxel'
 import {MaterialBasic} from '../terrain/shaders/materialBasic'
 import {voxelSize, voxelLayers} from './constants'
 
 import Worker from './voxel.worker.js'
 
-require('three/examples/js/MarchingCubes.js')
-
-const MarchingCubes = global.THREE.MarchingCubes
-
-const octree = new Octree({
-                // uncomment below to see the octree (may kill the fps)
-                // scene: scene,
-                // when undeferred = true, objects are inserted immediately
-                // instead of being deferred until next octree.update() call
-                // this may decrease performance as it forces a matrix update
-  undeferred: false,
-                // set the max depth of tree
-  depthMax: Infinity,
-                // max number of objects before nodes split or merge
-  objectsThreshold: 8,
-                // percent between 0 and 1 that nodes will overlap each other
-                // helps insert objects that lie over more than one node
-  overlapPct: 0.15
-})
-
 const materialBasic = MaterialBasic()
 const emptyKeys = new Set()
+window.emptyKeys = emptyKeys
 
 const buildVoxelsFromWorker = (event) => {
+  const key = [event.data.i, event.data.j, event.data.k]
   if (!event.data.hasGeometry) {
-    emptyKeys.add([event.data.i, event.data.j, event.data.k])
+    emptyKeys.add(key.toString())
     return
   }
-  const lod = new THREE.LOD()
-  const positions = [
-    new Float32Array(event.data.pos1)
-    // new Float32Array(event.data.pos2)
-  ]
-  const normals = [
-    new Float32Array(event.data.normals1)
-    // new Float32Array(event.data.normals2)
-  ]
-  const indices = [
-    new Uint16Array(event.data.index1)
-    // new Uint16Array(event.data.index2)
-  ]
-  const lodDistances = [0, 200, 500]
-  for (var i = 0; i < 1; i++) {
-    const geometry = new THREE.BufferGeometry()
-    geometry.addAttribute('position', new THREE.BufferAttribute(positions[i], 3))
-    geometry.addAttribute('normal', new THREE.BufferAttribute(normals[i], 3))
-    geometry.setIndex(new THREE.BufferAttribute(indices[i], 1))
-    const mesh = new THREE.Mesh(geometry, materialBasic)
-    // const mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial({wireframe: true}))
-    lod.addLevel(mesh, lodDistances[i])
-  }
-  lod.position.set(voxelSize * event.data.i, voxelSize * event.data.j, voxelSize * event.data.k)
-  let box = new THREE.BoxHelper(lod, 0xffff00)
+
+  const positions = new Float32Array(event.data.pos1)
+  const normals = new Float32Array(event.data.normals1)
+  const indices = new Uint16Array(event.data.index1)
+
+  const geometry = new THREE.BufferGeometry()
+  geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3))
+  geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3))
+  geometry.setIndex(new THREE.BufferAttribute(indices, 1))
+  const mesh = new THREE.Mesh(geometry, materialBasic)
+  // const mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial({wireframe: true}))
+
+  mesh.position.set(voxelSize * event.data.i, voxelSize * event.data.j, voxelSize * event.data.k)
+  mesh.userData.key = key
+  let box = new THREE.BoxHelper(mesh, 0xffff00)
   scene.add(box)
-  scene.add(lod)
+  scene.add(mesh)
 }
 
 let workerPool = []
