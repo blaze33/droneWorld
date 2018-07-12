@@ -57,7 +57,6 @@ const voxelBuilder = (timestamp) => {
         objectXY.set(voxelBlock.position.x, voxelBlock.position.y, 0)
       ).length()
       let cutOffDistance = voxelSize * Math.ceil(voxelNumber / 2) * 1.1
-      console.log('cut-off distance ', cutOffDistance.toFixed(0))
       voxelBlock.visible = distance < cutOffDistance
     })
   }
