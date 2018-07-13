@@ -81,7 +81,7 @@ class HUD extends Component {
         { this.state.pilot ? (
           <div id='messages'>
             <div>{this.state.pilot.altitude.toFixed(0)} m</div>
-            <div>{this.state.pilot.speed.toFixed(0)} µ/s</div>
+            <div>{this.state.pilot.speed.toFixed(0)} m/s</div>
           </div>
           ) : null
         }

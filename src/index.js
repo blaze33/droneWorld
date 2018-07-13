@@ -276,7 +276,7 @@ let loops = [
       underwaterPass.enabled = false
       wigglePass.enabled = false
       water.visible = true
-      controls.setAcceleration(150)
+      controls.setAcceleration(60)
     }
   }
 ]
