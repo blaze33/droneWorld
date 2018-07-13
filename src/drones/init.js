@@ -42,7 +42,7 @@ PubSub.subscribe('x.assets.drone.loaded', initDroneFactory)
 const buildPilotDrone = () => {
   const pilotDrone = droneFactory()
   pilotDrone.gunClock = new Clock(false)
-  pilotDrone.userData.altitude = 0
+  pilotDrone.userData.altitude = NaN
   pilotDrone.userData.speed = 0
   pilotDrone.userData.lastPosition = pilotDrone.position.clone()
   scene.add(pilotDrone)
