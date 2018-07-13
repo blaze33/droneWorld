@@ -3,6 +3,7 @@ import {
   Scene,
   PerspectiveCamera,
   CubeCamera,
+  Vector2,
   Vector3,
   WebGLRenderer,
   PCFSoftShadowMap,
@@ -14,6 +15,7 @@ import {
   WebGLRenderTarget,
   DepthTexture,
   Matrix4,
+  MeshDepthMaterial,
 
   // Water imports
   PlaneBufferGeometry,
@@ -178,33 +180,55 @@ const waterParameters = {
   distortionScale: 3.7,
   alpha: 1.0
 }
-var waterGeometry = new PlaneBufferGeometry(waterParameters.oceanSide * 5, waterParameters.oceanSide * 5)
+const waterGeometry = new PlaneBufferGeometry(waterParameters.oceanSide * 5, waterParameters.oceanSide * 5, 10, 10)
 
+const textureLoader = new TextureLoader().setCrossOrigin('anonymous')
 const water = new Water(
   waterGeometry,
   {
-    textureWidth: 1024,
-    textureHeight: 1024,
-    waterNormals: new TextureLoader().load(require('./textures/waternormals.jpg'), function (texture) {
-      texture.wrapS = texture.wrapT = RepeatWrapping
-    }),
-    alpha: waterParameters.alpha,
-    sunDirection: dirLight.position.clone().normalize(),
-    sunColor: 0xffffff,
-    waterColor: 0x001e0f,
-    distortionScale: waterParameters.distortionScale,
-    fog: false
+    textureWidth: 512,
+    textureHeight: 512,
+    color: 0xffffff,
+    flowDirection: new Vector2(1, 1),
+    scale: 20000 / 15.0,
+    normalMap0: textureLoader.load(require('./textures/Water_1_M_Normal.jpg')),
+    normalMap1: textureLoader.load(require('./textures/Water_2_M_Normal.jpg')),
+    clipBias: 0.00001,
+    reflectivity: 0.2,
+    shader: WaterShader,
+    flowSpeed: 0.1
   }
 )
+window.water = water
+const waterTarget = new WebGLRenderTarget(window.innerWidth, window.innerHeight)
+const depthMaterial = new MeshDepthMaterial()
+waterTarget.depthBuffer = true
+waterTarget.depthTexture = new DepthTexture()
+water.material.uniforms.tDepth.value = waterTarget.depthTexture
 
 water.up.set(0, 0, 1)
-water.rotation.z = -Math.PI / 2
-water.position.z = 43
+// water.rotation.z = -Math.PI / 2
+water.position.z = 75
+water.material.uniforms.surface.value = water.position.z
 gui.__folders['Sun, sky and ocean'].add(water.position, 'z', 0, 200, 1)
 water.receiveShadow = true
 water.userData.isWater = true
 window.water = water
 scene.add(water)
+
+const underwaterReflector = new Reflector(waterGeometry, {
+  textureWidth: 512,
+  textureHeight: 512,
+  clipBias: 0.00001
+  // shader: WaterRefractionShader
+})
+underwaterReflector.rotation.y = Math.PI
+underwaterReflector.up.set(0, 0, -1)
+underwaterReflector.position.copy(water.position)
+underwaterReflector.getRenderTarget().depthBuffer = true
+underwaterReflector.getRenderTarget().depthTexture = new DepthTexture()
+window.ref = underwaterReflector
+underwaterReflector.updateMatrixWorld()
 // ##########################
 
 setupDrones()
@@ -314,7 +338,7 @@ composer.addPass(wigglePass)
 // add a motion blur pass
 const motionPass = new ShaderPass(motionBlurShader, 'tColor')
 motionPass.renderToScreen = true
-motionPass.material.uniforms.tDepth.value = target.depthTexture
+motionPass.material.uniforms.tDepth.value = waterTarget.depthTexture
 motionPass.material.uniforms.velocityFactor.value = 1
 composer.addPass(motionPass)
 
@@ -359,6 +383,13 @@ var mainLoop = (timestamp) => {
       dofEffect.renderDepth()
       dofEffect.composer.render()
     } else {
+      // render to depth target
+      scene.overrideMaterial = depthMaterial
+      water.visible = false
+      renderer.render(scene, camera, waterTarget)
+      water.visible = true
+      scene.overrideMaterial = null
+
       // update motion blur shader uniforms
       motionPass.material.uniforms.delta.value = delta
       // tricky part to compute the clip-to-world and world-to-clip matrices
@@ -367,6 +398,12 @@ var mainLoop = (timestamp) => {
       motionPass.material.uniforms.previousWorldToClipMatrix.value
         .copy(previousProjectionMatrix.multiply(previousMatrixWorldInverse))
       motionPass.material.uniforms.cameraMove.value.copy(camera.position).sub(previousCameraPosition)
+
+      // water uniforms
+      water.material.uniforms.clipToWorldMatrix.value = motionPass.material.uniforms.clipToWorldMatrix.value
+      underwaterPass.material.uniforms.clipToWorldMatrix.value = motionPass.material.uniforms.clipToWorldMatrix.value
+      underwaterPass.material.uniforms.worldToClipMatrix.value
+        .copy(camera.projectionMatrix).multiply(camera.matrixWorldInverse)
 
       // render the postprocessing passes
       composer.render(delta)
