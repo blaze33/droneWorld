@@ -83,7 +83,7 @@ const buildPilotDrone = () => {
       lastTimestamp = timestamp
       raycaster.set(pilotDrone.position.clone().add(offsetVector), downVector)
       terrainTiles = raycaster.intersectObjects(scene.children.filter(child => {
-        return camera.userData.terrainKeysUnder.includes(child.key) || child.userData.isWater
+        return camera.userData.terrainKeysUnder.includes(child.key)
       }))
       if (terrainTiles.length > 0) {
         pilotDrone.userData.altitude = terrainTiles[0].distance - offsetVector.length()
