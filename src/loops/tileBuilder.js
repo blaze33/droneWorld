@@ -6,6 +6,7 @@ import {dirLight} from '../lights'
 import {buildPlane} from '../terrain'
 
 const tileSize = 800
+const maxTilesInMemory = 128
 let lastCameraPosition = new Vector3(0, 0, 0)
 let tiles = {}
 let pngs = {}
@@ -40,6 +41,12 @@ const tileBuilder = (timestamp) => {
     // const segments0 = 32
     // const segments1 = 15
     const segments2 = 15
+
+    const cutOffDistance = currentTileSize * 3
+    let distanceVector = new Vector3()
+    let cameraXY = new Vector3()
+    let objectXY = new Vector3()
+    let distance
 
     let visibleKeysArray = [
         [zoom, x0, y0, segments0, 0, currentTileSize],
@@ -97,17 +104,48 @@ const tileBuilder = (timestamp) => {
 
     const visibleKeysString = visibleKeysArray.map(k => k.toString())
     const currentKeysString = currentKeysArray.map(k => k.toString())
-    camera.userData.terrainKeysUnder = visibleKeysString.slice(0, 4)
+
+    // compute tile under the camera
+    const potentialUnderKeys = visibleKeysString.slice(0, 4)
+    const potentialUnderTiles = scene.children.filter(child => potentialUnderKeys.includes(child.key))
+    const tileToCamera = (tile) => {
+      return distanceVector.subVectors(tile.position, camera.position).length()
+    }
+    potentialUnderTiles.sort((a, b) =>
+       tileToCamera(a) - tileToCamera(b)
+    )
+    camera.userData.terrainKeysUnder = potentialUnderKeys
+    camera.userData.terrainTileUnder = potentialUnderTiles[0]
+
     const newKeys = visibleKeysString.filter(x => currentKeysString.indexOf(x) < 0)
-    // const oldKeys = currentKeysString.filter(x => visibleKeysString.indexOf(x) < 0)
+    const existingKeys = scene.children.filter(child => child.key).map(tile => tile.key)
 
-    // if (oldKeys) {console.log('deleting', oldKeys.sort())}
-    // if (newKeys) {console.log('adding', newKeys.sort())}
-
+    // build new keys
     newKeys.forEach(newKey => {
+      if (existingKeys.includes(newKey)) {
+        console.log(newKey, ' already exists!')
+        return
+      }
       const zxyijs = newKey.split(',').map(x => parseInt(x, 10))
       buildPlane(...zxyijs)
     })
+
+    // switch tiles visibility with regard to their distance to the camera
+    scene.children.filter(child => child.key)
+      .forEach(tile => {
+        distance = distanceVector.subVectors(
+          objectXY.set(tile.position.x, tile.position.y, 0),
+          cameraXY.set(camera.position.x, camera.position.y, 0)
+        ).length()
+        tile.userData.distanceToCamera = distance
+        if (distance < cutOffDistance && visibleKeysString.includes(tile.key)) {
+          tile.visible = true
+        } else {
+          window.setTimeout(() => { tile.visible = false }, 750)
+        }
+      })
+
+    // delete some distant tiles
     const deleteTile = (tile) => {
       scene.remove(tile)
       tile.geometry.dispose()
@@ -115,16 +153,15 @@ const tileBuilder = (timestamp) => {
       tile.material.dispose()
       tile.material = null
     }
-    scene.children.filter(
-      child => child.key && visibleKeysString.indexOf(child.key) < 0
-    ).forEach(
-      tile => {
+    scene.children.filter(child => child.key)
+      .sort((a, b) => a.userData.distanceToCamera - b.userData.distanceToCamera)
+      .slice(maxTilesInMemory)
+      .forEach(tile => {
         if (!tile.markedForDeletion) {
           window.setTimeout(() => deleteTile(tile), 750)
           tile.markedForDeletion = true
         }
-      }
-    )
+      })
 
     currentKeysArray = visibleKeysArray.slice(0)
   }
