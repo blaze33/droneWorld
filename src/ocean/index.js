@@ -43,6 +43,7 @@ const UnderwaterShader = {
     clipToWorldMatrix: { type: 'm4', value: null },
     worldToClipMatrix: { type: 'm4', value: new Matrix4() },
     cameraPosition: {type: 'v3', value: null},
+    sunPosition: {type: 'v3', value: null},
     time: {type: 'f', value: 0}
   },
   vertexShader: underwaterVertexShader,

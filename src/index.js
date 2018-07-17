@@ -335,6 +335,7 @@ underwaterPass.enabled = false
 underwaterPass.material.uniforms.waterLevel.value = water.position.z
 underwaterPass.material.uniforms.tDepth.value = waterTarget.depthTexture
 underwaterPass.material.uniforms.cameraPosition.value = camera.position
+underwaterPass.material.uniforms.sunPosition.value = sunPosition
 underwaterPass.material.uniforms.tReflectionMap.value = underwaterReflector.getRenderTarget().texture
 underwaterPass.material.uniforms.tReflectionDepth.value = underwaterReflector.getRenderTarget().depthTexture
 let tNormalMap0 = underwaterPass.material.uniforms.tNormalMap0
