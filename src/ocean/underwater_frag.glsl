@@ -20,6 +20,7 @@ uniform float reflectivity;
 uniform float time;
 uniform float waterLevel;
 uniform vec4 config;
+uniform vec3 sunPosition;
 uniform mat4 clipToWorldMatrix;
 uniform mat4 worldToClipMatrix;
 
@@ -74,14 +75,20 @@ float causticX(float x, float power, float gtime) {
 
 float GodRays(vec2 uv) {
   float light = 0.0;
+  vec4 uvSun = worldToClipMatrix * vec4(sunPosition, 1.);
+  uvSun /= uvSun.w;
+  uvSun = uvSun / 2. + 0.5;
+  vec2 uv2 = vec2(
+    dot(normalize(uv - uvSun.xy), vec2(1., 0.)),
+    length(uv - uvSun.xy)
+  );
 
-  light += pow(causticX((uv.x+0.08*uv.y)/1.7+0.5, 1.8, time*0.65),10.0)*0.05;
-  light-=pow((1.0-uv.y)*0.3,2.0)*0.2;
-  light += pow(causticX(sin(uv.x), 0.3,time*0.7),9.0)*0.4;
-  light += pow(causticX(cos(uv.x*2.3), 0.3,time*1.3),4.0)*0.1;
+  light += pow(causticX((uv2.x + 0.08 * uv2.y) / 1.7 + 0.5, 1.8, time * 0.65), 10.0) * 0.05;
+  light += pow(causticX(sin(uv2.x), 0.3, time * 0.7), 9.0) * 0.4;
+  light += pow(causticX(cos(uv2.x * 2.3), 0.3, time * 1.3), 4.0) * 0.1;
 
-  light-=pow((1.0-uv.y)*0.3,3.0);
-  light=clamp(light,0.0,1.0);
+  light *= smoothstep(0., .3, uv2.y) * smoothstep(0., .3, uv2.y);
+  light = clamp(light, 0.0, 1.0);
 
   return light;
 }
@@ -235,16 +242,15 @@ void main() {
 
 }
 
-
 // float fogDepth = dist + waterDepth * min(1., waterDepth / 100.);
 float fogDepth = dist + clamp(waterLevel - cameraPosition.z, 0., 100.);
 fogFactor = whiteCompliment( exp2( - fogDensity * fogDensity * fogDepth * fogDepth * LOG2 ) );
 gl_FragColor.rgb = mix(gl_FragColor.rgb, depthColor, fogFactor);
 
+gl_FragColor.rgb += GodRays(vUv) * (1. - smoothstep(0., 100., waterLevel - cameraPosition.z));
+
 vec4 star = detritus(cameraPosition, dir,  min(40., dist / STAR_VOXEL_STEP_SIZE));
 gl_FragColor.rgb = gl_FragColor.rgb * (1.0 - star.a)+star.rgb;
-
-gl_FragColor.rgb += GodRays(vec2(vUv.x * 2., (1. - vUv.y) * 4.));
 
 
 // gl_FragColor = texture2D(tReflectionMap, vec2(1.0 - vUv.x, vUv.y));
