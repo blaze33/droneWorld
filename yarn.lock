@@ -16,18 +16,6 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-aabb-3d@0.0.0, aabb-3d@0.0.X:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/aabb-3d/-/aabb-3d-0.0.0.tgz#223ef5798a747d1d5dfb6555a4c6ad942e1719c8"
-  dependencies:
-    gl-matrix "2.X.X"
-
-aabb-3d@0.X.X:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/aabb-3d/-/aabb-3d-0.1.0.tgz#651521d0634b0f3f508162e6b8cdec9f35393053"
-  dependencies:
-    gl-matrix "2.X.X"
-
 abab@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/abab/-/abab-1.0.4.tgz#5faad9c2c07f60dd76770f71cf025b62a63cfd4e"
@@ -359,10 +347,6 @@ async@^1.4.0, async@^1.5.2:
 asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
-
-atlaspack@~0.2.4:
-  version "0.2.7"
-  resolved "https://registry.yarnpkg.com/atlaspack/-/atlaspack-0.2.7.tgz#8d0008b9336188f55334ba5760384de698558d02"
 
 atob@^2.1.1:
   version "2.1.1"
@@ -1658,10 +1642,6 @@ collection-visit@^1.0.0:
     map-visit "^1.0.0"
     object-visit "^1.0.0"
 
-collide-3d-tilemap@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/collide-3d-tilemap/-/collide-3d-tilemap-0.0.1.tgz#38fc9ae4b0400dcf8370a6198a15103cf19fd55f"
-
 color-convert@^1.3.0, color-convert@^1.9.0:
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.2.tgz#49881b8fba67df12a96bdf3f56c0aab9e7913147"
@@ -2321,18 +2301,6 @@ domhandler@2.1:
   dependencies:
     domelementtype "1"
 
-domnode-dom@~0.0.X:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/domnode-dom/-/domnode-dom-0.0.4.tgz#4c66d26eaf1e4f1af56ede8593ec4fbfcd9d8e8f"
-  dependencies:
-    domnode "~0.0.3"
-
-domnode@~0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/domnode/-/domnode-0.0.3.tgz#a8bb0d8ea8d494455d0c1fb22e5645c64db0c4be"
-  dependencies:
-    mustache "0.4.0"
-
 domutils@1.1:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/domutils/-/domutils-1.1.6.tgz#bddc3de099b9a2efacc51c623f28f416ecc57485"
@@ -2359,13 +2327,6 @@ dotenv-expand@4.2.0:
 dotenv@4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-4.0.0.tgz#864ef1379aced55ce6f95debecdce179f7a0cd1d"
-
-drag-stream@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/drag-stream/-/drag-stream-0.0.2.tgz#52d6e40fa4b83178014a61e54eb25dc499d1fb0f"
-  dependencies:
-    domnode-dom "~0.0.X"
-    through "~1.1.1"
 
 duplexer3@^0.1.4:
   version "0.1.4"
@@ -2527,10 +2488,6 @@ es6-symbol@~3.0.1:
   dependencies:
     d "~0.1.1"
     es5-ext "~0.10.10"
-
-es6-tween@^5.0.5:
-  version "5.2.4"
-  resolved "https://registry.yarnpkg.com/es6-tween/-/es6-tween-5.2.4.tgz#aed8a90204c8bd210732d6041973fa0fd1db7846"
 
 es6-weak-map@^2.0.1:
   version "2.0.2"
@@ -2850,10 +2807,6 @@ eventsource@0.1.6:
   resolved "https://registry.yarnpkg.com/eventsource/-/eventsource-0.1.6.tgz#0acede849ed7dd1ccc32c811bb11b944d4f29232"
   dependencies:
     original ">=0.0.5"
-
-ever@X.X.X:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/ever/-/ever-0.0.3.tgz#cea46ca55f5999b4bbbd3bfc75e261d703c61543"
 
 evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
   version "1.0.3"
@@ -3324,10 +3277,6 @@ fstream@^1.0.0, fstream@^1.0.2:
     mkdirp ">=0.5 0"
     rimraf "2"
 
-fullscreen@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/fullscreen/-/fullscreen-0.0.1.tgz#a368c7f6d4d5d0ea55f021c926cae558370bf04f"
-
 function-bind@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.1.tgz#a56899d3ea3c9bab874bb9773b7c5ede92f4895d"
@@ -3402,14 +3351,6 @@ gh-pages@^1.1.0:
     globby "^6.1.0"
     graceful-fs "4.1.11"
     rimraf "^2.6.2"
-
-gl-matrix@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/gl-matrix/-/gl-matrix-2.0.0.tgz#06ecd8b2b60de4a0dbc44d6c98ca3166fc00ad1a"
-
-gl-matrix@2.X.X:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/gl-matrix/-/gl-matrix-2.6.1.tgz#1bc7f7b396f4ae80abdb4db9a98cd07d170b9004"
 
 glob-base@^0.3.0:
   version "0.3.0"
@@ -3903,10 +3844,6 @@ inflight@^1.0.4:
     once "^1.3.0"
     wrappy "1"
 
-inherits@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/inherits/-/inherits-1.0.0.tgz#38e1975285bf1f7ba9c84da102bb12771322ac48"
-
 inherits@2, inherits@2.0.3, inherits@^2.0.1, inherits@^2.0.3, inherits@~2.0.0, inherits@~2.0.1, inherits@~2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.3.tgz#633c2c83e3da42a502f52466022480f4208261de"
@@ -3956,14 +3893,6 @@ inquirer@^0.12.0:
     strip-ansi "^3.0.0"
     through "^2.3.6"
 
-interact@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/interact/-/interact-0.0.2.tgz#4823043dccbb145a320436caf0290a8cb9c0f973"
-  dependencies:
-    drag-stream "0.0.2"
-    fullscreen "0.0.1"
-    pointer-lock "0.0.3"
-
 internal-ip@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/internal-ip/-/internal-ip-1.2.0.tgz#ae9fbf93b984878785d50a8de1b356956058cf5c"
@@ -3983,10 +3912,6 @@ invariant@^2.2.2:
 invert-kv@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/invert-kv/-/invert-kv-1.0.0.tgz#104a8e4aaca6d3d8cd157a8ef8bfab2d7a3ffdb6"
-
-iota-array@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/iota-array/-/iota-array-1.0.0.tgz#81ef57fe5d05814cd58c2483632a99c30a0e8087"
 
 ip@^1.1.0, ip@^1.1.5:
   version "1.1.5"
@@ -4022,7 +3947,7 @@ is-binary-path@^1.0.0:
   dependencies:
     binary-extensions "^1.0.0"
 
-is-buffer@^1.0.2, is-buffer@^1.1.5:
+is-buffer@^1.1.5:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-1.1.6.tgz#efaa2ea9daa0d7ab2ea13a97b2b8ad51fefbe8be"
 
@@ -4790,13 +4715,6 @@ jsx-ast-utils@^2.0.0:
   dependencies:
     array-includes "^3.0.3"
 
-kb-controls@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/kb-controls/-/kb-controls-0.0.2.tgz#74a617cd65393e056794809d1d3088161ef6fa40"
-  dependencies:
-    ever X.X.X
-    vkey X.X.X
-
 keyboardjs@^2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/keyboardjs/-/keyboardjs-2.4.1.tgz#7c5ad28695a21b6c4d066681c127376a60f9acd1"
@@ -5251,10 +5169,6 @@ multicast-dns@^6.0.1:
     dns-packet "^1.3.1"
     thunky "^1.0.2"
 
-mustache@0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/mustache/-/mustache-0.4.0.tgz#49eb3bc60fd41119c50c87aa7067ef63d1592bdd"
-
 mute-stream@0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.5.tgz#8fbfabb0a98a253d3184331f9e8deb7372fac6c0"
@@ -5292,13 +5206,6 @@ ncname@1.0.x:
   resolved "https://registry.yarnpkg.com/ncname/-/ncname-1.0.0.tgz#5b57ad18b1ca092864ef62b0b1ed8194f383b71c"
   dependencies:
     xml-char-classes "^1.0.0"
-
-ndarray@^1.0.18:
-  version "1.0.18"
-  resolved "https://registry.yarnpkg.com/ndarray/-/ndarray-1.0.18.tgz#b60d3a73224ec555d0faa79711e502448fd3f793"
-  dependencies:
-    iota-array "^1.0.0"
-    is-buffer "^1.0.2"
 
 needle@^2.2.0:
   version "2.2.1"
@@ -5861,10 +5768,6 @@ pify@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/pify/-/pify-3.0.0.tgz#e5a4acd2c101fdf3d9a4d07f0dbc4db49dd28176"
 
-pin-it@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/pin-it/-/pin-it-0.0.1.tgz#cf841019ffbe68ca1c06b48dca143613856085c2"
-
 pinkie-promise@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/pinkie-promise/-/pinkie-promise-2.0.1.tgz#2135d6dfa7a358c069ac9b178776288228450ffa"
@@ -5919,10 +5822,6 @@ pluralize@^7.0.0:
 pn@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/pn/-/pn-1.1.0.tgz#e2f4cef0e219f463c179ab37463e4e1ecdccbafb"
-
-pointer-lock@0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/pointer-lock/-/pointer-lock-0.0.3.tgz#2b0675ca4824c3de50972d1a28309be7ce0a35f7"
 
 pointer-lock@^0.0.4:
   version "0.0.4"
@@ -6379,10 +6278,6 @@ querystring@0.2.0:
 querystringify@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.0.0.tgz#fa3ed6e68eb15159457c89b37bc6472833195755"
-
-raf@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/raf/-/raf-0.0.1.tgz#1cddaa6054ac7c407ef037131955a9d5861986fc"
 
 raf@3.4.0:
   version "3.4.0"
@@ -7260,16 +7155,6 @@ source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 
-spatial-events@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/spatial-events/-/spatial-events-0.0.1.tgz#2a993e3d4948acf0f77934d8c8155863e1c3076f"
-  dependencies:
-    aabb-3d "0.X.X"
-
-spatial-trigger@0.0.0:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/spatial-trigger/-/spatial-trigger-0.0.0.tgz#68794be1e911e7fae6a05a4ff35003c81db79c53"
-
 spdx-correct@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/spdx-correct/-/spdx-correct-3.0.0.tgz#05a5b4d7153a195bc92c3c425b69f3b2a9524c82"
@@ -7647,15 +7532,7 @@ text-table@0.2.0, text-table@^0.2.0, text-table@~0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
 
-three.terrain.js@^1.5.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/three.terrain.js/-/three.terrain.js-1.6.0.tgz#e4f7826dd6cad39ab11ad725ec8c075a5a63f258"
-
-three@0.56.0:
-  version "0.56.0"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.56.0.tgz#8c47c58b8294e86528c66de04aa70c968715bd31"
-
-three@0.94.0, three@0.X.X, three@^0.94.0:
+three@0.94.0, three@^0.94.0:
   version "0.94.0"
   resolved "https://registry.yarnpkg.com/three/-/three-0.94.0.tgz#4ce6db7f2bfbf79c2d73444aa6e3cfc08a32d762"
 
@@ -7667,17 +7544,9 @@ through@^2.3.6, through@^2.3.7, through@~2.3.4:
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
 
-through@~1.1.1:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/through/-/through-1.1.2.tgz#344a5425a3773314ca7e0eb6512fbafaf76c0bfe"
-
 thunky@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/thunky/-/thunky-1.0.2.tgz#a862e018e3fb1ea2ec3fce5d55605cf57f247371"
-
-tic@0.2.1, tic@~0.2.0:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/tic/-/tic-0.2.1.tgz#03240336dde29d0b7c2e5a24e9cc0cbf5461e1b1"
 
 time-stamp@^2.0.0:
   version "2.0.0"
@@ -8031,86 +7900,11 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vkey@X.X.X:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/vkey/-/vkey-1.0.1.tgz#71c56acb759e80321c95d616c2b7fc55059181c0"
-
 vm-browserify@0.0.4:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-0.0.4.tgz#5d7ea45bbef9e4a6ff65f95438e0a87c357d5a73"
   dependencies:
     indexof "0.0.1"
-
-voxel-control@0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/voxel-control/-/voxel-control-0.0.7.tgz#63a47ad1deae4d99b4f7475c76b401bbe6efb9c7"
-
-voxel-engine@^0.20.2:
-  version "0.20.2"
-  resolved "https://registry.yarnpkg.com/voxel-engine/-/voxel-engine-0.20.2.tgz#3e7b5b80fbf55e09f269e32976c6146f03498a38"
-  dependencies:
-    aabb-3d "0.0.0"
-    collide-3d-tilemap "0.0.1"
-    gl-matrix "2.0.0"
-    inherits "1.0.0"
-    interact "0.0.2"
-    kb-controls "0.0.2"
-    pin-it "0.0.1"
-    raf "0.0.1"
-    spatial-events "0.0.1"
-    spatial-trigger "0.0.0"
-    three "0.56.0"
-    tic "0.2.1"
-    voxel "0.3.1"
-    voxel-control "0.0.7"
-    voxel-mesh "0.2.1"
-    voxel-physical "0.0.10"
-    voxel-raycast "0.2.1"
-    voxel-region-change "0.1.0"
-    voxel-texture "0.5.6"
-    voxel-view "0.0.6"
-
-voxel-mesh@0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/voxel-mesh/-/voxel-mesh-0.2.1.tgz#6b7539e46e08435ddcb3ee7ccb6a2f5144eeca69"
-
-voxel-mesh@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/voxel-mesh/-/voxel-mesh-0.3.0.tgz#33d61695f67293c2857715986f177dd27c6a87e9"
-
-voxel-physical@0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/voxel-physical/-/voxel-physical-0.0.10.tgz#fc9f66facd6d6b4e1c422c4daab5c67eac436a58"
-  dependencies:
-    aabb-3d "0.0.X"
-    three "0.X.X"
-
-voxel-raycast@0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/voxel-raycast/-/voxel-raycast-0.2.1.tgz#61e7bb02e934b08265a3ed81e368b353bca4fb8e"
-
-voxel-region-change@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/voxel-region-change/-/voxel-region-change-0.1.0.tgz#fe12d30591178693ad7c10288309c82efaa558dc"
-  dependencies:
-    aabb-3d "0.0.0"
-
-voxel-texture@0.5.6:
-  version "0.5.6"
-  resolved "https://registry.yarnpkg.com/voxel-texture/-/voxel-texture-0.5.6.tgz#76c516a7cc4a9491db25c731230ada5c0898c288"
-  dependencies:
-    atlaspack "~0.2.4"
-    tic "~0.2.0"
-
-voxel-view@0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/voxel-view/-/voxel-view-0.0.6.tgz#b4924f2fc1e89a78bb332efbc99e29664d6274c8"
-
-voxel@0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/voxel/-/voxel-0.3.1.tgz#a9717a7635fe1e9431b78f172812385a98777e1b"
-  dependencies:
-    inherits "1.0.0"
 
 w3c-hr-time@^1.0.1:
   version "1.0.1"
