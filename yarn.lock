@@ -2489,10 +2489,6 @@ es6-symbol@~3.0.1:
     d "~0.1.1"
     es5-ext "~0.10.10"
 
-es6-tween@^5.0.5:
-  version "5.2.4"
-  resolved "https://registry.yarnpkg.com/es6-tween/-/es6-tween-5.2.4.tgz#aed8a90204c8bd210732d6041973fa0fd1db7846"
-
 es6-weak-map@^2.0.1:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/es6-weak-map/-/es6-weak-map-2.0.2.tgz#5e3ab32251ffd1538a1f8e5ffa1357772f92d96f"
@@ -7538,10 +7534,6 @@ test-exclude@^4.2.1:
 text-table@0.2.0, text-table@^0.2.0, text-table@~0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
-
-three.terrain.js@^1.5.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/three.terrain.js/-/three.terrain.js-1.6.0.tgz#e4f7826dd6cad39ab11ad725ec8c075a5a63f258"
 
 three@^0.94.0:
   version "0.94.0"
