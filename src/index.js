@@ -194,7 +194,7 @@ const water = new Water(
     scale: 20000 / 15.0,
     normalMap0: textureLoader.load(require('./textures/Water_1_M_Normal.jpg')),
     normalMap1: textureLoader.load(require('./textures/Water_2_M_Normal.jpg')),
-    clipBias: 0.2,
+    clipBias: 0.00001,
     reflectivity: 0.2,
     shader: WaterShader,
     flowSpeed: 0.1
