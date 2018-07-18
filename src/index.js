@@ -76,7 +76,7 @@ let camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1
 
 camera.up = new Vector3(0, 0, 1)
 camera.position.set(-500, 0, 700)
-camera.position.set(-70, -475, 275)
+// camera.position.set(-70, -475, 275)
 // camera.position.set(170, -500, 180)
 camera.lookAt(0, 0, 0)
 camera.rollAngle = 0

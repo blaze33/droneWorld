@@ -26,6 +26,11 @@ const smoothSnap = (t, m) => {
   return c + s * (((c + s * t) * 2) ** m) * 0.5
 }
 
+const smoothstep = (min, max, value) => {
+  var x = Math.max(0, Math.min(1, (value - min) / (max - min)))
+  return x * x * (3 - 2 * x)
+}
+
 const generateVoxels = (i, j, k, zMax) => {
   console.time([i, j, k].toString())
   let n = 0
@@ -54,6 +59,7 @@ const generateVoxels = (i, j, k, zMax) => {
     return value
   }
   let x1, y1, z1, x2, y2, z2
+  let density, zn, zsteps
   for (let z = k * (dim - 3); z < k * (dim - 3) + dim; z++) {
     for (let y = j * (dim - 3); y < j * (dim - 3) + dim; y++) {
       for (let x = i * (dim - 3); x < i * (dim - 3) + dim; x++, n++) {
@@ -65,11 +71,12 @@ const generateVoxels = (i, j, k, zMax) => {
         z2 = z + 16 * fbm(x1 + 222.22, y1 + 222.22, z1 + 222.22)
         noiseValue = fbm(x2, y2, z2)
 
-        let density = 0
+        density = 0
         density += noiseValue * 0.5
 
-        let zinfluence = 0.5 - z / (zMax * (dim - 3))
-        density += zinfluence
+        zn = (zMax * (dim - 3))
+        zsteps = smoothstep(0, 12, z % 12) * 12 + Math.floor(z / 12) * 12
+        density += 0.5 - zsteps / zn
 
         positions[n] = density
 
