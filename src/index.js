@@ -355,10 +355,10 @@ composer.addPass(wigglePass)
 
 // add a motion blur pass
 const motionPass = new ShaderPass(motionBlurShader, 'tColor')
-motionPass.renderToScreen = true
+motionPass.renderToScreen = false
 motionPass.material.uniforms.tDepth.value = waterTarget.depthTexture
 motionPass.material.uniforms.velocityFactor.value = 1
-// composer.addPass(motionPass)
+composer.addPass(motionPass)
 
 // define variables used by the motion blur pass
 let previousMatrixWorldInverse = new Matrix4()
@@ -369,11 +369,11 @@ let tmpMatrix = new Matrix4()
 // add a glitch pass
 const glitch = new GlitchPass()
 glitch.renderToScreen = false
-// composer.addPass(glitch)
+composer.addPass(glitch)
 
 // volumetric clouds pass
 const clouds = new ShaderPass(CloudsShader, 'tColor')
-clouds.material.uniforms.tDepth.value = target.depthTexture
+clouds.material.uniforms.tDepth.value = waterTarget.depthTexture
 clouds.renderToScreen = true
 composer.addPass(clouds)
 // ###################################

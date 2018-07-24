@@ -73,7 +73,7 @@ float fbm( vec3 p )
 }
 
 float map(vec3 p){
-    return p.z + ((fbm(p*0.03)-0.1) + sin(p.x*0.014 + sin(p.y*.001)*7.)*0.4+0.15 + sin(p.y*0.008)*0.1) / 0.007;
+    return p.z - 250. + ((fbm(p*0.03)-0.1) + sin(p.x*0.014 + sin(p.y*.001)*7.)*0.4+0.15 + sin(p.y*0.008)*0.1) / 0.007;
     return p.z + ((fbm(p*0.03)-0.1) + sin(p.x*0.024 + sin(p.y*.001)*7.)*0.22+0.15 + sin(p.y*0.008)*0.05) / 0.007;
 }
 
