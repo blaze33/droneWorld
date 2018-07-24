@@ -171,7 +171,13 @@ body {
   position: fixed;
   left: 50%;
   top: 100%;
+  width: 100%;
   transform: translateX(-50%) translateY(-300%);
   text-align: center;
   color: #0f0;
+}
+
+.hud #messages div {
+  display: inline-block;
+  min-width: 5em;
 }

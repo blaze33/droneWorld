@@ -3,6 +3,7 @@ import {
   Scene,
   PerspectiveCamera,
   CubeCamera,
+  Vector2,
   Vector3,
   Matrix4,
   WebGLRenderer,
@@ -18,9 +19,12 @@ import {
   // Water imports
   PlaneBufferGeometry,
   TextureLoader,
-  RepeatWrapping
+  RepeatWrapping,
+  LOD,
+  MeshDepthMaterial,
+  Plane,
+  GridHelper
 } from 'three'
-import Water from './modules/Water'
 import dat from 'dat.gui/build/dat.gui.js'
 import Stats from 'stats.js'
 import queryString from 'query-string'
@@ -28,20 +32,17 @@ import {WindowResize} from './modules/WindowResize'
 // import {ShadowMapViewer} from './modules/ShadowMapViewer'
 import {initSky} from './sky'
 import {initLights, dirLight} from './lights'
-import {tileBuilder} from './loops/tileBuilder'
+import {voxelBuilder} from './loops/voxelsLoop'
 import {
-  initDoF,
   lensFlare,
   motionBlurShader,
   CloudsShader
 } from './postprocessing'
-import {material} from './terrain'
 import {particleGroups} from './particles'
 import PubSub from './events'
 import setupDrones from './drones'
-import './controls'
+import controls from './controls'
 import setupSound from './sound'
-import {octree} from './voxel'
 
 import {
   EffectComposer,
@@ -50,8 +51,15 @@ import {
   SavePass,
   CopyShader,
   BlendShader,
-  GlitchPass
+  GlitchPass,
+  Water,
+  Reflector
 } from './modules'
+import {
+  WaterShader,
+  UnderwaterShader,
+  WiggleShader
+} from './ocean'
 
 const queryStringOptions = queryString.parse(window.location.search)
 const options = {
@@ -66,22 +74,23 @@ if (options.PBR) {
 
 const scene = new Scene()
 let camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1e6)
-var cubeCamera = new CubeCamera(1, 1e6, 1024)
-
-window.cube = cubeCamera
-cubeCamera.up.set(0, 0, 1)
 
 camera.up = new Vector3(0, 0, 1)
-camera.position.set(-500, 0, 400)
+camera.position.set(-500, 0, 700)
+camera.position.set(-70, -475, 275)
+// camera.position.set(170, -500, 180)
 camera.lookAt(0, 0, 0)
 camera.rollAngle = 0
 camera.userData = {terrainKeysUnder: []}
+camera.updateMatrixWorld()
+camera.updateProjectionMatrix()
 
 setupSound()
 
 var renderer = new WebGLRenderer({
   antialias: true,
-  alpha: true
+  alpha: true,
+  logarithmicDepthBuffer: false
 })
 
 renderer.gammaInput = true
@@ -92,7 +101,6 @@ renderer.shadowMap.type = PCFSoftShadowMap
 renderer.shadowMap.autoUpdate = true
 renderer.physicallyCorrectLights = true
 renderer.toneMapping = Uncharted2ToneMapping
-renderer.logarithmicDepthBuffer = true
 
 renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
@@ -100,6 +108,7 @@ document.body.appendChild(renderer.domElement)
 window.scene = scene
 window.renderer = renderer
 window.camera = camera
+window.controls = controls
 
 const gui = new dat.GUI({ autoPlace: false })
 gui.closed = true
@@ -162,8 +171,6 @@ scene.add(drone)
 const sunPosition = new Vector3()
 window.sunPosition = sunPosition
 initSky(scene, sunPosition, gui)
-const envMapScene = new Scene()
-const sky2 = initSky(envMapScene, new Vector3().copy(sunPosition))
 initLights(scene, sunPosition)
 dirLight.target = drone
 scene.add(lensFlare)
@@ -177,31 +184,62 @@ const waterParameters = {
 }
 var waterGeometry = new PlaneBufferGeometry(waterParameters.oceanSide * 5, waterParameters.oceanSide * 5)
 
+const textureLoader = new TextureLoader().setCrossOrigin('anonymous')
 const water = new Water(
   waterGeometry,
   {
-    textureWidth: 1024,
-    textureHeight: 1024,
-    waterNormals: new TextureLoader().load(require('./textures/waternormals.jpg'), function (texture) {
-      texture.wrapS = texture.wrapT = RepeatWrapping
-    }),
-    alpha: waterParameters.alpha,
-    sunDirection: dirLight.position.clone().normalize(),
-    sunColor: 0xffffff,
-    waterColor: 0x001e0f,
-    distortionScale: waterParameters.distortionScale,
-    fog: false
+    textureWidth: 512,
+    textureHeight: 512,
+    color: 0xffffff,
+    flowDirection: new Vector2(1, 1),
+    scale: 20000 / 15.0,
+    normalMap0: textureLoader.load(require('./textures/Water_1_M_Normal.jpg')),
+    normalMap1: textureLoader.load(require('./textures/Water_2_M_Normal.jpg')),
+    clipBias: 0.00001,
+    reflectivity: 0.2,
+    shader: WaterShader,
+    flowSpeed: 0.1
   }
 )
+window.water = water
+const waterTarget = new WebGLRenderTarget(window.innerWidth, window.innerHeight)
+const depthMaterial = new MeshDepthMaterial()
+waterTarget.depthBuffer = true
+waterTarget.depthTexture = new DepthTexture()
+water.material.uniforms.tDepth.value = waterTarget.depthTexture
 
 water.up.set(0, 0, 1)
 water.rotation.z = -Math.PI / 2
-water.position.z = -600
+water.position.z = 200
+water.material.uniforms.surface.value = water.position.z
 gui.__folders['Sun, sky and ocean'].add(water.position, 'z', 0, 200, 1)
 water.receiveShadow = true
 water.userData.isWater = true
 window.water = water
 scene.add(water)
+
+const underwaterReflector = new Reflector(waterGeometry, {
+  textureWidth: 512,
+  textureHeight: 512,
+  clipBias: 0.00001
+  // shader: WaterRefractionShader
+})
+underwaterReflector.rotation.y = Math.PI
+underwaterReflector.up.set(0, 0, -1)
+underwaterReflector.position.copy(water.position)
+underwaterReflector.getRenderTarget().depthBuffer = true
+underwaterReflector.getRenderTarget().depthTexture = new DepthTexture()
+window.ref = underwaterReflector
+underwaterReflector.updateMatrixWorld()
+
+// var gridHelper = new GridHelper(10000, 1000)
+// gridHelper.up.set(0, 0, 1)
+// gridHelper.position.copy(water.position)
+// gridHelper.rotation.y = Math.PI / 2
+// gridHelper.rotation.z = Math.PI / 2
+// window.gridHelper = gridHelper
+// scene.add(gridHelper)
+
 // ##########################
 
 setupDrones()
@@ -218,6 +256,7 @@ PubSub.subscribe('x.camera.shake.stop', () => (shakeCamera = false))
 
 let loops = [
   () => lensFlare.position.copy(sunPosition),
+  voxelBuilder,
   (timestamp, delta) => {
     particleGroups.forEach(group => group.tick(delta / 1000))
   },
@@ -233,6 +272,27 @@ let loops = [
     } else {
       glitch.enabled = false
       // motionPass.renderToScreen = true
+    }
+  },
+  () => scene.children.forEach(child => {
+    if (child instanceof LOD) {
+      child.update(camera)
+    }
+  }),
+  (timestamp, delta) => {
+    if (camera.position.z < water.position.z) {
+      underwaterPass.enabled = true
+      wigglePass.enabled = true
+      water.visible = false
+      underwaterReflector.onBeforeRender(renderer, scene, camera)
+      underwaterPass.material.uniforms.time.value = timestamp / 1000
+      wigglePass.material.uniforms.time.value = timestamp / 1000
+      controls.setAcceleration(30)
+    } else {
+      underwaterPass.enabled = false
+      wigglePass.enabled = false
+      water.visible = true
+      controls.setAcceleration(150)
     }
   }
 ]
@@ -254,9 +314,6 @@ const cleanLoops = () => {
   loops = loops.filter(loop => loop.alive === undefined || loop.alive === true)
 }
 
-// postprocessing
-const dofEffect = options.postprocessing ? initDoF(scene, renderer, camera, gui) : null
-
 // Start the app
 renderer.setPixelRatio(1.0)
 
@@ -267,19 +324,39 @@ document.body.appendChild(stats.dom)
 // EFFECTS
 // define a render target with a depthbuffer
 const target = new WebGLRenderTarget(window.innerWidth, window.innerHeight)
-target.depthBuffer = true
-target.depthTexture = new DepthTexture()
-
 const composer = new EffectComposer(renderer, target)
 
 // initial render pass
 const renderPass = new RenderPass(scene, camera)
 composer.addPass(renderPass)
 
+// add an underwater shader pass
+const underwaterPass = new ShaderPass(UnderwaterShader)
+underwaterPass.enabled = false
+underwaterPass.material.uniforms.waterLevel.value = water.position.z
+underwaterPass.material.uniforms.tDepth.value = waterTarget.depthTexture
+underwaterPass.material.uniforms.cameraPosition.value = camera.position
+underwaterPass.material.uniforms.sunPosition.value = sunPosition
+underwaterPass.material.uniforms.tReflectionMap.value = underwaterReflector.getRenderTarget().texture
+underwaterPass.material.uniforms.tReflectionDepth.value = underwaterReflector.getRenderTarget().depthTexture
+let tNormalMap0 = underwaterPass.material.uniforms.tNormalMap0
+let tNormalMap1 = underwaterPass.material.uniforms.tNormalMap1
+tNormalMap0.value = textureLoader.load(require('./textures/Water_1_M_Normal.jpg'))
+tNormalMap1.value = textureLoader.load(require('./textures/Water_2_M_Normal.jpg'))
+tNormalMap0.value.wrapS = tNormalMap0.value.wrapT = RepeatWrapping
+tNormalMap1.value.wrapS = tNormalMap1.value.wrapT = RepeatWrapping
+composer.addPass(underwaterPass)
+window.upass = underwaterPass
+
+// add an underwater wiggle pass
+const wigglePass = new ShaderPass(WiggleShader)
+wigglePass.enabled = false
+composer.addPass(wigglePass)
+
 // add a motion blur pass
 const motionPass = new ShaderPass(motionBlurShader, 'tColor')
-motionPass.renderToScreen = false
-motionPass.material.uniforms.tDepth.value = target.depthTexture
+motionPass.renderToScreen = true
+motionPass.material.uniforms.tDepth.value = waterTarget.depthTexture
 motionPass.material.uniforms.velocityFactor.value = 1
 // composer.addPass(motionPass)
 
@@ -315,37 +392,40 @@ var mainLoop = (timestamp) => {
       loop.loop ? loop.loop(timestamp, delta) : loop(timestamp, delta)
     })
 
-    if (options.postprocessing) {
-      sky2.material.uniforms.sunPosition.value = sunPosition
-      cubeCamera.update(renderer, envMapScene)
-      const envMap = cubeCamera.renderTarget
-      material.uniforms.envMap.value = envMap.texture
-
-      dofEffect.renderDepth()
-      dofEffect.composer.render()
-    } else {
-      // update motion blur shader uniforms
-      motionPass.material.uniforms.delta.value = delta
-      // tricky part to compute the clip-to-world and world-to-clip matrices
-      motionPass.material.uniforms.clipToWorldMatrix.value
+    // update motion blur shader uniforms
+    motionPass.material.uniforms.delta.value = delta
+    // tricky part to compute the clip-to-world and world-to-clip matrices
+    motionPass.material.uniforms.clipToWorldMatrix.value
         .getInverse(camera.matrixWorldInverse).multiply(tmpMatrix.getInverse(camera.projectionMatrix))
-      motionPass.material.uniforms.previousWorldToClipMatrix.value
+    motionPass.material.uniforms.previousWorldToClipMatrix.value
         .copy(previousProjectionMatrix.multiply(previousMatrixWorldInverse))
-      motionPass.material.uniforms.cameraMove.value.copy(camera.position).sub(previousCameraPosition)
+    motionPass.material.uniforms.cameraMove.value.copy(camera.position).sub(previousCameraPosition)
 
-      // clouds uniforms
-      clouds.material.uniforms.clipToWorldMatrix.value.copy(motionPass.material.uniforms.clipToWorldMatrix.value)
-      clouds.material.uniforms.cameraPosition.value.copy(camera.position)
-      clouds.material.uniforms.sun.value.copy(dirLight.position).normalize()
-      // console.log(savePass.renderTarget.depthTexture)
-      // render the postprocessing passes
-      composer.render(delta)
+    // render to depth target
+    scene.overrideMaterial = depthMaterial
+    water.visible = false
+    renderer.render(scene, camera, waterTarget)
+    water.visible = true
+    scene.overrideMaterial = null
 
-      // save some values for the next render pass
-      previousMatrixWorldInverse.copy(camera.matrixWorldInverse)
-      previousProjectionMatrix.copy(camera.projectionMatrix)
-      previousCameraPosition.copy(camera.position)
-    }
+    // water uniforms
+    water.material.uniforms.clipToWorldMatrix.value = motionPass.material.uniforms.clipToWorldMatrix.value
+    underwaterPass.material.uniforms.clipToWorldMatrix.value = motionPass.material.uniforms.clipToWorldMatrix.value
+    underwaterPass.material.uniforms.worldToClipMatrix.value
+      .copy(camera.projectionMatrix).multiply(camera.matrixWorldInverse)
+
+    // clouds uniforms
+    clouds.material.uniforms.clipToWorldMatrix.value.copy(motionPass.material.uniforms.clipToWorldMatrix.value)
+    clouds.material.uniforms.cameraPosition.value.copy(camera.position)
+    clouds.material.uniforms.sun.value.copy(dirLight.position).normalize()
+
+    // render the postprocessing passes
+    composer.render(delta)
+
+    // save some values for the next render pass
+    previousMatrixWorldInverse.copy(camera.matrixWorldInverse)
+    previousProjectionMatrix.copy(camera.projectionMatrix)
+    previousCameraPosition.copy(camera.position)
 
     // if (dirLight.shadow && dirLight.shadow.map) {
     //   shadowMapViewer.render(renderer)
