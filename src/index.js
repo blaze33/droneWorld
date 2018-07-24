@@ -376,6 +376,7 @@ var mainLoop = (timestamp) => {
     })
 
     if (options.postprocessing) {
+      water.visible = false
       sky2.material.uniforms.sunPosition.value = sunPosition
       cubeCamera.update(renderer, envMapScene)
       const envMap = cubeCamera.renderTarget
