@@ -6,7 +6,26 @@ const path = require('path')
 // http://facebook.github.io/jest/docs/en/webpack.html
 
 module.exports = {
-  process (src, filename) {
-    return `module.exports = ${JSON.stringify(path.basename(filename))};`
-  }
-}
+  process(src, filename) {
+    const assetFilename = JSON.stringify(path.basename(filename));
+
+    if (filename.match(/\.svg$/)) {
+      return `const React = require('react');
+      module.exports = {
+        __esModule: true,
+        default: ${assetFilename},
+        ReactComponent: React.forwardRef((props, ref) => ({
+          $$typeof: Symbol.for('react.element'),
+          type: 'svg',
+          ref: ref,
+          key: null,
+          props: Object.assign({}, props, {
+            children: ${assetFilename}
+          })
+        })),
+      };`;
+    }
+
+    return `module.exports = ${assetFilename};`;
+  },
+};
