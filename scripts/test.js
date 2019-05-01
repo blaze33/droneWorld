@@ -15,25 +15,25 @@ process.on('unhandledRejection', err => {
 // Ensure environment variables are read.
 require('../config/env')
 
-const jest = require('jest');
-const execSync = require('child_process').execSync;
-let argv = process.argv.slice(2);
+const jest = require('jest')
+const execSync = require('child_process').execSync
+let argv = process.argv.slice(2)
 
-function isInGitRepository() {
+function isInGitRepository () {
   try {
-    execSync('git rev-parse --is-inside-work-tree', { stdio: 'ignore' });
-    return true;
+    execSync('git rev-parse --is-inside-work-tree', { stdio: 'ignore' })
+    return true
   } catch (e) {
-    return false;
+    return false
   }
 }
 
-function isInMercurialRepository() {
+function isInMercurialRepository () {
   try {
-    execSync('hg --cwd . root', { stdio: 'ignore' });
-    return true;
+    execSync('hg --cwd . root', { stdio: 'ignore' })
+    return true
   } catch (e) {
-    return false;
+    return false
   }
 }
 
@@ -43,8 +43,8 @@ if (
   argv.indexOf('--watchAll') === -1
 ) {
   // https://github.com/facebook/create-react-app/issues/5210
-  const hasSourceControl = isInGitRepository() || isInMercurialRepository();
-  argv.push(hasSourceControl ? '--watch' : '--watchAll');
+  const hasSourceControl = isInGitRepository() || isInMercurialRepository()
+  argv.push(hasSourceControl ? '--watch' : '--watchAll')
 }
 
 jest.run(argv)

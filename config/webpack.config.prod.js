@@ -185,8 +185,8 @@ module.exports = {
                   fallback: {
                     loader: require.resolve('style-loader'),
                     options: {
-                      hmr: false,
-                    },
+                      hmr: false
+                    }
                   },
                   use: [
                     {
@@ -285,7 +285,7 @@ module.exports = {
         comparisons: false
       },
       mangle: {
-        safari10: true,
+        safari10: true
       },
       output: {
         comments: false,
