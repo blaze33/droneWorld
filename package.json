@@ -1,5 +1,5 @@
 {
-  "name": "test-cra",
+  "name": "droneWorld",
   "version": "0.1.0",
   "private": true,
   "homepage": ".",
@@ -74,7 +74,7 @@
     "webpack-manifest-plugin": "2.0.4",
     "whatwg-fetch": "2.0.3",
     "workbox-webpack-plugin": "4.2.0",
-    "worker-loader": "^1.1.0"
+    "worker-loader": "^2.0.0"
   },
   "scripts": {
     "predeploy": "npm run build",
