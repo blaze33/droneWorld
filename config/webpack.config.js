@@ -166,6 +166,9 @@ module.exports = function (webpackEnv) {
       // We inferred the "public path" (such as / or /my-project) from homepage.
       // We use "/" in development.
       publicPath: publicPath,
+      // workaround for webworker code
+      // cf. https://github.com/webpack/webpack/issues/6642
+      globalObject: 'this',
       // Point sourcemap entries to original disk location (format as URL on Windows)
       devtoolModuleFilenameTemplate: isEnvProduction
         ? info =>
