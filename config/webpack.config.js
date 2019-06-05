@@ -331,6 +331,14 @@ module.exports = function (webpackEnv) {
                 name: 'static/media/[name].[hash:8].[ext]'
               }
             },
+            // Web Workers
+            {
+              test: /\.worker\.js$/,
+              use: [
+                { loader: 'worker-loader' },
+                { loader: 'babel-loader' }
+              ]
+            },
             // Process application JS with Babel.
             // The preset includes JSX, Flow, TypeScript, and some ESnext features.
             {
@@ -361,6 +369,10 @@ module.exports = function (webpackEnv) {
                 cacheCompression: isEnvProduction,
                 compact: isEnvProduction
               }
+            },
+            {
+              test: /\.(glsl|vert|frag)$/,
+              loader: 'webpack-glsl-loader'
             },
             // Process any JS outside of the app with Babel.
             // Unlike the application JS, we only compile the standard ES features.
@@ -564,6 +576,9 @@ module.exports = function (webpackEnv) {
       // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
       // You can remove this if you don't use Moment.js:
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+      new webpack.ProvidePlugin({
+        THREE: "three",
+      }),
       // Generate a service worker script that will precache, and keep up to date,
       // the HTML & assets that are part of the Webpack build.
       isEnvProduction &&
