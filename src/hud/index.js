@@ -176,9 +176,9 @@ const registerTarget = (msg, target) => {
   let targetVector2D
   let targetVector3D
   let targetDirection
-  this.zone = 400
-  this.focalSize = 150
-  this.gunRange = 500
+  const ZONE = 400
+  const FOCAL_SIZE = 150
+  const GUN_RANGE = 500
   const targetLoop = (timestamp, delta) => {
     if (!hudElement.mounted) return
     hudPosition = screenXYclamped(target.position)
@@ -193,14 +193,14 @@ const registerTarget = (msg, target) => {
     }
     target.hudPosition = hudPosition
     targetVector2D = new Vector2(hudPosition.x, hudPosition.y).sub(screenCenter)
-    if (targetVector2D.length() > this.zone) {
-      targetVector2D.normalize().multiplyScalar(this.zone)
+    if (targetVector2D.length() > ZONE) {
+      targetVector2D.normalize().multiplyScalar(ZONE)
     }
-    target.userData.hud.arrow.style.opacity = 0.8 * (1 - (this.zone - targetVector2D.length()) / 50)
+    target.userData.hud.arrow.style.opacity = 0.8 * (1 - (ZONE - targetVector2D.length()) / 50)
     targetVector3D = camera.position.clone().sub(target.position)
     targetDistance3D = targetVector3D.length()
     target.userData.hud.distance.innerHTML = targetDistance3D.toFixed(0)
-    target.userData.hud.distance.style.color = targetDistance3D < this.gunRange ? '#0f0' : 'orange'
+    target.userData.hud.distance.style.color = targetDistance3D < GUN_RANGE ? '#0f0' : 'orange'
     target.userData.hud.element.style.transform = `
       translateX(${targetVector2D.x + screenCenter.x}px)
       translateY(${targetVector2D.y + screenCenter.y}px)
@@ -211,7 +211,7 @@ const registerTarget = (msg, target) => {
       rotate(${targetVector2D.angle() / Math.PI * 180 + 90}deg)
     `
     targetDistance2D = targetVector2D.length()
-    if (!target.destroyed && target.userData.hud.element.style.borderColor === 'orange' && targetDistance2D < this.focalSize) {
+    if (!target.destroyed && target.userData.hud.element.style.borderColor === 'orange' && targetDistance2D < FOCAL_SIZE) {
       target.userData.hud.arrow.style.borderBottomColor = '#0f0'
       targetsInSight.add(target)
       if (!target.lockClock.running) target.lockClock.start()
@@ -219,16 +219,16 @@ const registerTarget = (msg, target) => {
       targetsInSight.delete(target)
       target.lockClock.stop()
     }
-    if (!target.destroyed && targetDistance2D < this.zone - 10) {
+    if (!target.destroyed && targetDistance2D < ZONE - 10) {
       targetsInFront.add(target)
     } else {
       targetsInFront.delete(target)
     }
-    if (hudPosition.z <= 1 && targetDistance2D < this.zone * 0.8) {
+    if (hudPosition.z <= 1 && targetDistance2D < ZONE * 0.8) {
       targetDirection = screenXYclamped(
         target.position.clone().add(target.velocity.clone().multiplyScalar(
           Math.min(1,
-            (targetDistance3D + targetVector3D.clone().add(target.velocity).length()) / 2 / this.gunRange
+            (targetDistance3D + targetVector3D.clone().add(target.velocity).length()) / 2 / GUN_RANGE
           )
         ))
       )
