@@ -15,7 +15,7 @@
     "chalk": "2.3.0",
     "clone": "^2.1.1",
     "css-loader": "0.28.7",
-    "dat.gui": "^0.6.5",
+    "dat.gui": "^0.7.6",
     "dotenv": "4.0.0",
     "dotenv-expand": "4.2.0",
     "eslint": "4.10.0",
