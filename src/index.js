@@ -399,7 +399,8 @@ var mainLoop = (timestamp) => {
     // render to depth target
     scene.overrideMaterial = depthMaterial
     water.visible = false
-    renderer.render(scene, camera, waterTarget)
+    renderer.setRenderTarget(waterTarget)
+    renderer.render(scene, camera)
     water.visible = true
     scene.overrideMaterial = null
 
