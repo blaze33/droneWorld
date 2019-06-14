@@ -42,8 +42,8 @@ const cssFilename = 'static/css/[name].[contenthash:8].css'
 // However, our output is structured with css, js and media folders.
 // To have this structure working with relative paths, we have to use custom options.
 const extractTextPluginOptions = shouldUseRelativeAssetPaths
-  // Making sure that the publicPath goes back to to build folder.
-  ? { publicPath: Array(cssFilename.split('/').length).join('../') }
+  ? // Making sure that the publicPath goes back to to build folder.
+  { publicPath: Array(cssFilename.split('/').length).join('../') }
   : {}
 
 // This is the production configuration.
@@ -185,8 +185,8 @@ module.exports = {
                   fallback: {
                     loader: require.resolve('style-loader'),
                     options: {
-                      hmr: false,
-                    },
+                      hmr: false
+                    }
                   },
                   use: [
                     {
@@ -285,7 +285,7 @@ module.exports = {
         comparisons: false
       },
       mangle: {
-        safari10: true,
+        safari10: true
       },
       output: {
         comments: false,
