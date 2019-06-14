@@ -147,7 +147,7 @@
     "shader-particle-engine": "blaze33/ShaderParticleEngine.git#30058b9736cf2abb0e87cc210e5bd51ae215de73",
     "simplex-noise": "^2.4.0",
     "stats.js": "^0.17.0",
-    "three": "0.105.0",
+    "three": "^0.105.0",
     "upng-js": "^2.1.0",
     "webpack-glsl-loader": "^1.0.1",
     "worker-loader": "^1.1.0"
