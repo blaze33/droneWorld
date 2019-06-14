@@ -9017,9 +9017,9 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-shader-particle-engine@blaze33/ShaderParticleEngine.git#9aaf9a9a02cb0b786a7b24dcd3b9ea62214f507d:
+shader-particle-engine@blaze33/ShaderParticleEngine.git#30058b9736cf2abb0e87cc210e5bd51ae215de73:
   version "1.0.6"
-  resolved "https://codeload.github.com/blaze33/ShaderParticleEngine/tar.gz/9aaf9a9a02cb0b786a7b24dcd3b9ea62214f507d"
+  resolved "https://codeload.github.com/blaze33/ShaderParticleEngine/tar.gz/30058b9736cf2abb0e87cc210e5bd51ae215de73"
   dependencies:
     three "^0.105.0"
 
