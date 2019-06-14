@@ -9,6 +9,7 @@ import {
   WebGLRenderer,
   PCFSoftShadowMap,
   Uncharted2ToneMapping,
+  Color,
   FogExp2,
   Mesh,
   SphereBufferGeometry,
@@ -156,6 +157,7 @@ lowController.name('low (default)')
 // rendererFolder.add(rendererController, 'lowShadow')
 // rendererFolder.add(rendererController, 'lowShadowDoF')
 // rendererFolder.add(rendererController, 'high')
+scene.background = new Color(0x91abb5);
 scene.fog = new FogExp2(0x91abb5, 0.0005)
 
 const drone = new Mesh(
@@ -397,7 +399,8 @@ var mainLoop = (timestamp) => {
     // render to depth target
     scene.overrideMaterial = depthMaterial
     water.visible = false
-    renderer.render(scene, camera, waterTarget)
+    renderer.setRenderTarget(waterTarget)
+    renderer.render(scene, camera)
     water.visible = true
     scene.overrideMaterial = null
 

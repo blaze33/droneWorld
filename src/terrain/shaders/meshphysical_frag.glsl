@@ -42,7 +42,7 @@ varying vec3 vNormal2;
 #include <bsdfs>
 #include <cube_uv_reflection_fragment>
 #include <lights_pars_begin>
-#include <lights_pars_maps>
+#include <envmap_physical_pars_fragment>
 #include <lights_physical_pars_fragment>
 #include <shadowmap_pars_fragment>
 #include <bumpmap_pars_fragment>
