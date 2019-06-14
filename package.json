@@ -144,7 +144,7 @@
     "pointer-lock": "^0.0.4",
     "pubsub-js": "^1.5.8",
     "query-string": "^5.0.1",
-    "shader-particle-engine": "blaze33/ShaderParticleEngine.git#9aaf9a9a02cb0b786a7b24dcd3b9ea62214f507d",
+    "shader-particle-engine": "blaze33/ShaderParticleEngine.git#30058b9736cf2abb0e87cc210e5bd51ae215de73",
     "simplex-noise": "^2.4.0",
     "stats.js": "^0.17.0",
     "three": "0.105.0",
