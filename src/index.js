@@ -245,10 +245,7 @@ underwaterReflector.updateMatrixWorld()
 
 setupDrones()
 
-// TODO: investigate why SPE wreaks havoc in r105
-// disabling particles for now
-// particleGroups.forEach(group => scene.add(group.mesh))
-
+particleGroups.forEach(group => scene.add(group.mesh))
 // var helper = new CameraHelper( camera );
 // scene.add( helper );
 
