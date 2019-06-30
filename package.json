@@ -134,11 +134,11 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^1.1.0",
-    "snazzy": "^8.0.0",
-    "standard": "^12.0.1",
     "clone": "^2.1.1",
     "dat.gui": "^0.7.6",
+    "dotenv-webpack": "^1.7.0",
+    "gh-pages": "^1.1.0",
+    "html-webpack-partials-plugin": "^0.5.1",
     "keyboardjs": "^2.4.1",
     "nipplejs": "^0.6.8",
     "pointer-lock": "^0.0.4",
@@ -146,6 +146,8 @@
     "query-string": "^5.0.1",
     "shader-particle-engine": "blaze33/ShaderParticleEngine.git#bb21e8efd9c4e9e886410220e897e08f2cf00a2b",
     "simplex-noise": "^2.4.0",
+    "snazzy": "^8.0.0",
+    "standard": "^12.0.1",
     "stats.js": "^0.17.0",
     "three": "^0.106.0",
     "upng-js": "^2.1.0",
