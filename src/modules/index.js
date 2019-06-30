@@ -24,7 +24,7 @@ require('three/examples/js/postprocessing/GlitchPass.js')
 
 require('three/examples/js/modifiers/SimplifyModifier.js')
 
-require('three/examples/js/MarchingCubes.js')
+require('three/examples/js/objects/MarchingCubes.js')
 
 const GLTFLoader = global.THREE.GLTFLoader
 const Sky = global.THREE.Sky
