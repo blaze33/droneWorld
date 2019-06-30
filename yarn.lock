@@ -8855,11 +8855,11 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-shader-particle-engine@blaze33/ShaderParticleEngine.git#62d8d7085e52f83ba9fefbfb5a57da4df314792b:
+shader-particle-engine@blaze33/ShaderParticleEngine.git#bb21e8efd9c4e9e886410220e897e08f2cf00a2b:
   version "1.0.6"
-  resolved "https://codeload.github.com/blaze33/ShaderParticleEngine/tar.gz/62d8d7085e52f83ba9fefbfb5a57da4df314792b"
+  resolved "https://codeload.github.com/blaze33/ShaderParticleEngine/tar.gz/bb21e8efd9c4e9e886410220e897e08f2cf00a2b"
   dependencies:
-    three "^0.105.0"
+    three "^0.106.0"
 
 shallow-clone@^0.1.2:
   version "0.1.2"
@@ -9536,10 +9536,10 @@ text-table@0.2.0, text-table@^0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
 
-three@^0.105.0:
-  version "0.105.2"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.105.2.tgz#d135f1549bdcf5a9acd904ba3dbf9198a0268984"
-  integrity sha512-L3Al37k4g3hVbgFFS251UVtIc25chhyN0/RvXzR0C+uIBToV6EKDG+MZzEXm9L2miGUVMK27W46/VkP6WUZXMg==
+three@^0.106.0:
+  version "0.106.2"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.106.2.tgz#6752d304c470e4df230944ecd45325e7bf79e1f8"
+  integrity sha512-4Tlx43uoxnIaZFW2Bzkd1rXsatvVHEWAZJy8LuE+s6Q8c66ogNnhfq1bHiBKPAnXP230LD11H/ScIZc2LZMviA==
 
 throat@^4.0.0:
   version "4.1.0"
