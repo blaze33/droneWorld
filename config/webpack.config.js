@@ -25,6 +25,8 @@ const getClientEnvironment = require('./env')
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin')
 const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin')
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter')
+const Dotenv = require('dotenv-webpack')
+const HtmlWebpackPartialsPlugin = require('html-webpack-partials-plugin')
 
 const postcssNormalize = require('postcss-normalize')
 
@@ -490,6 +492,7 @@ module.exports = function (webpackEnv) {
       ]
     },
     plugins: [
+      new Dotenv(),
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin(
         Object.assign(
@@ -516,6 +519,15 @@ module.exports = function (webpackEnv) {
             : undefined
         )
       ),
+      new HtmlWebpackPartialsPlugin({
+        path: paths.appPublic.concat('/analytics.html'),
+        inject: process.env.ANALYTICS === 'true',
+        location: 'head',
+        priority: 'high',
+        options: {
+          ga_property_id: process.env.GA_PROPERTY_ID
+        }
+      }),
       // Inlines the webpack runtime script. This script is too small to warrant
       // a network request.
       isEnvProduction &&

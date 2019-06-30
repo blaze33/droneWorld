@@ -155,7 +155,9 @@
   "devDependencies": {
     "gh-pages": "^1.1.0",
     "snazzy": "^7.0.0",
-    "standard": "^10.0.3"
+    "standard": "^10.0.3",
+    "html-webpack-partials-plugin": "^0.5.1",
+    "dotenv-webpack": "^1.7.0"
   },
   "standard": {
     "env": {
