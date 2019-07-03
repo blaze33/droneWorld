@@ -62,4 +62,20 @@ const voxelBuilder = (timestamp) => {
   }
 }
 
+const deleteTile = (tile) => {
+  scene.remove(tile)
+  tile.geometry.dispose()
+  tile.geometry = null
+  tile.material.dispose()
+  tile.material = null
+}
+
+voxelBuilder.clean = () => {
+  scene.children
+    .filter(child => ['terrainVoxel', 'terrainVoxelHelper'].includes(child.name))
+    .forEach(tile => deleteTile(tile))
+  currentKeys = []
+  lastCameraPosition = new Vector3(0, 0, 0)
+}
+
 export {voxelBuilder}

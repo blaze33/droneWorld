@@ -13,6 +13,14 @@ let currentKeysArray = []
 window.tiles = tiles
 window.pngs = pngs
 
+const deleteTile = (tile) => {
+  scene.remove(tile)
+  tile.geometry.dispose()
+  tile.geometry = null
+  tile.material.dispose()
+  tile.material = null
+}
+
 let camVec = new Vector3()
 const tileBuilder = (timestamp) => {
   const cameraPosition = camera.position
@@ -108,13 +116,6 @@ const tileBuilder = (timestamp) => {
       const zxyijs = newKey.split(',').map(x => parseInt(x, 10))
       buildPlane(...zxyijs)
     })
-    const deleteTile = (tile) => {
-      scene.remove(tile)
-      tile.geometry.dispose()
-      tile.geometry = null
-      tile.material.dispose()
-      tile.material = null
-    }
     scene.children.filter(
       child => child.key && visibleKeysString.indexOf(child.key) < 0
     ).forEach(
@@ -128,6 +129,14 @@ const tileBuilder = (timestamp) => {
 
     currentKeysArray = visibleKeysArray.slice(0)
   }
+}
+
+tileBuilder.clean = () => {
+  scene.children
+    .filter(child => child.name === 'terrainTile')
+    .forEach(tile => deleteTile(tile))
+  currentKeysArray = []
+  lastCameraPosition = new Vector3(0, 0, 0)
 }
 
 export {tileBuilder}

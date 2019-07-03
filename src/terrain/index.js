@@ -75,6 +75,7 @@ const buildTileFromWorker = event => {
   const plane = new Mesh(geometry, terrainMaterial)
 
   plane.key = event.data.key
+  plane.name = 'terrainTile'
   plane.castShadow = true
   plane.receiveShadow = true
   setTilePosition(plane, event.data.key)

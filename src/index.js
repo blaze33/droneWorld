@@ -33,7 +33,7 @@ import {WindowResize} from './modules/WindowResize'
 // import {ShadowMapViewer} from './modules/ShadowMapViewer'
 import {initSky} from './sky'
 import {initLights, dirLight} from './lights'
-import {voxelBuilder} from './loops/voxelsLoop'
+import {terrainLoop} from './loops/terrainLoop'
 import {
   lensFlare,
   motionBlurShader
@@ -257,7 +257,7 @@ PubSub.subscribe('x.camera.shake.stop', () => (shakeCamera = false))
 
 let loops = [
   () => lensFlare.position.copy(sunPosition),
-  voxelBuilder,
+  terrainLoop,
   (timestamp, delta) => {
     particleGroups.forEach(group => group.tick(delta / 1000))
   },

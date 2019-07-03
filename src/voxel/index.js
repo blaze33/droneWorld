@@ -31,6 +31,8 @@ const buildVoxelsFromWorker = (event) => {
   mesh.position.set(voxelSize * event.data.i, voxelSize * event.data.j, voxelSize * event.data.k)
   mesh.userData.key = key
   let box = new THREE.BoxHelper(mesh, 0xffff00)
+  mesh.name = 'terrainVoxel'
+  box.name = 'terrainVoxelHelper'
   scene.add(box)
   scene.add(mesh)
 }
