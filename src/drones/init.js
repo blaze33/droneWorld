@@ -11,21 +11,6 @@ let droneFactory = {
   ready: false
 }
 
-const droneController = {
-  x: 0,
-  y: 0,
-  z: 0
-}
-
-const initDroneGui = (gui) => {
-  window.droneController = droneController
-  const droneFolder = gui.addFolder('drone')
-  droneFolder.add(droneController, 'x', 0, 2 * Math.PI)
-  droneFolder.add(droneController, 'y', 0, 2 * Math.PI)
-  droneFolder.add(droneController, 'z', 0, 2 * Math.PI)
-}
-PubSub.subscribe('x.gui.init', (msg, data) => initDroneGui(data.gui))
-
 const initDroneFactory = (msg, data) => {
   droneFactory = () => {
     const drone = data.mesh.clone()
@@ -67,9 +52,6 @@ const buildPilotDrone = () => {
       .add(camVec)
       .add({x: 0, y: 0, z: 60})
     )
-    pilotDrone.rotation.x += droneController.x
-    pilotDrone.rotation.y += droneController.y
-    pilotDrone.rotation.z += droneController.z
 
     // velocity computation
     pilotDrone.userData.velocity = pilotDrone.position.clone()
