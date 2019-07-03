@@ -5,8 +5,8 @@ import {
   UniformsLib,
   Matrix3
 } from 'three'
-import vertexShader from './meshstandard_vert.glsl'
-import fragmentShader from './meshstandard_frag.glsl'
+import vertexShader from './terrain_tile_vert.glsl'
+import fragmentShader from './terrain_tile_frag.glsl'
 
 const textureLoader = new TextureLoader().setCrossOrigin('anonymous')
 

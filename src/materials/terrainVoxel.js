@@ -6,8 +6,8 @@ import {
   Matrix3,
   Vector2
 } from 'three'
-import vertexShader from './meshstandard_vert.glsl'
-import fragmentShader from './meshstandard_frag.glsl'
+import vertexShader from './terrain_voxel_frag.glsl'
+import fragmentShader from './terrain_voxel_frag.glsl'
 
 const textureLoader = new TextureLoader().setCrossOrigin('anonymous')
 
