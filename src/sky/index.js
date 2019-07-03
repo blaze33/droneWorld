@@ -47,7 +47,7 @@ function initSky (scene, sunPosition, gui) {
     mieCoefficient: 0.005,
     mieDirectionalG: 0.8,
     luminance: 1,
-    inclination: 0.12, // elevation / inclination
+    inclination: 0.32, // elevation / inclination
     azimuth: 0.2, // Facing front,
     sun: !true
   }

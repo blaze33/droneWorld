@@ -76,10 +76,12 @@ const scene = new Scene()
 let camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1e6)
 
 camera.up = new Vector3(0, 0, 1)
-camera.position.set(-500, 0, 700)
-camera.position.set(-70, -475, 275)
-// camera.position.set(170, -500, 180)
-camera.lookAt(0, 0, 0)
+// camera.position.set(-500, 0, 700)
+// camera.position.set(-70, -475, 275)
+// // camera.position.set(170, -500, 180)
+// camera.lookAt(0, 0, 0)
+camera.position.set(-70, 175, 345)
+camera.lookAt(0, -400, 0)
 camera.rollAngle = 0
 camera.userData = {terrainKeysUnder: []}
 camera.updateMatrixWorld()
