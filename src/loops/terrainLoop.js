@@ -4,8 +4,8 @@ import PubSub from '../events'
 import keyboardJS from 'keyboardjs'
 
 const terrainLoops = [
-    voxelBuilder,
-    tileBuilder
+    tileBuilder,
+    voxelBuilder
 ]
 
 let activeTerrainIndex = 0

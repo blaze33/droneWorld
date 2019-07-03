@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import PubSub from '../events'
 import {scene} from '../index'
-import {MaterialBasic} from '../terrain/shaders/materialBasic'
+import {MaterialBasic} from '../materials/terrainVoxel'
 import {voxelSize, voxelLayers} from './constants'
 
 import Worker from './voxel.worker.js'

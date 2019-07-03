@@ -6,8 +6,8 @@ import {
 import {renderer, scene, options} from '../index'
 // import SimplifyModifier from '../modules/meshSimplify'
 import Worker from './terrain.worker.js'
-import {Material} from './shaders/material'
-import {MaterialBasic} from './shaders/materialBasic'
+import {Material} from '../materials/terrainPhysical'
+import {MaterialBasic} from '../materials/terrainTile'
 
 // const textureLoader = new TextureLoader().setCrossOrigin('anonymous')
 // const spectralTexture = textureLoader.load(
