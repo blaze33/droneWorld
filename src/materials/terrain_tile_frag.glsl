@@ -89,8 +89,30 @@ vec4 physicalColor(sampler2D map, sampler2D normalMap, float roughness, float me
 	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
 	vec3 totalEmissiveRadiance = emissive;
 
+	vec2 vUvXY = vec2(mod(vWorldPosition.x, 100.0) / 100.0, mod(vWorldPosition.y, 100.0) / 100.0 );
+	vec2 vUvXZ = vec2(mod(vWorldPosition.x, 100.0) / 100.0 , mod(vWorldPosition.z, 100.0) / 100.0 );
+	vec2 vUvYZ = vec2(mod(vWorldPosition.y, 100.0) / 100.0 , mod(vWorldPosition.z, 100.0) / 100.0 );
+
+	vec3 mixer = clamp(abs(vNormal2), 0.0, 1.0);
+
 	#include <logdepthbuf_fragment>
-	#include <map_fragment>
+
+	// #include <map_fragment>
+	vec4 texelColorXY = texture2D( map, vUvXY );
+	vec4 texelColorXZ = texture2D( map, vUvXZ );
+	vec4 texelColorYZ = texture2D( map, vUvYZ );
+	vec4 black = vec4(0.0, 0.0, 0.0, 1.0);
+	vec4 texelColor = (
+		mix(black, texelColorXY, pow(mixer.z, 2.5)) +
+		mix(black, texelColorXZ, pow(mixer.y, 2.5)) +
+		mix(black, texelColorYZ, pow(mixer.x, 2.5))
+	);
+	// texelColor = texelColorXY;
+
+	texelColor = mapTexelToLinear( texelColor );
+	diffuseColor *= texelColor;
+	// return diffuseColor;
+
 	#include <color_fragment>
 	#include <alphamap_fragment>
 	#include <alphatest_fragment>

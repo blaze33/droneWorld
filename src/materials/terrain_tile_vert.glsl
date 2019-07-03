@@ -10,6 +10,7 @@ varying vec3 vViewPosition;
 
 varying vec3 vNormal2;
 varying float flatness;
+varying vec3 vWorldPosition;
 
 #include <common>
 #include <uv_pars_vertex>
@@ -51,10 +52,13 @@ void main() {
 
 	vViewPosition = - mvPosition.xyz;
 
-	#include <worldpos_vertex>
+	// #include <worldpos_vertex>
+  vec4 worldPosition = modelMatrix * vec4( transformed, 1.0 );
+
 	#include <shadowmap_vertex>
 	#include <fog_vertex>
 
 	vNormal2 = normalize(normal);
 	flatness = dot(normal, vec3(0.0, 0.0, 1.0));
+  vWorldPosition = position;
 }
