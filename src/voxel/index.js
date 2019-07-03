@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import PubSub from '../events'
 import {scene} from '../index'
 import {MaterialBasic} from '../materials/terrainVoxel'
-import {voxelSize, voxelLayers} from './constants'
+import {voxelSize, voxelLayers, voxelOffset} from './constants'
 
 import Worker from './voxel.worker.js'
 
@@ -28,7 +28,11 @@ const buildVoxelsFromWorker = (event) => {
   const mesh = new THREE.Mesh(geometry, materialBasic)
   // const mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial({wireframe: true}))
 
-  mesh.position.set(voxelSize * event.data.i, voxelSize * event.data.j, voxelSize * event.data.k)
+  mesh.position.set(
+    voxelSize * event.data.i + voxelOffset.x,
+    voxelSize * event.data.j + voxelOffset.y,
+    voxelSize * event.data.k + voxelOffset.z
+  )
   mesh.userData.key = key
   let box = new THREE.BoxHelper(mesh, 0xffff00)
   mesh.name = 'terrainVoxel'
