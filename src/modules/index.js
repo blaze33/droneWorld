@@ -5,8 +5,6 @@ global.THREE = THREE
 require('three/examples/js/loaders/GLTFLoader')
 require('three/examples/js/objects/Sky.js')
 
-require('three/examples/js/Octree.js')
-
 require('three/examples/js/objects/Lensflare.js')
 
 require('three/examples/js/objects/Reflector.js')
@@ -26,12 +24,10 @@ require('three/examples/js/postprocessing/GlitchPass.js')
 
 require('three/examples/js/modifiers/SimplifyModifier.js')
 
-require('three/examples/js/MarchingCubes.js')
+require('three/examples/js/objects/MarchingCubes.js')
 
 const GLTFLoader = global.THREE.GLTFLoader
 const Sky = global.THREE.Sky
-
-const Octree = global.THREE.Octree
 const BlendShader = global.THREE.BlendShader
 const CopyShader = global.THREE.CopyShader
 const WaterRefractionShader = global.THREE.WaterRefractionShader
@@ -57,7 +53,6 @@ const MarchingCubes = global.THREE.MarchingCubes
 export {
   GLTFLoader,
   Sky,
-  Octree,
   BlendShader,
   CopyShader,
   WaterRefractionShader,

@@ -150,7 +150,6 @@ function build (previousFileSizes) {
           stats.toJson({ all: false, warnings: true, errors: true })
         )
       }
-
       if (messages.errors.length) {
         // Only keep the first error. Others are often indicative
         // of the same problem, but confuse the reader with noise.

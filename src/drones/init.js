@@ -147,7 +147,7 @@ const initTargets = () => {
   spawnDrone(true, Math.PI / 2)
   spawnDrone(true, Math.PI)
 }
-PubSub.subscribe('x.drones.factory.ready', initTargets)
+// PubSub.subscribe('x.drones.factory.ready', initTargets)
 PubSub.subscribe('x.drones.destroy', () => spawnDrone(true, Math.random() * 2 * Math.PI))
 
 export default initDroneFactory

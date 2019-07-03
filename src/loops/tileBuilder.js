@@ -14,6 +14,14 @@ let currentKeysArray = []
 window.tiles = tiles
 window.pngs = pngs
 
+const deleteTile = (tile) => {
+  scene.remove(tile)
+  tile.geometry.dispose()
+  tile.geometry = null
+  tile.material.dispose()
+  tile.material = null
+}
+
 let camVec = new Vector3()
 const tileBuilder = (timestamp) => {
   const cameraPosition = camera.position
@@ -146,13 +154,6 @@ const tileBuilder = (timestamp) => {
       })
 
     // delete some distant tiles
-    const deleteTile = (tile) => {
-      scene.remove(tile)
-      tile.geometry.dispose()
-      tile.geometry = null
-      tile.material.dispose()
-      tile.material = null
-    }
     scene.children.filter(child => child.key)
       .sort((a, b) => a.userData.distanceToCamera - b.userData.distanceToCamera)
       .slice(maxTilesInMemory)
@@ -165,6 +166,14 @@ const tileBuilder = (timestamp) => {
 
     currentKeysArray = visibleKeysArray.slice(0)
   }
+}
+
+tileBuilder.clean = () => {
+  scene.children
+    .filter(child => child.name === 'terrainTile')
+    .forEach(tile => deleteTile(tile))
+  currentKeysArray = []
+  lastCameraPosition = new Vector3(0, 0, 0)
 }
 
 export {tileBuilder}

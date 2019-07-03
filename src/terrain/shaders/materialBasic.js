@@ -1,9 +1,10 @@
 import {
   ShaderMaterial,
   TextureLoader,
-  RepeatWrapping,
+  MirroredRepeatWrapping,
   UniformsLib,
-  Matrix3
+  Matrix3,
+  Vector2
 } from 'three'
 import vertexShader from './meshstandard_vert.glsl'
 import fragmentShader from './meshstandard_frag.glsl'
@@ -20,12 +21,12 @@ const grassTextureNormal = textureLoader.load(require('../../textures/GrassGreen
 // const icyTexture = textureLoader.load(require('../../textures/snow_scuffed_ground_1.jpg'))
 // const snowTexture = textureLoader.load(require('../../textures/Snow_01_UV_H_CM_1.jpg'))
 // const envmapTexture = textureLoader.load(require('../../textures/envmap.jpg'))
-rockTexture.wrapS = rockTexture.wrapT = RepeatWrapping
+rockTexture.wrapS = rockTexture.wrapT = MirroredRepeatWrapping
 rockTexture.offset.set(0, 0)
 rockTexture.repeat.set(20, 20)
-rockTextureNormal.wrapS = rockTextureNormal.wrapT = RepeatWrapping
-grassTexture.wrapS = grassTexture.wrapT = RepeatWrapping
-grassTextureNormal.wrapS = grassTextureNormal.wrapT = RepeatWrapping
+rockTextureNormal.wrapS = rockTextureNormal.wrapT = MirroredRepeatWrapping
+grassTexture.wrapS = grassTexture.wrapT = MirroredRepeatWrapping
+grassTextureNormal.wrapS = grassTextureNormal.wrapT = MirroredRepeatWrapping
 // grassTexture.offset.set(0, 0);
 // grassTexture.repeat.set( 20, 20 );
 // grassTexture2.wrapS = grassTexture2.wrapT = RepeatWrapping
@@ -99,7 +100,7 @@ const MaterialBasic = (options, uniforms) => {
   // material.envMapIntensity = 1
   // material.refractionRatio = 0.98
   // material.bumpscale = 1.0
-  // material.normalScale = new Vector2(5, 5)
+  material.normalScale = new Vector2(1, 1)
   // material.uniforms.reflectivity.value = 0.5
   // material.clearCoatRoughness = 0.0
 

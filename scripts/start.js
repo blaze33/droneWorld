@@ -74,7 +74,6 @@ checkBrowsers(paths.appPath, isInteractive)
       // We have not found a port.
       return
     }
-
     const config = configFactory('development')
     const protocol = process.env.HTTPS === 'true' ? 'https' : 'http'
     const appName = require(paths.appPackageJson).name
@@ -86,7 +85,6 @@ checkBrowsers(paths.appPath, isInteractive)
       errors: errors =>
         devServer.sockWrite(devServer.sockets, 'errors', errors)
     }
-
     // Create a webpack compiler that is configured with custom messages.
     const compiler = createCompiler({
       appName,
