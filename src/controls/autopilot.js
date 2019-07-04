@@ -10,6 +10,7 @@ class AutoPilot {
     this.controls = controls
     this.active = active
     this.target = null
+    this.pointerElement = document.getElementById('pointer')
   }
 
   toggle() {
@@ -32,14 +33,21 @@ class AutoPilot {
 
     const move = {x: 0, y: 0}
     if (this.target.hudPosition.z > 1) {
-      move.x += Math.sign(this.target.userData.hudPositionCentered.x) * 100
+      let uturnX = Math.sign(this.target.userData.hudPositionCentered.x) * 100
+      move.x += uturnX
+      move.y += uturnX * Math.abs(Math.sin(this.ship.rollAngle))
+    } else {
+      move.x += clamp(-100, this.target.userData.hudPositionCentered.x, 100)
+      move.y += clamp(-100, this.target.userData.hudPositionCentered.y, 100)
     }
-    move.x += clamp(-100, this.target.userData.hudPositionCentered.x, 100)
-    move.y += clamp(-100, this.target.userData.hudPositionCentered.y, 100)
     this.controls.mousemove({
       pageX: move.x,
       pageY: move.y
     })
+    this.pointerElement.style.transform = `
+      translateX(${move.x - 16}px)
+      translateY(${move.y - 16}px)
+    `
 
     if (this.target.userData.distance > 150) {
       this.controls.moveState.forward = 1
