@@ -1,6 +1,6 @@
 import {camera} from '../index'
 
-function screenXY (vec3) {
+function screenXY (vec3, centered=false) {
   const vector = vec3.clone()
 
   const widthHalf = (window.innerWidth / 2)
@@ -8,8 +8,13 @@ function screenXY (vec3) {
 
   vector.project(camera)
 
-  vector.x = (vector.x * widthHalf) + widthHalf
-  vector.y = -(vector.y * heightHalf) + heightHalf
+  vector.x = (vector.x * widthHalf)
+  vector.y = -(vector.y * heightHalf)
+
+  if (!centered) {
+    vector.x += widthHalf
+    vector.y += heightHalf
+  }
 
   return vector
 }
