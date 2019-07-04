@@ -14,6 +14,7 @@ import {
   Vector3
 } from 'three'
 import {selectNearestTargetInSight, hudElement} from '../hud'
+import AutoPilot from './autopilot'
 
 let controls = {
   module: null,
@@ -64,7 +65,14 @@ const initControls = (msg, data) => {
   }
 
   controls.module.update(0)
-  PubSub.publish('x.loops.unshift', (timestamp, delta) => controls.module.update(delta))
+
+  const autoPilot = new AutoPilot(camera, controls.module, false)
+  keyboardJS.bind('p', e => autoPilot.toggle())
+
+  PubSub.publish('x.loops.unshift', (timestamp, delta) => {
+    autoPilot.update(timestamp, delta)
+    controls.module.update(delta)
+  })
 
   const pilotDrone = data.pilotDrone
 

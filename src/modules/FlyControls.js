@@ -31,7 +31,7 @@ export default function FlyControls (object, domElement, nipple, pointer) {
     })
   }
 
-  this.acceleration = 150
+  this.acceleration = 100
   this.velocity = new Vector3(0, 0, 0)
 
   this.pointer = pointer

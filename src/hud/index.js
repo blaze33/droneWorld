@@ -7,16 +7,19 @@ import PubSub from '../events'
 import {scene, camera} from '../index'
 import Crosshair from './crosshair'
 
-let targets = []
 let pilotDrone
-const targetsInSight = new Set()
-const targetsInFront = new Set()
 let screenCenter = new Vector2(window.innerWidth / 2, window.innerHeight / 2)
 PubSub.subscribe('x.screen.resized', (msg, rendererSize) => {
   screenCenter = new Vector2(rendererSize.width / 2, rendererSize.height / 2)
 })
 let horizonStyle
 let focalStyle
+const hudData = {
+  targets: new Set(),
+  targetsInSight: new Set(),
+  targetsInFront: new Set(),
+  gunTarget: null
+}
 
 class HUD extends Component {
   constructor (props) {
@@ -43,11 +46,11 @@ class HUD extends Component {
   }
 
   lockLevel () {
-    if (targetsInSight.size === 0) {
+    if (hudData.targetsInSight.size === 0) {
       return Math.max(0, this.state.lockLevel - 0.02)
     }
     const times = []
-    targetsInSight.forEach(target => {
+    hudData.targetsInSight.forEach(target => {
       const delta = target.lockClock.getDelta()
       times.push(this.state.lockLevel + delta / 2)
     })
@@ -68,6 +71,7 @@ class HUD extends Component {
   }
 
   render () {
+    const targets = Array.from(hudData.targets)
     const targetsData = targets.map(target => Object.assign(
       clone(target.userData),
       {id: target.id}
@@ -164,7 +168,7 @@ class HUD extends Component {
 }
 
 const registerTarget = (msg, target) => {
-  targets.push(target)
+  hudData.targets.add(target)
   target.userData.hud = {
     element: {style: {}},
     arrow: {style: {}},
@@ -193,12 +197,14 @@ const registerTarget = (msg, target) => {
     }
     target.hudPosition = hudPosition
     targetVector2D = new Vector2(hudPosition.x, hudPosition.y).sub(screenCenter)
+    target.userData.hudPositionCentered = targetVector2D
     if (targetVector2D.length() > ZONE) {
       targetVector2D.normalize().multiplyScalar(ZONE)
     }
     target.userData.hud.arrow.style.opacity = 0.8 * (1 - (ZONE - targetVector2D.length()) / 50)
     targetVector3D = camera.position.clone().sub(target.position)
     targetDistance3D = targetVector3D.length()
+    target.userData.distance = targetDistance3D
     target.userData.hud.distance.innerHTML = targetDistance3D.toFixed(0)
     target.userData.hud.distance.style.color = targetDistance3D < GUN_RANGE ? '#0f0' : 'orange'
     target.userData.hud.element.style.transform = `
@@ -213,16 +219,16 @@ const registerTarget = (msg, target) => {
     targetDistance2D = targetVector2D.length()
     if (!target.destroyed && target.userData.hud.element.style.borderColor === 'orange' && targetDistance2D < FOCAL_SIZE) {
       target.userData.hud.arrow.style.borderBottomColor = '#0f0'
-      targetsInSight.add(target)
+      hudData.targetsInSight.add(target)
       if (!target.lockClock.running) target.lockClock.start()
     } else {
-      targetsInSight.delete(target)
+      hudData.targetsInSight.delete(target)
       target.lockClock.stop()
     }
     if (!target.destroyed && targetDistance2D < ZONE - 10) {
-      targetsInFront.add(target)
+      hudData.targetsInFront.add(target)
     } else {
-      targetsInFront.delete(target)
+      hudData.targetsInFront.delete(target)
     }
     if (hudPosition.z <= 1 && targetDistance2D < ZONE * 0.8) {
       targetDirection = screenXYclamped(
@@ -240,14 +246,15 @@ const registerTarget = (msg, target) => {
     } else {
       target.gunHud = false
     }
+    target.ready = true
   }
   targetLoop.id = target.id
   const destroyTarget = (msg, targetToDestroy) => {
     if (targetToDestroy.id !== target.id) return
     scene.remove(targetToDestroy)
     PubSub.publish('x.loops.remove', targetLoop)
-    targets = targets.filter(item => item.id !== targetToDestroy.id)
-    targetsInSight.delete(target)
+    hudData.targets.delete(targetToDestroy)
+    hudData.targetsInSight.delete(target)
     hudElement.forceUpdate()
   }
   PubSub.subscribe('x.drones.destroy', destroyTarget)
@@ -278,7 +285,8 @@ const hudLoop = (timestamp) => {
   } else {
     focalStyle = {boxShadow: ''}
   }
-  hudElement.update(timestamp, {horizonStyle, focalStyle, gunTarget: selectNearestGunTarget()})
+  hudData.gunTarget = selectNearestGunTarget()
+  hudElement.update(timestamp, {horizonStyle, focalStyle, gunTarget: hudData.gunTarget})
 }
 
 PubSub.subscribe('x.hud.mounted', () => {
@@ -295,9 +303,9 @@ PubSub.subscribe('x.drones.missile.start', (msg, pilotDrone) => {
 })
 
 const selectNearestTargetInSight = () => {
-  if (targetsInSight.size === 0 || !hudElement.state.lock) return null
+  if (hudData.targetsInSight.size === 0 || !hudElement.state.lock) return null
   const distances = []
-  targetsInSight.forEach(target =>
+  hudData.targetsInSight.forEach(target =>
     distances.push([camera.position.distanceTo(target.position), target])
   )
   distances.sort((a, b) => a[0] > b[0])
@@ -305,9 +313,9 @@ const selectNearestTargetInSight = () => {
 }
 
 const selectNearestGunTarget = () => {
-  if (targetsInSight.size === 0) return null
+  if (hudData.targetsInSight.size === 0) return null
   const distances = []
-  targetsInSight.forEach(target =>
+  hudData.targetsInSight.forEach(target =>
     distances.push([
       new Vector2(target.hudPosition.x, target.hudPosition.y)
         .sub(screenCenter)
@@ -323,4 +331,9 @@ const hudElement = ReactDOM.render(
   document.getElementById('hud')
 )
 
-export {selectNearestTargetInSight, selectNearestGunTarget, hudElement, targets, targetsInFront, targetsInSight}
+export {
+  selectNearestTargetInSight,
+  selectNearestGunTarget,
+  hudElement,
+  hudData
+}

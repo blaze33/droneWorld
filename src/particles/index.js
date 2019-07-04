@@ -10,7 +10,7 @@ import {
 } from 'three'
 import PubSub from '../events'
 // import {scene} from '../index'
-import {targetsInFront, selectNearestGunTarget} from '../hud'
+import {hudData, selectNearestGunTarget} from '../hud'
 import {camera} from '../index'
 
 // GROUPS
@@ -396,7 +396,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
         collisions = []
         positions.forEach((pos, i) => {
           if (pos === null) return
-          targetsInFront.forEach((target) => {
+          hudData.targetsInFront.forEach((target) => {
             bulletLine = new Line3(
               pos,
               pos.clone().add(new Vector3(...velocities[i]).multiplyScalar(delta / 1000))
