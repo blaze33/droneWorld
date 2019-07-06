@@ -143,6 +143,8 @@
     "keyboardjs": "^2.4.1",
     "nipplejs": "^0.6.8",
     "pointer-lock": "^0.0.4",
+    "preact": "^8.4.2",
+    "preact-compat": "^3.19.0",
     "pubsub-js": "^1.5.8",
     "query-string": "^5.0.1",
     "shader-particle-engine": "blaze33/ShaderParticleEngine.git#bb21e8efd9c4e9e886410220e897e08f2cf00a2b",
