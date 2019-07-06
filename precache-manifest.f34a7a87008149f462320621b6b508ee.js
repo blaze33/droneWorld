@@ -1,19 +1,19 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "8f86c33cce8a82c99ad36d85f4aeb9c2",
+    "revision": "42430f4ea6bc2ad6dab0087a605c1238",
     "url": "./index.html"
   },
   {
-    "revision": "2ab8f6c41f126a0eabc4",
+    "revision": "a7aad3006aef93c231d5",
     "url": "./static/css/main.1458272a.chunk.css"
   },
   {
-    "revision": "e755838f4eb52e1db8d1",
-    "url": "./static/js/2.5ef09477.chunk.js"
+    "revision": "f99ff70c052b9fc64485",
+    "url": "./static/js/2.ec9420a1.chunk.js"
   },
   {
-    "revision": "2ab8f6c41f126a0eabc4",
-    "url": "./static/js/main.154e7596.chunk.js"
+    "revision": "a7aad3006aef93c231d5",
+    "url": "./static/js/main.a1b02339.chunk.js"
   },
   {
     "revision": "9ffb70c93509eef4f423",
@@ -24,8 +24,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "./static/js/terrain.worker.f5d6880c.js"
   },
   {
-    "revision": "fb4d4e6b817299115223e91dd2352e17",
-    "url": "./static/js/voxel.worker.19dfdfac.js"
+    "revision": "0db17b6f689062d109380eb81ecf779b",
+    "url": "./static/js/voxel.worker.46a0c964.js"
   },
   {
     "revision": "d28fc70f29b3c25bf99f3b63983cffa7",
