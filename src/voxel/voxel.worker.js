@@ -1,8 +1,10 @@
 /* eslint-env worker */
 
 import SimplexNoise from 'simplex-noise'
-import {MarchingCubes, SimplifyModifier} from '../modules'
-import * as THREE from 'three'
+import {Geometry} from 'three/src/core/Geometry'
+import {MeshNormalMaterial} from 'three/src/materials/MeshNormalMaterial'
+import {MarchingCubes} from 'three/examples/jsm/objects/MarchingCubes.js'
+import {SimplifyModifier} from 'three/examples/jsm/modifiers/SimplifyModifier.js'
 import {voxelSize} from './constants'
 
 const simple = new SimplifyModifier()
@@ -34,7 +36,7 @@ const generateVoxels = (i, j, k, zMax) => {
   let geometry
   let dim = 32
   const positions = new Float32Array(dim * dim * dim)
-  const effect = new MarchingCubes(dim, new THREE.MeshNormalMaterial(), false, false)
+  const effect = new MarchingCubes(dim, new MeshNormalMaterial(), false, false)
   effect.isolation = 0
 
   let n128, n64, n32, n16, n8, n4
@@ -105,7 +107,7 @@ const generateVoxels = (i, j, k, zMax) => {
   let scaleFactor = voxelSize / 1.8125
   geometry.scale(scaleFactor, scaleFactor, scaleFactor)
 
-  geometry = new THREE.Geometry().fromBufferGeometry(geometry)
+  geometry = new Geometry().fromBufferGeometry(geometry)
   geometry.mergeVertices()
   const geometry1 = simple.modify(
     geometry,
@@ -115,7 +117,7 @@ const generateVoxels = (i, j, k, zMax) => {
   geometry1.computeVertexNormals()
   // geometry2.computeVertexNormals()
   // geometry.computeFaceNormals()
-  // geometry = new THREE.BufferGeometry().fromGeometry(geometry)
+  // geometry = new BufferGeometry().fromGeometry(geometry)
 
   // geometry.computeVertexNormals()
   const pos1 = geometry1.attributes.position.array.buffer
