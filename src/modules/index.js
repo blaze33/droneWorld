@@ -1,54 +1,26 @@
-import * as THREE from 'three'
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader'
+import {Sky} from 'three/examples/jsm/objects/Sky.js'
 
-global.THREE = THREE
+import {Lensflare, LensflareElement} from 'three/examples/jsm/objects/Lensflare.js'
 
-require('three/examples/js/loaders/GLTFLoader')
-require('three/examples/js/objects/Sky.js')
+import {Reflector} from 'three/examples/jsm/objects/Reflector.js'
+import {Refractor} from 'three/examples/jsm/objects/Refractor.js'
+import {Water} from 'three/examples/jsm/objects/Water2.js'
 
-require('three/examples/js/objects/Lensflare.js')
+import {BokehShader} from 'three/examples/jsm/shaders/BokehShader2.js'
+import {CopyShader} from 'three/examples/jsm/shaders/CopyShader.js'
+import {BlendShader} from 'three/examples/jsm/shaders/BlendShader.js'
+import {WaterRefractionShader} from 'three/examples/jsm/shaders/WaterRefractionShader.js'
+import {EffectComposer} from 'three/examples/jsm/postprocessing/EffectComposer.js'
+import {ShaderPass} from 'three/examples/jsm/postprocessing/ShaderPass.js'
+import {RenderPass} from 'three/examples/jsm/postprocessing/RenderPass.js'
+import {SavePass} from 'three/examples/jsm/postprocessing/SavePass.js'
+import {DigitalGlitch} from 'three/examples/jsm/shaders/DigitalGlitch.js'
+import {GlitchPass} from 'three/examples/jsm/postprocessing/GlitchPass.js'
 
-require('three/examples/js/objects/Reflector.js')
-require('three/examples/js/objects/Refractor.js')
-require('three/examples/js/objects/Water2.js')
+import {SimplifyModifier} from 'three/examples/jsm/modifiers/SimplifyModifier.js'
 
-require('three/examples/js/shaders/BokehShader2.js')
-require('three/examples/js/shaders/CopyShader.js')
-require('three/examples/js/shaders/BlendShader.js')
-require('three/examples/js/shaders/WaterRefractionShader.js')
-require('three/examples/js/postprocessing/EffectComposer.js')
-require('three/examples/js/postprocessing/ShaderPass.js')
-require('three/examples/js/postprocessing/RenderPass.js')
-require('three/examples/js/postprocessing/SavePass.js')
-require('three/examples/js/shaders/DigitalGlitch.js')
-require('three/examples/js/postprocessing/GlitchPass.js')
-
-require('three/examples/js/modifiers/SimplifyModifier.js')
-
-require('three/examples/js/objects/MarchingCubes.js')
-
-const GLTFLoader = global.THREE.GLTFLoader
-const Sky = global.THREE.Sky
-const BlendShader = global.THREE.BlendShader
-const CopyShader = global.THREE.CopyShader
-const WaterRefractionShader = global.THREE.WaterRefractionShader
-
-const BokehShader = global.THREE.BokehShader
-const EffectComposer = global.THREE.EffectComposer
-const ShaderPass = global.THREE.ShaderPass
-const RenderPass = global.THREE.RenderPass
-const SavePass = global.THREE.SavePass
-const GlitchPass = global.THREE.GlitchPass
-
-const Lensflare = global.THREE.Lensflare
-const LensflareElement = global.THREE.LensflareElement
-
-const Reflector = global.THREE.Reflector
-const Refractor = global.THREE.Refractor
-const Water = global.THREE.Water
-
-const SimplifyModifier = global.THREE.SimplifyModifier
-
-const MarchingCubes = global.THREE.MarchingCubes
+import {MarchingCubes} from 'three/examples/jsm/objects/MarchingCubes.js'
 
 export {
   GLTFLoader,
