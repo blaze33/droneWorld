@@ -10,24 +10,6 @@ import { voxelSize } from './constants'
 const simple = new SimplifyModifier()
 const noise = new SimplexNoise('123')
 
-const smoothSnap = (t, m) => {
-  // input: t in [0..1]
-  // maps input to an output that goes from 0..1,
-  // but spends most of its time at 0 or 1, except for
-  // a quick, smooth jump from 0 to 1 around input values of 0.5.
-  // the slope of the jump is roughly determined by 'm'.
-  // note: 'm' shouldn't go over ~16 or so (precision breaks down).
-
-  // float t1 =     pow((  t)*2, m)*0.5;
-  // float t2 = 1 - pow((1-t)*2, m)*0.5;
-  // return (t > 0.5) ? t2 : t1;
-
-  // optimized:
-  let c = (t > 0.5) ? 1 : 0
-  let s = 1 - c * 2
-  return c + s * (((c + s * t) * 2) ** m) * 0.5
-}
-
 const generateVoxels = (i, j, k, zMax) => {
   console.time([i, j, k].toString())
   let n = 0
