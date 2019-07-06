@@ -1,8 +1,6 @@
 /* eslint-env worker */
 
-import {
-  PlaneBufferGeometry
-} from 'three'
+import {PlaneBufferGeometry} from 'three/src/geometries/PlaneGeometry'
 import UPNG from 'upng-js'
 // import SimplifyModifier from '../modules/meshSimplify'
 import {crackFix} from './crackFix'
