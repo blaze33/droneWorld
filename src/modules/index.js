@@ -17,10 +17,6 @@ import {RenderPass} from 'three/examples/jsm/postprocessing/RenderPass.js'
 import {SavePass} from 'three/examples/jsm/postprocessing/SavePass.js'
 import {GlitchPass} from 'three/examples/jsm/postprocessing/GlitchPass.js'
 
-import {SimplifyModifier} from 'three/examples/jsm/modifiers/SimplifyModifier.js'
-
-import {MarchingCubes} from 'three/examples/jsm/objects/MarchingCubes.js'
-
 export {
   GLTFLoader,
   Sky,
@@ -40,9 +36,5 @@ export {
 
   Reflector,
   Refractor,
-  Water,
-
-  SimplifyModifier,
-
-  MarchingCubes
+  Water
 }
