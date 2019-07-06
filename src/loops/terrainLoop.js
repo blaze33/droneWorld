@@ -1,6 +1,5 @@
 import { tileBuilder } from './tileBuilder'
 import { voxelBuilder } from './voxelsLoop'
-import PubSub from '../events'
 import keyboardJS from 'keyboardjs'
 
 const terrainLoops = [

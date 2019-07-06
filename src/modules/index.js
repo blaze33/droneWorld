@@ -15,7 +15,6 @@ import {EffectComposer} from 'three/examples/jsm/postprocessing/EffectComposer.j
 import {ShaderPass} from 'three/examples/jsm/postprocessing/ShaderPass.js'
 import {RenderPass} from 'three/examples/jsm/postprocessing/RenderPass.js'
 import {SavePass} from 'three/examples/jsm/postprocessing/SavePass.js'
-import {DigitalGlitch} from 'three/examples/jsm/shaders/DigitalGlitch.js'
 import {GlitchPass} from 'three/examples/jsm/postprocessing/GlitchPass.js'
 
 import {SimplifyModifier} from 'three/examples/jsm/modifiers/SimplifyModifier.js'

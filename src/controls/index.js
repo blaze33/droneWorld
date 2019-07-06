@@ -25,7 +25,6 @@ let controls = {
     }
   }
 }
-let controlsElement
 let isMobile = mobileAndTabletcheck()
 let controlsInitialized = false
 const initControls = (msg, data) => {
@@ -57,11 +56,9 @@ const initControls = (msg, data) => {
     buttonX.addEventListener('touchstart', pressX, false)
 
     controls.module = new FlyControls(camera, touchPaneLeft, nippleLook)
-    controlsElement = touchPaneLeft
   } else {
     const pointer = lock(renderer.domElement)
     controls.module = new FlyControls(camera, renderer.domElement, undefined, pointer)
-    controlsElement = renderer.domElement
   }
 
   controls.module.update(0)

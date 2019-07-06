@@ -2,7 +2,6 @@ import './index.css'
 import {
   Scene,
   PerspectiveCamera,
-  CubeCamera,
   Vector2,
   Vector3,
   Matrix4,
@@ -23,8 +22,6 @@ import {
   TextureLoader,
   RepeatWrapping,
   LOD,
-  Plane,
-  GridHelper
 } from 'three'
 import dat from 'dat.gui/build/dat.gui.js'
 import Stats from 'stats.js'
@@ -48,9 +45,6 @@ import {
   EffectComposer,
   ShaderPass,
   RenderPass,
-  SavePass,
-  CopyShader,
-  BlendShader,
   GlitchPass,
   Water,
   Reflector

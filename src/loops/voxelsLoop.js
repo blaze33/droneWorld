@@ -2,9 +2,8 @@ import {
   Vector3,
   Matrix4,
   Frustum,
-  Box3
 } from 'three'
-import { camera, scene, drone } from '../index'
+import { camera, scene } from '../index'
 import { buildVoxels, emptyKeys } from '../voxel'
 import { voxelSize, voxelLayers, voxelNumber } from '../voxel/constants'
 
@@ -28,12 +27,7 @@ const voxelBuilder = (timestamp) => {
     for (let i = 0; i < size; i++) {
       for (let j = 0; j < size; j++) {
         for (let k = 0; k < voxelLayers; k++) {
-          // let min = new Vector3(i - 2 + i0, j - 2 + j0, k).multiplyScalar(100)
-          // let box = new Box3(min, min.clone().add(new Vector3(100, 100, 100)))
-          // console.log(box)
-          // if (frustum.intersectsBox(box)) {
           visibleKeys.push([i - Math.floor((size - 1) / 2) + i0, j - Math.floor((size - 1) / 2) + j0, k])
-          // }
         }
       }
     }

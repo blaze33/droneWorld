@@ -1,5 +1,10 @@
-import * as THREE from 'three'
-import PubSub from '../events'
+import {
+  BufferGeometry,
+  BufferAttribute,
+  Mesh,
+  // MeshNormalMaterial,
+  BoxHelper
+} from 'three'
 import { scene } from '../index'
 import { MaterialBasic } from '../materials/terrainVoxel'
 import { voxelSize, voxelLayers, voxelOffset } from './constants'
@@ -21,12 +26,12 @@ const buildVoxelsFromWorker = (event) => {
   const normals = new Float32Array(event.data.normals1)
   const indices = new Uint16Array(event.data.index1)
 
-  const geometry = new THREE.BufferGeometry()
-  geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3))
-  geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3))
-  geometry.setIndex(new THREE.BufferAttribute(indices, 1))
-  const mesh = new THREE.Mesh(geometry, materialBasic)
-  // const mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial({wireframe: true}))
+  const geometry = new BufferGeometry()
+  geometry.addAttribute('position', new BufferAttribute(positions, 3))
+  geometry.addAttribute('normal', new BufferAttribute(normals, 3))
+  geometry.setIndex(new BufferAttribute(indices, 1))
+  const mesh = new Mesh(geometry, materialBasic)
+  // const mesh = new Mesh(geometry, new MeshNormalMaterial({wireframe: true}))
 
   mesh.position.set(
     voxelSize * event.data.i + voxelOffset.x,
@@ -34,7 +39,7 @@ const buildVoxelsFromWorker = (event) => {
     voxelSize * event.data.k + voxelOffset.z
   )
   mesh.userData.key = key
-  let box = new THREE.BoxHelper(mesh, 0xffff00)
+  let box = new BoxHelper(mesh, 0xffff00)
   mesh.name = 'terrainVoxel'
   box.name = 'terrainVoxelHelper'
   scene.add(box)
