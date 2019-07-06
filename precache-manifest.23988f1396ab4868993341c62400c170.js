@@ -1,31 +1,31 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "e0351d5e11947cdf5d7040ca0501846e",
-    "url": "./cda99a05056e141db379.worker.js"
-  },
-  {
-    "revision": "4d73db8111051ab29beeb43af1f68a9c",
-    "url": "./df24d1147ca2c50c5baa.worker.js"
-  },
-  {
-    "revision": "bb08747624b0d42c872e171feb535aa8",
+    "revision": "8f86c33cce8a82c99ad36d85f4aeb9c2",
     "url": "./index.html"
   },
   {
-    "revision": "aec141affae9ed3a31bf",
+    "revision": "2ab8f6c41f126a0eabc4",
     "url": "./static/css/main.1458272a.chunk.css"
   },
   {
-    "revision": "9f6eaee36bf79646a7f4",
-    "url": "./static/js/2.4bea0199.chunk.js"
+    "revision": "e755838f4eb52e1db8d1",
+    "url": "./static/js/2.5ef09477.chunk.js"
   },
   {
-    "revision": "aec141affae9ed3a31bf",
-    "url": "./static/js/main.07a3012d.chunk.js"
+    "revision": "2ab8f6c41f126a0eabc4",
+    "url": "./static/js/main.154e7596.chunk.js"
   },
   {
     "revision": "9ffb70c93509eef4f423",
     "url": "./static/js/runtime~main.edb76626.js"
+  },
+  {
+    "revision": "4fbae182af6a45f1949b1e60b8f77f47",
+    "url": "./static/js/terrain.worker.f5d6880c.js"
+  },
+  {
+    "revision": "fb4d4e6b817299115223e91dd2352e17",
+    "url": "./static/js/voxel.worker.19dfdfac.js"
   },
   {
     "revision": "d28fc70f29b3c25bf99f3b63983cffa7",
