@@ -154,7 +154,7 @@
     "three": "^0.106.0",
     "upng-js": "^2.1.0",
     "webpack-glsl-loader": "^1.0.1",
-    "worker-loader": "^1.1.0"
+    "worker-loader": "^2.0.0"
   },
   "standard": {
     "env": {
