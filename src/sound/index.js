@@ -4,26 +4,26 @@ import {
   PositionalAudio,
   AudioLoader
 } from 'three'
-import {camera} from '../index'
+import { camera } from '../index'
 import PubSub from '../events'
 
 const audioLoader = new AudioLoader()
 
 const impacts = [
-  {url: require('./impact1.ogg')},
-  {url: require('./impact2.ogg')},
-  {url: require('./impact3.ogg')},
-  {url: require('./impact4.ogg')}
+  { url: require('./impact1.ogg') },
+  { url: require('./impact2.ogg') },
+  { url: require('./impact3.ogg') },
+  { url: require('./impact4.ogg') }
 ]
 
 const weapons = [
-  {url: require('./gatling.ogg')},
-  {url: require('./missile.ogg')}
+  { url: require('./gatling.ogg') },
+  { url: require('./missile.ogg') }
 ]
 
 const explosions = [
-  {url: require('./explosion1.ogg')},
-  {url: require('./explosion2.ogg')}
+  { url: require('./explosion1.ogg') },
+  { url: require('./explosion2.ogg') }
 ]
 
 const audioMapper = sound => {

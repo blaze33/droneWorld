@@ -1,19 +1,19 @@
 import keyboardJS from 'keyboardjs'
 import nipplejs from 'nipplejs'
 import lock from 'pointer-lock'
-import {mobileAndTabletcheck} from '../utils/isMobile'
+import { mobileAndTabletcheck } from '../utils/isMobile'
 import FlyControls from '../modules/FlyControls'
 // import {OrbitControls} from '../modules/OrbitControls'
-import {triggerExplosion} from '../particles'
+import { triggerExplosion } from '../particles'
 import PubSub from '../events'
-import {scene, camera, renderer} from '../index'
+import { scene, camera, renderer } from '../index'
 import {
   Mesh,
   SphereBufferGeometry,
   MeshPhongMaterial,
   Vector3
 } from 'three'
-import {selectNearestTargetInSight, hudElement} from '../hud'
+import { selectNearestTargetInSight, hudElement } from '../hud'
 import AutoPilot from './autopilot'
 
 let controls = {
@@ -36,7 +36,7 @@ const initControls = (msg, data) => {
     const nippleLook = nipplejs.create({
       zone: touchPaneLeft,
       mode: 'static',
-      position: {left: '30%', top: '90%'},
+      position: { left: '30%', top: '90%' },
       color: 'white'
     })
 
@@ -50,7 +50,7 @@ const initControls = (msg, data) => {
     const buttonX = document.getElementById('buttonX')
     const pressX = (event) => {
       event.target.style.opacity = 0.5
-      fireBullet({button: 2})
+      fireBullet({ button: 2 })
       setTimeout(() => { event.target.style.opacity = 0.3 }, 250)
     }
     buttonX.addEventListener('click', pressX, false)
@@ -106,7 +106,7 @@ const initControls = (msg, data) => {
 
   const bullet = new Mesh(
     new SphereBufferGeometry(1, 5, 5),
-    new MeshPhongMaterial({color: 0x111111})
+    new MeshPhongMaterial({ color: 0x111111 })
   )
   const fireBullet = e => {
     if (!pilotDrone) return

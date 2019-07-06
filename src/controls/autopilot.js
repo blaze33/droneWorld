@@ -2,10 +2,10 @@ import {
   hudElement,
   hudData
 } from '../hud'
-import {clamp} from '../utils'
+import { clamp } from '../utils'
 
 class AutoPilot {
-  constructor(ship, controls, active) {
+  constructor (ship, controls, active) {
     this.ship = ship
     this.controls = controls
     this.active = active
@@ -13,13 +13,13 @@ class AutoPilot {
     this.pointerElement = document.getElementById('pointer')
   }
 
-  toggle() {
+  toggle () {
     this.active = !this.active
   }
 
-  update(delta) {
+  update (delta) {
     if (!this.active) return
-    this.state = {...hudElement.state, ...hudData}
+    this.state = { ...hudElement.state, ...hudData }
 
     if (this.target === null || this.target.destroyed) {
       this.target = Array.from(this.state.targets)
@@ -31,7 +31,7 @@ class AutoPilot {
 
     if (!this.target) return
 
-    const move = {x: 0, y: 0}
+    const move = { x: 0, y: 0 }
     if (this.target.hudPosition.z > 1) {
       let uturnX = Math.sign(this.target.userData.hudPositionCentered.x) * 100
       move.x += uturnX

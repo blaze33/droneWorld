@@ -1,4 +1,4 @@
-import React, {PureComponent} from 'react'
+import React, { PureComponent } from 'react'
 
 class Crosshair extends PureComponent {
   render () {

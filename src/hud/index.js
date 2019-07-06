@@ -1,10 +1,10 @@
-import {Vector2, Vector3} from 'three'
-import React, {Component} from 'react'
+import { Vector2, Vector3 } from 'three'
+import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import clone from 'clone'
-import {screenXYclamped} from '../utils'
+import { screenXYclamped } from '../utils'
 import PubSub from '../events'
-import {scene, camera} from '../index'
+import { scene, camera } from '../index'
 import Crosshair from './crosshair'
 
 let pilotDrone
@@ -24,7 +24,7 @@ const hudData = {
 class HUD extends Component {
   constructor (props) {
     super(props)
-    this.state = {time: 0, gunHeat: 0, lockLevel: 0, pilot: null}
+    this.state = { time: 0, gunHeat: 0, lockLevel: 0, pilot: null }
   }
 
   componentDidMount () {
@@ -74,7 +74,7 @@ class HUD extends Component {
     const targets = Array.from(hudData.targets)
     const targetsData = targets.map(target => Object.assign(
       clone(target.userData),
-      {id: target.id}
+      { id: target.id }
     ))
     return (
       <div>
@@ -87,7 +87,7 @@ class HUD extends Component {
             <div>{this.state.pilot.altitude.toFixed(0)} m</div>
             <div>{this.state.pilot.speed.toFixed(0)} m/s</div>
           </div>
-          ) : null
+        ) : null
         }
         <svg className='vector'>
           <Crosshair size='30' x={screenCenter.x} y={screenCenter.y}
@@ -104,13 +104,13 @@ class HUD extends Component {
           />
           {
             this.state.lockLevel
-            ? (<circle
-              cx={screenCenter.x} cy={screenCenter.y} r={160}
-              stroke='#0f0' opacity={0.8} strokeWidth='10' fill='transparent'
-              strokeDasharray={`${this.state.lockLevel * 140} 1000`}
-              transform={`rotate(155 ${screenCenter.x} ${screenCenter.y})`}
-              strokeLinecap='round'
-            />) : null
+              ? (<circle
+                cx={screenCenter.x} cy={screenCenter.y} r={160}
+                stroke='#0f0' opacity={0.8} strokeWidth='10' fill='transparent'
+                strokeDasharray={`${this.state.lockLevel * 140} 1000`}
+                transform={`rotate(155 ${screenCenter.x} ${screenCenter.y})`}
+                strokeLinecap='round'
+              />) : null
           }
           <circle
             cx={screenCenter.x} cy={screenCenter.y} r={160}
@@ -120,42 +120,42 @@ class HUD extends Component {
           />
           {
             this.state.gunHeat
-            ? (<circle
-              cx={screenCenter.x} cy={screenCenter.y} r={160}
-              stroke='orange' opacity={0.8} strokeWidth='10' fill='transparent'
-              strokeDasharray={`${this.state.gunHeat * 140} 1000`}
-              strokeLinecap='round' transform={`rotate(205 ${screenCenter.x} ${screenCenter.y}) translate(${screenCenter.x * 2}, 0) scale(-1, 1)`}
+              ? (<circle
+                cx={screenCenter.x} cy={screenCenter.y} r={160}
+                stroke='orange' opacity={0.8} strokeWidth='10' fill='transparent'
+                strokeDasharray={`${this.state.gunHeat * 140} 1000`}
+                strokeLinecap='round' transform={`rotate(205 ${screenCenter.x} ${screenCenter.y}) translate(${screenCenter.x * 2}, 0) scale(-1, 1)`}
               />)
-            : null
+              : null
           }
           {targets.map(target => (
             target.gunHud
-            ? (<g key={target.id}>
-              <path
-                d={`M ${target.hudPosition.x} ${target.hudPosition.y}
+              ? (<g key={target.id}>
+                <path
+                  d={`M ${target.hudPosition.x} ${target.hudPosition.y}
                     l ${target.direction.x} ${target.direction.y}`}
-                strokeWidth='1'
-                stroke={target === this.state.gunTarget ? '#0f0' : 'orange'}
-                fill='transparent' />
-              {target === this.state.gunTarget ? (
-                <Crosshair size='30'
-                  x={target.hudPosition.x + target.direction.x}
-                  y={target.hudPosition.y + target.direction.y}
-                  fill='#0f0'
-                  fillOpacity='0.6'
-                  stroke='#0f0'
-                  strokeWidth='17'
-                  strokeOpacity='1'
-                />
-              ) : null}
-            </g>)
-            : null
+                  strokeWidth='1'
+                  stroke={target === this.state.gunTarget ? '#0f0' : 'orange'}
+                  fill='transparent' />
+                {target === this.state.gunTarget ? (
+                  <Crosshair size='30'
+                    x={target.hudPosition.x + target.direction.x}
+                    y={target.hudPosition.y + target.direction.y}
+                    fill='#0f0'
+                    fillOpacity='0.6'
+                    stroke='#0f0'
+                    strokeWidth='17'
+                    strokeOpacity='1'
+                  />
+                ) : null}
+              </g>)
+              : null
           ))}
         </svg>
         <div id='targets'>
           {targetsData.map(target => (
             <div className='target' key={target.id} id={'target-' + target.id} style={target.hud.element.style}>
-              <div className='life' style={{width: target.life / 100 * 20}} />
+              <div className='life' style={{ width: target.life / 100 * 20 }} />
               <div className='arrow' style={target.hud.arrow.style} />
               <div className='distance'>{target.hud.distance.innerHTML}</div>
               <div className='name'>drone-{target.id}</div>
@@ -170,9 +170,9 @@ class HUD extends Component {
 const registerTarget = (msg, target) => {
   hudData.targets.add(target)
   target.userData.hud = {
-    element: {style: {}},
-    arrow: {style: {}},
-    distance: {style: {}}
+    element: { style: {} },
+    arrow: { style: {} },
+    distance: { style: {} }
   }
   let hudPosition
   let targetDistance2D
@@ -281,12 +281,12 @@ const hudLoop = (timestamp) => {
     transform: `translateX(-50%) translateY(${pitch * window.innerHeight / 2}px) rotate(${rollAngleDegree}deg)`
   }
   if (hudElement.state.lock) {
-    focalStyle = {boxShadow: '0 0 75px #0f0'}
+    focalStyle = { boxShadow: '0 0 75px #0f0' }
   } else {
-    focalStyle = {boxShadow: ''}
+    focalStyle = { boxShadow: '' }
   }
   hudData.gunTarget = selectNearestGunTarget()
-  hudElement.update(timestamp, {horizonStyle, focalStyle, gunTarget: hudData.gunTarget})
+  hudElement.update(timestamp, { horizonStyle, focalStyle, gunTarget: hudData.gunTarget })
 }
 
 PubSub.subscribe('x.hud.mounted', () => {
@@ -299,7 +299,7 @@ PubSub.subscribe('x.drones.pilotDrone.loaded', (msg, data) => {
 })
 
 PubSub.subscribe('x.drones.missile.start', (msg, pilotDrone) => {
-  hudElement.setState(state => ({...state, lockLevel: 0, lock: false}))
+  hudElement.setState(state => ({ ...state, lockLevel: 0, lock: false }))
 })
 
 const selectNearestTargetInSight = () => {

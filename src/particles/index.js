@@ -10,8 +10,8 @@ import {
 } from 'three'
 import PubSub from '../events'
 // import {scene} from '../index'
-import {hudData, selectNearestGunTarget} from '../hud'
-import {camera} from '../index'
+import { hudData, selectNearestGunTarget } from '../hud'
+import { camera } from '../index'
 
 // GROUPS
 const textureLoader = new TextureLoader()
@@ -389,8 +389,8 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
         positions = params.map((param, i) => {
           return param[0]
             ? new Vector3(...initialPositions[i]).add(
-                new Vector3(...velocities[i]).multiplyScalar(param[1])
-              )
+              new Vector3(...velocities[i]).multiplyScalar(param[1])
+            )
             : null
         })
         collisions = []
@@ -410,7 +410,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
         if (collisions.length) {
           collisions.forEach(ar => {
             PubSub.publish('x.sound.impact', ar[0])
-            triggerSmallExplosion({position: ar[1]})
+            triggerSmallExplosion({ position: ar[1] })
             ar[0].userData.life -= 5
           })
         }
@@ -502,4 +502,4 @@ PubSub.subscribe('x.drones.gun.stop', (msg, drone) => {
   }
 })
 
-export {groups as particleGroups, triggerExplosion}
+export { groups as particleGroups, triggerExplosion }

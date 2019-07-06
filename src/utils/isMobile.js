@@ -10,4 +10,4 @@ const mobileAndTabletcheck = function () {
   return check
 }
 
-export {mobilecheck, mobileAndTabletcheck}
+export { mobilecheck, mobileAndTabletcheck }

@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 import PubSub from '../events'
-import {scene} from '../index'
-import {MaterialBasic} from '../materials/terrainVoxel'
-import {voxelSize, voxelLayers, voxelOffset} from './constants'
+import { scene } from '../index'
+import { MaterialBasic } from '../materials/terrainVoxel'
+import { voxelSize, voxelLayers, voxelOffset } from './constants'
 
 import Worker from './voxel.worker.js'
 
@@ -59,4 +59,4 @@ const buildVoxels = (i, j, k) => {
   workerPool.postMessage([i, j, k, voxelLayers])
 }
 
-export {buildVoxels, emptyKeys, voxelSize}
+export { buildVoxels, emptyKeys, voxelSize }

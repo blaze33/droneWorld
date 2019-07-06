@@ -29,16 +29,16 @@ import {
 import dat from 'dat.gui/build/dat.gui.js'
 import Stats from 'stats.js'
 import queryString from 'query-string'
-import {WindowResize} from './modules/WindowResize'
+import { WindowResize } from './modules/WindowResize'
 // import {ShadowMapViewer} from './modules/ShadowMapViewer'
-import {initSky} from './sky'
-import {initLights, dirLight} from './lights'
-import {terrainLoop} from './loops/terrainLoop'
+import { initSky } from './sky'
+import { initLights, dirLight } from './lights'
+import { terrainLoop } from './loops/terrainLoop'
 import {
   lensFlare,
   motionBlurShader
 } from './postprocessing'
-import {particleGroups} from './particles'
+import { particleGroups } from './particles'
 import PubSub from './events'
 import setupDrones from './drones'
 import controls from './controls'
@@ -83,7 +83,7 @@ camera.up = new Vector3(0, 0, 1)
 camera.position.set(-70, 175, 345)
 camera.lookAt(0, -400, 0)
 camera.rollAngle = 0
-camera.userData = {terrainKeysUnder: []}
+camera.userData = { terrainKeysUnder: [] }
 camera.updateMatrixWorld()
 camera.updateProjectionMatrix()
 
@@ -116,7 +116,7 @@ const gui = new dat.GUI({ autoPlace: false })
 gui.closed = true
 window.document.getElementsByClassName('guiPane')[0].appendChild(gui.domElement)
 window.gui = gui
-PubSub.publish('x.gui.init', {gui})
+PubSub.publish('x.gui.init', { gui })
 
 const rendererFolder = gui.addFolder('Level of detail')
 const RendererController = function () {
@@ -159,7 +159,7 @@ lowController.name('low (default)')
 // rendererFolder.add(rendererController, 'lowShadow')
 // rendererFolder.add(rendererController, 'lowShadowDoF')
 // rendererFolder.add(rendererController, 'high')
-scene.background = new Color(0x91abb5);
+scene.background = new Color(0x91abb5)
 scene.fog = new FogExp2(0x91abb5, 0.0005)
 
 const drone = new Mesh(
@@ -384,9 +384,9 @@ var mainLoop = (timestamp) => {
     motionPass.material.uniforms.delta.value = delta
     // tricky part to compute the clip-to-world and world-to-clip matrices
     motionPass.material.uniforms.clipToWorldMatrix.value
-        .getInverse(camera.matrixWorldInverse).multiply(tmpMatrix.getInverse(camera.projectionMatrix))
+      .getInverse(camera.matrixWorldInverse).multiply(tmpMatrix.getInverse(camera.projectionMatrix))
     motionPass.material.uniforms.previousWorldToClipMatrix.value
-        .copy(previousProjectionMatrix.multiply(previousMatrixWorldInverse))
+      .copy(previousProjectionMatrix.multiply(previousMatrixWorldInverse))
     motionPass.material.uniforms.cameraMove.value.copy(camera.position).sub(previousCameraPosition)
 
     // render to depth target
@@ -425,4 +425,4 @@ mainLoop(0)
 
 WindowResize(renderer, camera)
 
-export {renderer, scene, camera, drone, sunPosition, gui, options, loops}
+export { renderer, scene, camera, drone, sunPosition, gui, options, loops }

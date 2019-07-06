@@ -3,7 +3,7 @@ import {
   HemisphereLight,
   AmbientLight
 } from 'three'
-import {drone} from './index'
+import { drone } from './index'
 
 const dirLight = new DirectionalLight(0xffffff, 4)
 window.dirLight = dirLight
@@ -44,4 +44,4 @@ const initLights = (scene, sunPosition) => {
   scene.add(ambientLight)
 }
 
-export {initLights, dirLight, hemishpereLight, ambientLight}
+export { initLights, dirLight, hemishpereLight, ambientLight }

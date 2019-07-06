@@ -1,9 +1,9 @@
 /* eslint-env worker */
 
-import {PlaneBufferGeometry} from 'three/src/geometries/PlaneGeometry'
+import { PlaneBufferGeometry } from 'three/src/geometries/PlaneGeometry'
 import UPNG from 'upng-js'
 // import SimplifyModifier from '../modules/meshSimplify'
-import {crackFix} from './crackFix'
+import { crackFix } from './crackFix'
 
 const tilesElevationURL = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium'
 
@@ -69,7 +69,7 @@ const setHeightmap = (geometry, heightmap, scale, offset, key) => {
     if (
       i % (nPosition) === 0 ||
       i % (nPosition) === nPosition - 1
-      ) continue
+    ) continue
     x = Math.floor(i / (nPosition))
     y = i % (nPosition)
     geometry.attributes.position.setZ(
@@ -78,7 +78,7 @@ const setHeightmap = (geometry, heightmap, scale, offset, key) => {
     )
   }
 
-    // center geometry along xY for correct XY scaling in crackFix
+  // center geometry along xY for correct XY scaling in crackFix
   const z0 = geometry.attributes.position.array[2]
   geometry.center()
   const z1 = geometry.attributes.position.array[2]
@@ -118,8 +118,8 @@ const lat2tile = (lat, zoom) => {
     (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom)
   )
 }
-const offset = {y: 45.8671, x: 7.3087}
-const chamonix = {x: long2tile(offset.x, 10), y: lat2tile(offset.y, 10)}
+const offset = { y: 45.8671, x: 7.3087 }
+const chamonix = { x: long2tile(offset.x, 10), y: lat2tile(offset.y, 10) }
 const offsetAtZ = (z) => {
   return {
     x: chamonix.x / Math.pow(2, 10 - z),

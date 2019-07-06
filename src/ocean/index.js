@@ -12,17 +12,17 @@ const WaterShader = {
 
   uniforms: {
 
-    'color': {type: 'c', value: null},
-    'reflectivity': {type: 'f', value: 0},
-    'surface': {type: 'f', value: 0},
-    'tReflectionMap': {type: 't', value: null},
-    'tRefractionMap': {type: 't', value: null},
-    'tNormalMap0': {type: 't', value: null},
-    'tNormalMap1': {type: 't', value: null},
-    'tDepth': {type: 't', value: null},
-    'textureMatrix': {type: 'm4', value: null},
-    'clipToWorldMatrix': {type: 'm4', value: null},
-    'config': {type: 'v4', value: new Vector4()}
+    'color': { type: 'c', value: null },
+    'reflectivity': { type: 'f', value: 0 },
+    'surface': { type: 'f', value: 0 },
+    'tReflectionMap': { type: 't', value: null },
+    'tRefractionMap': { type: 't', value: null },
+    'tNormalMap0': { type: 't', value: null },
+    'tNormalMap1': { type: 't', value: null },
+    'tDepth': { type: 't', value: null },
+    'textureMatrix': { type: 'm4', value: null },
+    'clipToWorldMatrix': { type: 'm4', value: null },
+    'config': { type: 'v4', value: new Vector4() }
   },
   vertexShader: waterVertexShader,
   fragmentShader: waterFragmentShader
@@ -30,9 +30,9 @@ const WaterShader = {
 
 const UnderwaterShader = {
   uniforms: {
-    color: {type: 'c', value: new Color(0xffffff)},
-    reflectivity: {type: 'f', value: 0.75},
-    waterLevel: {type: 'f', value: 0},
+    color: { type: 'c', value: new Color(0xffffff) },
+    reflectivity: { type: 'f', value: 0.75 },
+    waterLevel: { type: 'f', value: 0 },
     tDepth: { type: 't', value: null },
     tDiffuse: { type: 't', value: null },
     tReflectionMap: { type: 't', value: null },
@@ -42,9 +42,9 @@ const UnderwaterShader = {
 
     clipToWorldMatrix: { type: 'm4', value: null },
     worldToClipMatrix: { type: 'm4', value: new Matrix4() },
-    cameraPosition: {type: 'v3', value: null},
-    sunPosition: {type: 'v3', value: null},
-    time: {type: 'f', value: 0}
+    cameraPosition: { type: 'v3', value: null },
+    sunPosition: { type: 'v3', value: null },
+    time: { type: 'f', value: 0 }
   },
   vertexShader: underwaterVertexShader,
   fragmentShader: underwaterFragmentShader
@@ -53,7 +53,7 @@ const UnderwaterShader = {
 const WiggleShader = {
   uniforms: {
     tDiffuse: { type: 't', value: null },
-    time: {type: 'f', value: 0}
+    time: { type: 'f', value: 0 }
   },
   vertexShader: `
     varying vec2 vUv;
@@ -84,4 +84,4 @@ const WiggleShader = {
   `
 }
 
-export {WaterShader, UnderwaterShader, WiggleShader}
+export { WaterShader, UnderwaterShader, WiggleShader }

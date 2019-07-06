@@ -3,9 +3,9 @@ import {
   Clock,
   Raycaster
 } from 'three'
-import {scene, camera, loops} from '../index'
+import { scene, camera, loops } from '../index'
 import PubSub from '../events'
-import {triggerExplosion} from '../particles'
+import { triggerExplosion } from '../particles'
 
 let droneFactory = {
   ready: false
@@ -50,7 +50,7 @@ const buildPilotDrone = () => {
     pilotDrone.position.copy(targetPositionFinal)
     pilotDrone.lookAt(targetPosition
       .add(camVec)
-      .add({x: 0, y: 0, z: 60})
+      .add({ x: 0, y: 0, z: 60 })
     )
 
     // velocity computation
@@ -78,7 +78,7 @@ const buildPilotDrone = () => {
     }
   }
   loops.push(pilotDroneLoop)
-  PubSub.publish('x.drones.pilotDrone.loaded', {pilotDrone})
+  PubSub.publish('x.drones.pilotDrone.loaded', { pilotDrone })
 }
 PubSub.subscribe('x.drones.factory.ready', buildPilotDrone)
 

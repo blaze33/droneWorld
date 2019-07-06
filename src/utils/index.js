@@ -1,6 +1,6 @@
-import {camera} from '../index'
+import { camera } from '../index'
 
-function screenXY (vec3, centered=false) {
+function screenXY (vec3, centered = false) {
   const vector = vec3.clone()
 
   const widthHalf = (window.innerWidth / 2)
@@ -30,4 +30,4 @@ const screenXYclamped = (vec3) => {
 
 const clamp = (min, value, max) => Math.min(Math.max(min, value), max)
 
-export {screenXY, screenXYclamped, clamp}
+export { screenXY, screenXYclamped, clamp }

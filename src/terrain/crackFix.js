@@ -76,4 +76,4 @@ const crackFix = (geometry) => {
   // console.timeEnd('crackFix')
 }
 
-export {crackFix}
+export { crackFix }

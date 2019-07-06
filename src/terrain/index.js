@@ -3,11 +3,11 @@ import {
   BufferAttribute,
   BufferGeometry
 } from 'three'
-import {renderer, scene, options} from '../index'
+import { renderer, scene, options } from '../index'
 // import SimplifyModifier from '../modules/meshSimplify'
 import Worker from './terrain.worker.js'
-import {Material} from '../materials/terrainPhysical'
-import {MaterialBasic} from '../materials/terrainTile'
+import { Material } from '../materials/terrainPhysical'
+import { MaterialBasic } from '../materials/terrainTile'
 
 // const textureLoader = new TextureLoader().setCrossOrigin('anonymous')
 // const spectralTexture = textureLoader.load(
@@ -25,8 +25,8 @@ const lat2tile = (lat, zoom) => {
     (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom)
   )
 }
-const offset = {y: 45.8671, x: 7.3087}
-const chamonix = {x: long2tile(offset.x, 10), y: lat2tile(offset.y, 10)}
+const offset = { y: 45.8671, x: 7.3087 }
+const chamonix = { x: long2tile(offset.x, 10), y: lat2tile(offset.y, 10) }
 const offsetAtZ = (z) => {
   return {
     x: chamonix.x / Math.pow(2, 10 - z),

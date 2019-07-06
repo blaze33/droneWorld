@@ -34,11 +34,11 @@ grassTextureNormal.wrapS = grassTextureNormal.wrapT = RepeatWrapping
 const Material = (options, uniforms) => {
   const material = new ShaderMaterial({
     uniforms: {
-      opacity: {value: 1.0},
-      clearCoat: {value: 0.0},
-      clearCoatRoughness: {value: 0.0},
-      roughness: {value: 0.0},
-      metalness: {value: 0.0},
+      opacity: { value: 1.0 },
+      clearCoat: { value: 0.0 },
+      clearCoatRoughness: { value: 0.0 },
+      roughness: { value: 0.0 },
+      metalness: { value: 0.0 },
       ...UniformsLib.common,
       ...UniformsLib.lights,
       ...UniformsLib.specularMap,
@@ -55,8 +55,8 @@ const Material = (options, uniforms) => {
       ...UniformsLib.fog,
       ...UniformsLib.points,
       // spectral: {value: spectralTexture},
-      rockTexture: {value: rockTexture},
-      rockTextureNormal: {value: rockTextureNormal},
+      rockTexture: { value: rockTexture },
+      rockTextureNormal: { value: rockTextureNormal },
       // grassTexture: {value: grassTexture},
       // grassTextureNormal: {value: grassTextureNormal},
       // icyTexture: {value: icyTexture},
@@ -87,8 +87,8 @@ const Material = (options, uniforms) => {
   material.uniforms.map.value = grassTexture
   material.uniforms.normalMap.value = grassTextureNormal
   // material.uniforms.envMap.value = envmapTexture
-  material.uniforms.toneMappingExposure = {value: 3}
-  material.uniforms.toneMappingWhitePoint = {value: 5}
+  material.uniforms.toneMappingExposure = { value: 3 }
+  material.uniforms.toneMappingWhitePoint = { value: 5 }
   // material.uniforms.normalScale = {value: 5}
   material.opacity = 1.0
   material.roughness = 1
@@ -115,4 +115,4 @@ const Material = (options, uniforms) => {
   return material
 }
 
-export {Material}
+export { Material }

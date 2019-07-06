@@ -1,9 +1,9 @@
 import {
   Vector3
 } from 'three'
-import {camera, scene, drone} from '../index'
-import {dirLight} from '../lights'
-import {buildPlane} from '../terrain'
+import { camera, scene, drone } from '../index'
+import { dirLight } from '../lights'
+import { buildPlane } from '../terrain'
 
 const tileSize = 800
 const maxTilesInMemory = 128
@@ -57,48 +57,48 @@ const tileBuilder = (timestamp) => {
     let distance
 
     let visibleKeysArray = [
-        [zoom, x0, y0, segments0, 0, currentTileSize],
-        [zoom, x0, y0 + 1, segments0, 0, currentTileSize],
-        [zoom, x0 + 1, y0, segments0, 0, currentTileSize],
-        [zoom, x0 + 1, y0 + 1, segments0, 0, currentTileSize],
+      [zoom, x0, y0, segments0, 0, currentTileSize],
+      [zoom, x0, y0 + 1, segments0, 0, currentTileSize],
+      [zoom, x0 + 1, y0, segments0, 0, currentTileSize],
+      [zoom, x0 + 1, y0 + 1, segments0, 0, currentTileSize],
 
-        [zoom, x0 - 1, y0 - 1, segments1, 0, currentTileSize],
-        [zoom, x0 - 1, y0 - 0, segments1, 0, currentTileSize],
-        [zoom, x0 - 1, y0 + 1, segments1, 0, currentTileSize],
-        [zoom, x0 - 1, y0 + 2, segments1, 0, currentTileSize],
+      [zoom, x0 - 1, y0 - 1, segments1, 0, currentTileSize],
+      [zoom, x0 - 1, y0 - 0, segments1, 0, currentTileSize],
+      [zoom, x0 - 1, y0 + 1, segments1, 0, currentTileSize],
+      [zoom, x0 - 1, y0 + 2, segments1, 0, currentTileSize],
 
-        [zoom, x0 + 2, y0 - 1, segments1, 0, currentTileSize],
-        [zoom, x0 + 2, y0 - 0, segments1, 0, currentTileSize],
-        [zoom, x0 + 2, y0 + 1, segments1, 0, currentTileSize],
-        [zoom, x0 + 2, y0 + 2, segments1, 0, currentTileSize],
+      [zoom, x0 + 2, y0 - 1, segments1, 0, currentTileSize],
+      [zoom, x0 + 2, y0 - 0, segments1, 0, currentTileSize],
+      [zoom, x0 + 2, y0 + 1, segments1, 0, currentTileSize],
+      [zoom, x0 + 2, y0 + 2, segments1, 0, currentTileSize],
 
-        [zoom, x0, y0 - 1, segments1, 0, currentTileSize],
-        [zoom, x0, y0 + 2, segments1, 0, currentTileSize],
-        [zoom, x0 + 1, y0 - 1, segments1, 0, currentTileSize],
-        [zoom, x0 + 1, y0 + 2, segments1, 0, currentTileSize],
+      [zoom, x0, y0 - 1, segments1, 0, currentTileSize],
+      [zoom, x0, y0 + 2, segments1, 0, currentTileSize],
+      [zoom, x0 + 1, y0 - 1, segments1, 0, currentTileSize],
+      [zoom, x0 + 1, y0 + 2, segments1, 0, currentTileSize],
 
-        [zoom, x0 - 2, y0 - 2, segments2, 0, currentTileSize],
-        [zoom, x0 - 2, y0 - 1, segments2, 0, currentTileSize],
-        [zoom, x0 - 2, y0 - 0, segments2, 0, currentTileSize],
-        [zoom, x0 - 2, y0 + 1, segments2, 0, currentTileSize],
-        [zoom, x0 - 2, y0 + 2, segments2, 0, currentTileSize],
-        [zoom, x0 - 2, y0 + 3, segments2, 0, currentTileSize],
+      [zoom, x0 - 2, y0 - 2, segments2, 0, currentTileSize],
+      [zoom, x0 - 2, y0 - 1, segments2, 0, currentTileSize],
+      [zoom, x0 - 2, y0 - 0, segments2, 0, currentTileSize],
+      [zoom, x0 - 2, y0 + 1, segments2, 0, currentTileSize],
+      [zoom, x0 - 2, y0 + 2, segments2, 0, currentTileSize],
+      [zoom, x0 - 2, y0 + 3, segments2, 0, currentTileSize],
 
-        [zoom, x0 + 3, y0 - 2, segments2, 0, currentTileSize],
-        [zoom, x0 + 3, y0 - 1, segments2, 0, currentTileSize],
-        [zoom, x0 + 3, y0 - 0, segments2, 0, currentTileSize],
-        [zoom, x0 + 3, y0 + 1, segments2, 0, currentTileSize],
-        [zoom, x0 + 3, y0 + 2, segments2, 0, currentTileSize],
-        [zoom, x0 + 3, y0 + 3, segments2, 0, currentTileSize],
+      [zoom, x0 + 3, y0 - 2, segments2, 0, currentTileSize],
+      [zoom, x0 + 3, y0 - 1, segments2, 0, currentTileSize],
+      [zoom, x0 + 3, y0 - 0, segments2, 0, currentTileSize],
+      [zoom, x0 + 3, y0 + 1, segments2, 0, currentTileSize],
+      [zoom, x0 + 3, y0 + 2, segments2, 0, currentTileSize],
+      [zoom, x0 + 3, y0 + 3, segments2, 0, currentTileSize],
 
-        [zoom, x0 - 1, y0 - 2, segments2, 0, currentTileSize],
-        [zoom, x0 - 1, y0 + 3, segments2, 0, currentTileSize],
-        [zoom, x0, y0 - 2, segments2, 0, currentTileSize],
-        [zoom, x0, y0 + 3, segments2, 0, currentTileSize],
-        [zoom, x0 + 1, y0 - 2, segments2, 0, currentTileSize],
-        [zoom, x0 + 1, y0 + 3, segments2, 0, currentTileSize],
-        [zoom, x0 + 2, y0 - 2, segments2, 0, currentTileSize],
-        [zoom, x0 + 2, y0 + 3, segments2, 0, currentTileSize]
+      [zoom, x0 - 1, y0 - 2, segments2, 0, currentTileSize],
+      [zoom, x0 - 1, y0 + 3, segments2, 0, currentTileSize],
+      [zoom, x0, y0 - 2, segments2, 0, currentTileSize],
+      [zoom, x0, y0 + 3, segments2, 0, currentTileSize],
+      [zoom, x0 + 1, y0 - 2, segments2, 0, currentTileSize],
+      [zoom, x0 + 1, y0 + 3, segments2, 0, currentTileSize],
+      [zoom, x0 + 2, y0 - 2, segments2, 0, currentTileSize],
+      [zoom, x0 + 2, y0 + 3, segments2, 0, currentTileSize]
 
     ]
 
@@ -120,7 +120,7 @@ const tileBuilder = (timestamp) => {
       return distanceVector.subVectors(tile.position, camera.position).length()
     }
     potentialUnderTiles.sort((a, b) =>
-       tileToCamera(a) - tileToCamera(b)
+      tileToCamera(a) - tileToCamera(b)
     )
     camera.userData.terrainKeysUnder = potentialUnderKeys
     camera.userData.terrainTileUnder = potentialUnderTiles[0]
@@ -176,4 +176,4 @@ tileBuilder.clean = () => {
   lastCameraPosition = new Vector3(0, 0, 0)
 }
 
-export {tileBuilder}
+export { tileBuilder }

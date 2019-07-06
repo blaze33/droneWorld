@@ -5,8 +5,8 @@ import {
   MeshBasicMaterial,
   BackSide
 } from 'three'
-import {Sky} from '../modules/Sky'
-import {dirLight} from '../lights'
+import { Sky } from '../modules/Sky'
+import { dirLight } from '../lights'
 
 function initSky (scene, sunPosition, gui) {
   // Add Sky
@@ -69,7 +69,7 @@ function initSky (scene, sunPosition, gui) {
       sunPosition.z = distance * Math.sin(phi) * Math.sin(theta)
       sunPosition.y = distance * Math.sin(phi) * Math.cos(theta)
 
-        // sunSphere.visible = effectController.sun;
+      // sunSphere.visible = effectController.sun;
 
       uniforms.sunPosition.value.copy(sunPosition)
       sunPosition.copy(sunPosition)
@@ -95,4 +95,4 @@ function initSky (scene, sunPosition, gui) {
   return sky
 }
 
-export {initSky}
+export { initSky }

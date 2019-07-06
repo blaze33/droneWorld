@@ -2,8 +2,8 @@ import {
   TextureLoader
 } from 'three'
 import {
-    Lensflare,
-    LensflareElement
+  Lensflare,
+  LensflareElement
 } from '../modules'
 
 const textureLoader = new TextureLoader()

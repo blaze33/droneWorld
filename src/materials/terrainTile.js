@@ -38,8 +38,8 @@ const MaterialBasic = (options, uniforms) => {
       // opacity: {value: 1.0},
       // clearCoat: {value: 0.0},
       // clearCoatRoughness: {value: 0.0},
-      roughness: {value: 0.7},
-      metalness: {value: 0.0},
+      roughness: { value: 0.7 },
+      metalness: { value: 0.0 },
       ...UniformsLib.common,
       ...UniformsLib.lights,
       // ...UniformsLib.specularMap,
@@ -56,8 +56,8 @@ const MaterialBasic = (options, uniforms) => {
       ...UniformsLib.fog,
       // ...UniformsLib.points,
       // spectral: {value: spectralTexture},
-      rockTexture: {value: rockTexture},
-      rockTextureNormal: {value: rockTextureNormal},
+      rockTexture: { value: rockTexture },
+      rockTextureNormal: { value: rockTextureNormal },
       // grassTexture: {value: grassTexture},
       // grassTextureNormal: {value: grassTextureNormal},
       // icyTexture: {value: icyTexture},
@@ -115,4 +115,4 @@ const MaterialBasic = (options, uniforms) => {
   return material
 }
 
-export {MaterialBasic}
+export { MaterialBasic }

@@ -597,7 +597,7 @@ module.exports = function (webpackEnv) {
       // You can remove this if you don't use Moment.js:
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
       new webpack.ProvidePlugin({
-        THREE: paths.appSrc.concat('/particles/three'),
+        THREE: paths.appSrc.concat('/particles/three')
       }),
       // Generate a service worker script that will precache, and keep up to date,
       // the HTML & assets that are part of the Webpack build.

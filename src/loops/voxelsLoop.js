@@ -4,9 +4,9 @@ import {
   Frustum,
   Box3
 } from 'three'
-import {camera, scene, drone} from '../index'
-import {buildVoxels, emptyKeys} from '../voxel'
-import {voxelSize, voxelLayers, voxelNumber} from '../voxel/constants'
+import { camera, scene, drone } from '../index'
+import { buildVoxels, emptyKeys } from '../voxel'
+import { voxelSize, voxelLayers, voxelNumber } from '../voxel/constants'
 
 let lastCameraPosition = new Vector3(0, 0, 0)
 let currentKeys = []
@@ -78,4 +78,4 @@ voxelBuilder.clean = () => {
   lastCameraPosition = new Vector3(0, 0, 0)
 }
 
-export {voxelBuilder}
+export { voxelBuilder }

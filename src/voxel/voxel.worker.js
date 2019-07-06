@@ -1,11 +1,11 @@
 /* eslint-env worker */
 
 import SimplexNoise from 'simplex-noise'
-import {Geometry} from 'three/src/core/Geometry'
-import {MeshNormalMaterial} from 'three/src/materials/MeshNormalMaterial'
-import {MarchingCubes} from 'three/examples/jsm/objects/MarchingCubes.js'
-import {SimplifyModifier} from 'three/examples/jsm/modifiers/SimplifyModifier.js'
-import {voxelSize} from './constants'
+import { Geometry } from 'three/src/core/Geometry'
+import { MeshNormalMaterial } from 'three/src/materials/MeshNormalMaterial'
+import { MarchingCubes } from 'three/examples/jsm/objects/MarchingCubes.js'
+import { SimplifyModifier } from 'three/examples/jsm/modifiers/SimplifyModifier.js'
+import { voxelSize } from './constants'
 
 const simple = new SimplifyModifier()
 const noise = new SimplexNoise('123')
