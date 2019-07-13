@@ -57,7 +57,7 @@ varying float flatness;
 	// Per-Pixel Tangent Space Normal Mapping
 	// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html
 
-	vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm) {
+	vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm, sampler2D normalMap) {
 
 		// Workaround for Adreno 3XX dFd*( vec3 ) bug. See #9988
 
@@ -119,7 +119,8 @@ vec4 physicalColor(sampler2D map, sampler2D normalMap, float roughness, float me
 	#include <roughnessmap_fragment>
 	#include <metalnessmap_fragment>
 	#include <normal_fragment_begin>
-	#include <normal_fragment_maps>
+	// #include <normal_fragment_maps>
+	normal = perturbNormal2Arb( -vViewPosition, normal, normalMap);
 
 	#include <emissivemap_fragment>
 
