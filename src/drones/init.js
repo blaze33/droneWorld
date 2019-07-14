@@ -17,6 +17,7 @@ const initDroneFactory = (msg, data) => {
     drone.up.set(0, 0, 1)
     drone.rotation.x = 0
     drone.scale.set(0.1, 0.1, 0.1)
+    drone.name = `drone-${drone.id}`
     return drone
   }
   droneFactory.ready = true
