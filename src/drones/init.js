@@ -43,7 +43,7 @@ const buildPilotDrone = () => {
   let terrainTiles
   let lastTimestamp = 0
   const pilotDroneLoop = (timestamp, delta) => {
-    camVec = camera.getWorldDirection(camVec)
+    camVec = camVec.set(0, 0, -1).applyQuaternion(camera.quaternion)
     targetPosition = camera.position.clone()
       .add(camVec.multiplyScalar(20))
     localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
@@ -101,7 +101,7 @@ const spawnDrone = (circle = true, phase = 0) => {
       )
     } else {
       drone.position.copy(camera.position.clone()
-        .add(camera.getWorldDirection(camVec).multiplyScalar(100)))
+        .add(camVec.set(0, 0, -1).applyQuaternion(camera.quaternion).multiplyScalar(100)))
     }
     drone.velocity = drone.position.clone().sub(drone.lastPosition).multiplyScalar(1000 / delta)
     drone.lastPosition = drone.position.clone()
