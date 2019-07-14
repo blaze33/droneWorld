@@ -1,19 +1,19 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "42430f4ea6bc2ad6dab0087a605c1238",
+    "revision": "d54cf12f6da94348ff0efc924d15661f",
     "url": "./index.html"
   },
   {
-    "revision": "a7aad3006aef93c231d5",
+    "revision": "832fa646a9d38f96e3bc",
     "url": "./static/css/main.1458272a.chunk.css"
   },
   {
-    "revision": "f99ff70c052b9fc64485",
-    "url": "./static/js/2.ec9420a1.chunk.js"
+    "revision": "40c935d0db35487adc60",
+    "url": "./static/js/2.f7c554f2.chunk.js"
   },
   {
-    "revision": "a7aad3006aef93c231d5",
-    "url": "./static/js/main.a1b02339.chunk.js"
+    "revision": "832fa646a9d38f96e3bc",
+    "url": "./static/js/main.d2215a27.chunk.js"
   },
   {
     "revision": "9ffb70c93509eef4f423",
@@ -24,8 +24,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "./static/js/terrain.worker.f5d6880c.js"
   },
   {
-    "revision": "0db17b6f689062d109380eb81ecf779b",
-    "url": "./static/js/voxel.worker.46a0c964.js"
+    "revision": "ceb4d4ee99b73972f4e675619e3651ec",
+    "url": "./static/js/voxel.worker.626df7dc.js"
   },
   {
     "revision": "d28fc70f29b3c25bf99f3b63983cffa7",
@@ -38,6 +38,14 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "002f20c3fa9d6ea9cd496da92c104461",
     "url": "./static/media/GrassGreenTexture0003_normal.002f20c3.jpg"
+  },
+  {
+    "revision": "3f1df3f02d624315f24bf268ae313245",
+    "url": "./static/media/GrassGreenTexture_1024.3f1df3f0.jpg"
+  },
+  {
+    "revision": "ce43156ee07f197e7346d22684a4d341",
+    "url": "./static/media/GrassGreenTexture_1024_normal.ce43156e.jpg"
   },
   {
     "revision": "da494a885ce544445cd09fbbde67058e",
