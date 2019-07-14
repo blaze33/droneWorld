@@ -131,7 +131,6 @@ const tileBuilder = (timestamp) => {
     // build new keys
     newKeys.forEach(newKey => {
       if (existingKeys.includes(newKey)) {
-        console.log(newKey, ' already exists!')
         return
       }
       const zxyijs = newKey.split(',').map(x => parseInt(x, 10))
