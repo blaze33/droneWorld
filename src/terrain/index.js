@@ -7,6 +7,7 @@ import { renderer, scene, options } from '../index'
 // import SimplifyModifier from '../modules/meshSimplify'
 import Worker from './terrain.worker.js'
 import { Material } from '../materials/terrainPhysical'
+// import { MaterialBasic } from '../materials/terrainTileRaw'
 import { MaterialBasic } from '../materials/terrainTile'
 
 // const textureLoader = new TextureLoader().setCrossOrigin('anonymous')
