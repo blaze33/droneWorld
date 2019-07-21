@@ -1,19 +1,19 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "02b98aeedf559bb8c695c3cfecc3e676",
+    "revision": "1f4a1ad4fac4f8a9013d0445687932d3",
     "url": "./index.html"
   },
   {
-    "revision": "0a0e9eed8a538a8da65d",
+    "revision": "30f0650079d39efa2c4c",
     "url": "./static/css/main.1458272a.chunk.css"
   },
   {
-    "revision": "e9558360bea12ae941a6",
-    "url": "./static/js/2.25a5d18a.chunk.js"
+    "revision": "b6bec9ca1a0153e49aee",
+    "url": "./static/js/2.e2f0d92b.chunk.js"
   },
   {
-    "revision": "0a0e9eed8a538a8da65d",
-    "url": "./static/js/main.bb6113d3.chunk.js"
+    "revision": "30f0650079d39efa2c4c",
+    "url": "./static/js/main.c038eafb.chunk.js"
   },
   {
     "revision": "9ffb70c93509eef4f423",
@@ -24,20 +24,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "./static/js/terrain.worker.f5d6880c.js"
   },
   {
-    "revision": "ceb4d4ee99b73972f4e675619e3651ec",
-    "url": "./static/js/voxel.worker.626df7dc.js"
+    "revision": "788c21bbb5b2223060426f48d80b3aa9",
+    "url": "./static/js/voxel.worker.0fb86023.js"
   },
   {
     "revision": "d28fc70f29b3c25bf99f3b63983cffa7",
     "url": "./static/media/Explosion_002_Tile_8x8_256x256.d28fc70f.png"
-  },
-  {
-    "revision": "78621f638fada65d5ab24e8b4f89eb3b",
-    "url": "./static/media/GrassGreenTexture0003.78621f63.jpg"
-  },
-  {
-    "revision": "002f20c3fa9d6ea9cd496da92c104461",
-    "url": "./static/media/GrassGreenTexture0003_normal.002f20c3.jpg"
   },
   {
     "revision": "3f1df3f02d624315f24bf268ae313245",
