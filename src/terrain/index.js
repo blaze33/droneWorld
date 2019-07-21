@@ -3,10 +3,10 @@ import {
   BufferAttribute,
   BufferGeometry
 } from 'three'
-import { renderer, scene, options } from '../index'
+import { renderer, scene } from '../index'
 // import SimplifyModifier from '../modules/meshSimplify'
 import Worker from './terrain.worker.js'
-import { Material } from '../materials/terrainPhysical'
+// import { Material } from '../materials/terrainPhysical'
 // import { MaterialBasic } from '../materials/terrainTileRaw'
 import { MaterialBasic } from '../materials/terrainTile'
 
@@ -49,9 +49,6 @@ const setTilePosition = (geometry, key) => {
   )
 }
 
-// PBR
-const material = Material({}, {})
-
 const buildTileFromWorker = event => {
   const geometry = new BufferGeometry()
   const positions = new Float32Array(event.data.positions)
@@ -72,8 +69,7 @@ const buildTileFromWorker = event => {
   geometry.computeBoundingSphere()
   geometry.computeBoundingBox()
 
-  const terrainMaterial = options.PBR ? material : materialBasic
-  const plane = new Mesh(geometry, terrainMaterial)
+  const plane = new Mesh(geometry, materialBasic)
 
   plane.key = event.data.key
   plane.name = 'terrainTile'
@@ -103,6 +99,5 @@ const buildPlane = (z, x, y, segments, j, size) => {
 }
 
 export {
-  buildPlane,
-  material
+  buildPlane
 }
