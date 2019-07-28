@@ -2,10 +2,11 @@
 
 import { PlaneBufferGeometry } from 'three/src/geometries/PlaneGeometry'
 import UPNG from 'upng-js'
-// import SimplifyModifier from '../modules/meshSimplify'
+// import { SimplifyModifier } from 'three/examples/jsm/modifiers/SimplifyModifier.js'
 import { crackFix } from './crackFix'
 
 const tilesElevationURL = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium'
+// const simple = new SimplifyModifier()
 
 const pngToHeight = (array) => {
   const heightmap = new Float32Array(256 * 256)
@@ -87,12 +88,10 @@ const setHeightmap = (geometry, heightmap, scale, offset, key) => {
   geometry.scale(1, 1, 0.75)
   crackFix(geometry)
 
+  // const target = Math.floor(geometry.attributes.position.count * 0.4)
+  // geometry = simple.modify(geometry, target)
   // geometry.computeVertexNormals()
-  // tessellateTile(plane)
-  // const tessellator = new SimplifyModifier()
-  // geometry = tessellator.modify(geometry)
-  // geometry.attributes.position.needsUpdate = true
-  // geometry.needUpdate = true
+
   const positions = geometry.attributes.position.array.buffer
   const normals = geometry.attributes.normal.array.buffer
   const indices = geometry.index.array.buffer
