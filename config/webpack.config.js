@@ -27,6 +27,7 @@ const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpack
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter')
 const Dotenv = require('dotenv-webpack')
 const HtmlWebpackPartialsPlugin = require('html-webpack-partials-plugin')
+const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 
 const postcssNormalize = require('postcss-normalize')
 
@@ -498,6 +499,10 @@ module.exports = function (webpackEnv) {
     },
     plugins: [
       new Dotenv(),
+      new WasmPackPlugin({
+        crateDirectory: paths.appSrc.concat('/terrain/dem2mesh'),
+        extraArgs: '--no-typescript'
+      }),
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin(
         Object.assign(
