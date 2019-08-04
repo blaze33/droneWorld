@@ -49,7 +49,18 @@ const setTilePosition = (geometry, key) => {
   )
 }
 
+const processStats = data => {
+  scene.userData.wasm = (scene.userData.wasm || 0) + data.wasm
+  scene.userData.js = (scene.userData.js || 0) + data.js
+  console.log(data.wasm, data.js, scene.userData)
+}
+
 const buildTileFromWorker = event => {
+  if (event.data.stats) {
+    processStats(event.data)
+    return
+  }
+
   const geometry = new BufferGeometry()
   const positions = new Float32Array(event.data.positions)
   const normals = new Float32Array(event.data.normals)

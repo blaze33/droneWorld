@@ -49,29 +49,16 @@ const heightmap = (z, x, y) => {
   const tileURL = `${tilesElevationURL}/${z}/${x}/${y}.png`
   return fetch(tileURL)
     .then(res => res.arrayBuffer())
-    .then(array => new Uint8Array(UPNG.toRGBA8(UPNG.decode(array))[0]))
-    .then(png => {
-      png.heightmap = pngToHeight(png)
-      return png
+    .then(array => {
+      const t0 = Date.now()
+      const retwasm = dem2mesh.png2mesh(new Uint8Array(array))
+      const t1 = Date.now()
+      const retjs = pngToHeight(new Uint8Array(UPNG.toRGBA8(UPNG.decode(array))[0]))
+      const t2 = Date.now()
+      postMessage({stats: true, wasm: t1-t0, js: t2-t1})
+      return retwasm
     })
 }
-
-// const DEMfromHeightmap = (heightmap) => {
-//   const DEM = new Uint8Array(heightmap.length * 3)
-//   const [minHeight, maxHeight] = heightmap.reduce((minmax, height) => [
-//     height < minmax[0] ? height : minmax[0],
-//     height > minmax[1] ? height : minmax[1]
-//   ], [heightmap[0], heightmap[0]])
-//   const heightRange = maxHeight - minHeight
-//   // const normalizedHeightmap = heightmap.map(height => Math.floor((height - minHeight) / heightRange * 255))
-//   const normalizedHeightmap = heightmap.map(height => Math.abs(Math.floor(height / 8900 * 255)))
-//   normalizedHeightmap.forEach((height, index) => {
-//     DEM[index * 3] = height
-//     DEM[index * 3 + 1] = height
-//     DEM[index * 3 + 2] = height
-//   })
-//   return DEM
-// }
 
 const setHeightmap = (geometry, heightmap, scale, offset, key) => {
   if (!geometry) { return }
@@ -101,7 +88,7 @@ const setHeightmap = (geometry, heightmap, scale, offset, key) => {
   geometry.scale(1, 1, 0.75)
   crackFix(geometry)
 
-  dem2mesh.greet()
+  // dem2mesh.greet()
   // const target = Math.floor(geometry.attributes.position.count * 0.4)
   // geometry = simple.modify(geometry, target)
   // geometry.computeVertexNormals()
@@ -144,7 +131,7 @@ const buildPlane = (z, x, y, segments, j, size, key) => {
   const geometry = new PlaneBufferGeometry(size, size, segments + 2, segments + 2)
   // const geometry = new PlaneBufferGeometry( size, size, 4, 4);
 
-  heightmap(z, x, y).then(parsedPng => {
-    setHeightmap(geometry, parsedPng.heightmap, 0.1, 0, key)
+  heightmap(z, x, y).then(heightmap => {
+    setHeightmap(geometry, heightmap, 0.1, 0, key)
   })
 }
