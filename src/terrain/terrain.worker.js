@@ -46,13 +46,14 @@ const heightmap = (z, x, y) => {
   return fetch(tileURL)
     .then(res => res.arrayBuffer())
     .then(array => {
-      const t0 = Date.now()
-      const retwasm = dem2mesh.png2mesh(new Uint8Array(array))
-      const t1 = Date.now()
-      const retjs = pngToHeight(new Uint8Array(UPNG.toRGBA8(UPNG.decode(array))[0]))
-      const t2 = Date.now()
-      postMessage({stats: true, wasm: t1-t0, js: t2-t1})
-      return retwasm
+      return dem2mesh.png2elevation(new Uint8Array(array))
+      // const t0 = Date.now()
+      // const retwasm = dem2mesh.png2elevation(new Uint8Array(array))
+      // const t1 = Date.now()
+      // const retjs = pngToHeight(new Uint8Array(UPNG.toRGBA8(UPNG.decode(array))[0]))
+      // const t2 = Date.now()
+      // postMessage({stats: true, wasm: t1-t0, js: t2-t1})
+      // return retwasm
     })
 }
 
