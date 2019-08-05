@@ -25,8 +25,7 @@ extern "C" {
     // fn log_vec(v: &);
 }
 
-#[wasm_bindgen]
-pub fn png2mesh(png_bytes: &[u8]) -> JsValue {
+pub fn png2elevation_rs(png_bytes: &[u8]) -> Vec<f32> {
     // decode raw bytes and check we have a 256x256px image
     let decoder = png::Decoder::new(png_bytes);
     let (info, mut reader) = decoder.read_info().unwrap();
@@ -46,9 +45,23 @@ pub fn png2mesh(png_bytes: &[u8]) -> JsValue {
     //     }
     // };
 
-    let elevation: Vec<f32> = buf.chunks(3)
+    buf.chunks(3)
         .map(|rgb| rgb[0] as f32 * 256.0 + rgb[1] as f32 + rgb[2] as f32 / 256.0 - 32768.0)
-        .collect();
-    serde_wasm_bindgen::to_value(&elevation).unwrap()
+        .collect()
+}
 
+#[wasm_bindgen]
+pub fn png2elevation(png_bytes: &[u8]) -> JsValue {
+    let elevation = png2elevation_rs(png_bytes);
+    serde_wasm_bindgen::to_value(&elevation).unwrap()
+}
+
+#[wasm_bindgen]
+pub fn png2mesh(png_bytes: &[u8]) -> JsValue {
+    let elevation = png2elevation_rs(png_bytes);
+    let positions = &[0; 256 * 256 * 3];
+
+    // TODO: build mesh
+
+    JsValue::null()
 }
