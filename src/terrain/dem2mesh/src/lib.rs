@@ -9,8 +9,9 @@ use wasm_bindgen::JsValue;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-extern crate png;
 extern crate serde_wasm_bindgen;
+extern crate png;
+// extern crate image;
 
 #[wasm_bindgen]
 extern "C" {
@@ -36,7 +37,14 @@ pub fn png2mesh(png_bytes: &[u8]) -> JsValue {
     // Read the next frame. Currently this function should only called once.
     reader.next_frame(&mut buf).unwrap();
 
-    // log(format!("{}", info.buffer_size()));
+
+    // let buf = match image::load_from_memory(png_bytes) {
+    //     Ok(i) => i.to_rgb(),
+    //     Err(e) => {
+    //         log(e.to_string());
+    //         return JsValue::null();
+    //     }
+    // };
 
     let elevation: Vec<f32> = buf.chunks(3)
         .map(|rgb| rgb[0] as f32 * 256.0 + rgb[1] as f32 + rgb[2] as f32 / 256.0 - 32768.0)
