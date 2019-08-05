@@ -23,12 +23,8 @@ const tilesElevationURL = 'https://s3.amazonaws.com/elevation-tiles-prod/terrari
 
 const pngToHeight = (array) => {
   const heightmap = new Float32Array(256 * 256)
-  for (let i = 0; i < 256; i++) {
-    for (let j = 0; j < 256; j++) {
-      const ij = i + 256 * j
-      const rgba = ij * 4
-      heightmap[ij] = array[rgba] * 256.0 + array[rgba + 1] + array[rgba + 2] / 256.0 - 32768.0
-    }
+  for (let i = 0, j = array.length; i < j; i += 4) {
+    heightmap[i / 4] = array[i] * 256.0 + array[i + 1] + array[i + 2] / 256.0 - 32768.0
   }
   return heightmap
 }
