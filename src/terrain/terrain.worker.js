@@ -11,6 +11,7 @@ onmessage = message => messages.push(message)
 let dem2mesh
 import('./dem2mesh/pkg').then(pkg => {
   dem2mesh = pkg
+  dem2mesh.init()
   onmessage = function (args) {
     const [z, x, y, segments, j, size] = args.data
     buildPlane(z, x, y, segments, j, size, args.data.toString())

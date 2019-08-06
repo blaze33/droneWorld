@@ -1,4 +1,5 @@
 mod utils;
+mod plane;
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
@@ -58,10 +59,14 @@ pub fn png2elevation(png_bytes: &[u8]) -> JsValue {
 
 #[wasm_bindgen]
 pub fn png2mesh(png_bytes: &[u8]) -> JsValue {
-    let elevation = png2elevation_rs(png_bytes);
-    let positions = &[0; 256 * 256 * 3];
+    let heightmap = png2elevation_rs(png_bytes);
+    log(format!("{}", (heightmap.len() as f32).sqrt() / 256.0));
 
-    // TODO: build mesh
+    let (position, index) = plane::build_tile_mesh(400.0, 255, heightmap);
+    serde_wasm_bindgen::to_value(&(position, index)).unwrap()
+}
 
-    JsValue::null()
+#[wasm_bindgen]
+pub fn init() {
+    utils::set_panic_hook();
 }
