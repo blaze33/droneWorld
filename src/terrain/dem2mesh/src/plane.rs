@@ -1,4 +1,5 @@
 pub fn build_tile_mesh(size: f32, segments: u8, heightmap: Vec<f32>) -> (Vec<f32>, Vec<u16>) {
+	let z_scale = 0.075;
 	let size_half = size / 2f32;
     let grid = segments as u16;
 	let grid1 = grid + 1;
@@ -21,7 +22,7 @@ pub fn build_tile_mesh(size: f32, segments: u8, heightmap: Vec<f32>) -> (Vec<f32
 				((iy as f32 * ratio).round() * heightmap_n
 					+ ix as f32 * ratio
 				).round() as usize
-			] * 0.1;
+			] * z_scale;
 			position.push(x);
 			position.push(-y);
 			position.push(z);
