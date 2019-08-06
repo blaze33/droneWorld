@@ -58,11 +58,10 @@ pub fn png2elevation(png_bytes: &[u8]) -> JsValue {
 }
 
 #[wasm_bindgen]
-pub fn png2mesh(png_bytes: &[u8]) -> JsValue {
+pub fn png2mesh(png_bytes: &[u8], size: f32, segments: u8) -> JsValue {
     let heightmap = png2elevation_rs(png_bytes);
-    log(format!("{}", (heightmap.len() as f32).sqrt() / 256.0));
 
-    let (position, index) = plane::build_tile_mesh(400.0, 255, heightmap);
+    let (position, index) = plane::build_tile_mesh(size, segments, heightmap);
     serde_wasm_bindgen::to_value(&(position, index)).unwrap()
 }
 
