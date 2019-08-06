@@ -498,6 +498,7 @@ module.exports = function (webpackEnv) {
       ]
     },
     plugins: [
+      new webpack.ProgressPlugin(),
       new Dotenv(),
       new WasmPackPlugin({
         crateDirectory: paths.appSrc.concat('/terrain/dem2mesh'),
