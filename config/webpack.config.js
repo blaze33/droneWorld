@@ -502,7 +502,6 @@ module.exports = function (webpackEnv) {
       new Dotenv(),
       new WasmPackPlugin({
         crateDirectory: paths.appSrc.concat('/terrain/dem2mesh'),
-        extraArgs: '--no-typescript',
         forceMode: 'production'
       }),
       // Generates an `index.html` file with the <script> injected.
