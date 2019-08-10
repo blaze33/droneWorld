@@ -1,7 +1,9 @@
 import {
   Mesh,
   BufferAttribute,
-  BufferGeometry
+  BufferGeometry,
+  WireframeGeometry,
+  LineSegments
 } from 'three'
 import { renderer, scene } from '../index'
 // import SimplifyModifier from '../modules/meshSimplify'
@@ -64,18 +66,16 @@ const buildTileFromWorker = event => {
   const geometry = new BufferGeometry()
   const positions = new Float32Array(event.data.positions)
   const normals = new Float32Array(event.data.normals)
+  const uvs = new Float32Array(event.data.uvs)
   const IndexArrayClass = {
     2: Uint16Array,
     4: Uint32Array
   }[event.data.bpe.indices]
   const index = new IndexArrayClass(event.data.indices)
-  // const dem = new Uint8Array(event.data.dem)
-  let uv = new Float32Array(positions.length / 3 * 2)
-  const n = Math.sqrt(positions.length / 3)
-  uv = uv.map((_, index) => index % 2 ? Math.floor((index / 2) / n) / n : (index / 2) % n / n)
+
   geometry.addAttribute('position', new BufferAttribute(positions, 3))
   geometry.addAttribute('normal', new BufferAttribute(normals, 3))
-  geometry.addAttribute('uv', new BufferAttribute(uv, 2))
+  geometry.addAttribute('uv', new BufferAttribute(uvs, 2))
   geometry.setIndex(new BufferAttribute(index, 1))
   geometry.computeBoundingSphere()
   geometry.computeBoundingBox()
@@ -89,6 +89,12 @@ const buildTileFromWorker = event => {
   setTilePosition(plane, event.data.key)
   scene.add(plane)
   renderer.shadowMap.needsUpdate = true
+
+  const wireframe = new WireframeGeometry(geometry)
+  const line = new LineSegments(wireframe)
+  line.material.color.set(0xbda888)
+  setTilePosition(line, event.data.key)
+  scene.add(line)
 }
 
 let workerPool = []

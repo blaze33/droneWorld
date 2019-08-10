@@ -40,11 +40,13 @@ const fetchPNG = (z, x, y) => {
 }
 
 const buildTile = (png, size, segments, key) => {
+  console.time(key)
   let geometry = new BufferGeometry()
   let position
   let index
+  let uv
 
-  [position, index] = dem2mesh.png2mesh(png, size, segments)
+  [position, index, uv] = dem2mesh.png2mesh(png, size, segments)
 
   geometry.addAttribute(
     'position',
@@ -53,22 +55,29 @@ const buildTile = (png, size, segments, key) => {
   geometry.setIndex(
     new BufferAttribute(Uint16Array.from(index), 1)
   )
+  geometry.addAttribute(
+    'uv',
+    new BufferAttribute(Float32Array.from(uv), 2)
+  )
   geometry.computeVertexNormals()
 
   const positions = geometry.attributes.position.array.buffer
   const normals = geometry.attributes.normal.array.buffer
   const indices = geometry.index.array.buffer
+  const uvs = geometry.attributes.uv.array.buffer
+  console.timeEnd(key)
   postMessage({
     key,
     positions,
     normals,
     indices,
+    uvs,
     bpe: {
       positions: geometry.attributes.position.array.BYTES_PER_ELEMENT,
       normals: geometry.attributes.normal.array.BYTES_PER_ELEMENT,
       indices: geometry.index.array.BYTES_PER_ELEMENT
     }
-  }, [positions, normals, indices])
+  }, [positions, normals, indices, uvs])
 }
 
 // cf. http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#ECMAScript_.28JavaScript.2FActionScript.2C_etc..29
