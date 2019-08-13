@@ -24,7 +24,7 @@ const hudData = {
 class HUD extends Component {
   constructor (props) {
     super(props)
-    this.state = { time: 0, gunHeat: 0, lockLevel: 0, pilot: null }
+    this.state = { gunHeat: 0, lockLevel: 0, pilot: null }
   }
 
   componentDidMount () {
@@ -57,12 +57,11 @@ class HUD extends Component {
     return Math.min(Math.max(...times), 1)
   }
 
-  update (timestamp, newState) {
+  update (newState) {
     const gunHeat = this.gunHeat()
     const lockLevel = this.lockLevel()
     this.setState({
       ...newState,
-      time: timestamp,
       gunHeat,
       lockLevel,
       lock: lockLevel === 1,
@@ -286,7 +285,7 @@ const hudLoop = (timestamp) => {
     focalStyle = { boxShadow: '' }
   }
   hudData.gunTarget = selectNearestGunTarget()
-  hudElement.update(timestamp, { horizonStyle, focalStyle, gunTarget: hudData.gunTarget })
+  hudElement.update({ horizonStyle, focalStyle, gunTarget: hudData.gunTarget })
 }
 
 PubSub.subscribe('x.hud.mounted', () => {
