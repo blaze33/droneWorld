@@ -25,7 +25,7 @@ const deleteTile = (tile) => {
 let camVec = new Vector3()
 const tileBuilder = (timestamp) => {
   const cameraPosition = camera.position
-  camVec = camVec.set(0, 0, -1).applyQuaternion(camera.quaternion)
+  camVec = camera.getWorldDirection(camVec)
   let targetPosition = cameraPosition.clone()
 
   targetPosition = targetPosition.add(camVec.multiplyScalar(400 * Math.max(1, Math.abs(cameraPosition.z) / 400)))

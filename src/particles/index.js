@@ -338,7 +338,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
 
   if (offset) {
     emitter.position.value = target.position.clone().add(
-      camVec.set(0, 0, -1).applyQuaternion(camera.quaternion).multiplyScalar(5)
+      camera.getWorldDirection(camVec).multiplyScalar(5)
     )
   } else {
     emitter.position.value = target.position.clone()
@@ -367,7 +367,7 @@ const triggerSingleEmitter = (group, target, follow = false, velocityFunction, o
     loop: (timestamp, delta) => {
       if (offset) {
         emitter.position.value = target.position.clone().add(
-          camVec.set(0, 0, -1).applyQuaternion(camera.quaternion).multiplyScalar(5)
+          camera.getWorldDirection(camVec).multiplyScalar(5)
         )
       } else {
         emitter.position.value = target.position.clone()
@@ -485,7 +485,7 @@ PubSub.subscribe('x.drones.gun.start', (msg, drone) => {
       tmpVec1.normalize().multiplyScalar(500)
       targetVector.copy(tmpVec1)
     } else {
-      targetVector = camVec.set(0, 0, -1).applyQuaternion(camera.quaternion).multiplyScalar(500)
+      targetVector = camera.getWorldDirection(camVec).multiplyScalar(500)
       const localY = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
       targetVector = targetVector.add(localY.multiplyScalar(24))
     }
