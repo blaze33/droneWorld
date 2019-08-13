@@ -374,8 +374,6 @@ var mainLoop = (timestamp) => {
       loop.loop ? loop.loop(timestamp, delta) : loop(timestamp, delta)
     })
 
-    // update camera matrix before computing motion blur uniforms
-    camera.updateMatrixWorld()
     // update motion blur shader uniforms
     motionPass.material.uniforms.delta.value = delta
     // tricky part to compute the clip-to-world and world-to-clip matrices
