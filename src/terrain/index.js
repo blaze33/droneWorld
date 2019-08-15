@@ -2,8 +2,8 @@ import {
   Mesh,
   BufferAttribute,
   BufferGeometry,
-  WireframeGeometry,
-  LineSegments
+  // WireframeGeometry,
+  // LineSegments
 } from 'three'
 import { renderer, scene } from '../index'
 // import SimplifyModifier from '../modules/meshSimplify'
@@ -90,11 +90,11 @@ const buildTileFromWorker = event => {
   scene.add(plane)
   renderer.shadowMap.needsUpdate = true
 
-  const wireframe = new WireframeGeometry(geometry)
-  const line = new LineSegments(wireframe)
-  line.material.color.set(0xbda888)
-  setTilePosition(line, event.data.key)
-  scene.add(line)
+  // const wireframe = new WireframeGeometry(geometry)
+  // const line = new LineSegments(wireframe)
+  // line.material.color.set(0xbda888)
+  // setTilePosition(line, event.data.key)
+  // scene.add(line)
 }
 
 let workerPool = []
