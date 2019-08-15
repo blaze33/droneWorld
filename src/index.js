@@ -47,7 +47,8 @@ import {
   RenderPass,
   GlitchPass,
   Water,
-  Reflector
+  Reflector,
+  CopyShader
 } from './modules'
 import {
   WaterShader,
@@ -239,8 +240,8 @@ particleGroups.forEach(group => scene.add(group.mesh))
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
 let shakeCamera = false
 let shakeAmplitude = 1
-PubSub.subscribe('x.camera.shake.start', (msg, value = 1) => (shakeCamera = true))
-PubSub.subscribe('x.camera.shake.stop', () => (shakeCamera = false))
+PubSub.subscribe('x.camera.shake.start', (msg, value = 1) => { glitch.enabled = true; shakeCamera = true })
+PubSub.subscribe('x.camera.shake.stop', () => { glitch.enabled = false; shakeCamera = false })
 
 let loops = [
   () => lensFlare.position.copy(sunPosition),
@@ -255,11 +256,6 @@ let loops = [
         y: (Math.random() - 0.5) * shakeAmplitude,
         z: (Math.random() - 0.5) * shakeAmplitude
       })
-      glitch.enabled = true
-      motionPass.renderToScreen = false
-    } else {
-      glitch.enabled = false
-      motionPass.renderToScreen = true
     }
   },
   () => scene.children.forEach(child => {
@@ -343,7 +339,6 @@ composer.addPass(wigglePass)
 
 // add a motion blur pass
 const motionPass = new ShaderPass(motionBlurShader, 'tColor')
-motionPass.renderToScreen = true
 motionPass.material.uniforms.tDepth.value = waterTarget.depthTexture
 motionPass.material.uniforms.velocityFactor.value = 1
 composer.addPass(motionPass)
@@ -356,8 +351,12 @@ let tmpMatrix = new Matrix4()
 
 // add a glitch pass
 const glitch = new GlitchPass()
-glitch.renderToScreen = true
+glitch.enabled = false
 composer.addPass(glitch)
+
+//add output pass
+const outputPass = new ShaderPass(CopyShader)
+composer.addPass(outputPass)
 // ###################################
 
 let play = true
