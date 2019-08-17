@@ -16,6 +16,7 @@ import {ShaderPass} from 'three/examples/jsm/postprocessing/ShaderPass.js'
 import {RenderPass} from 'three/examples/jsm/postprocessing/RenderPass.js'
 import {SavePass} from 'three/examples/jsm/postprocessing/SavePass.js'
 import {GlitchPass} from 'three/examples/jsm/postprocessing/GlitchPass.js'
+import {MaskPass, ClearMaskPass} from 'three/examples/jsm/postprocessing/MaskPass.js'
 
 export {
   GLTFLoader,
@@ -30,6 +31,8 @@ export {
   RenderPass,
   SavePass,
   GlitchPass,
+  MaskPass,
+  ClearMaskPass,
 
   Lensflare,
   LensflareElement,

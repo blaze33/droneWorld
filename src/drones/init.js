@@ -31,6 +31,7 @@ const buildPilotDrone = () => {
   pilotDrone.userData.altitude = NaN
   pilotDrone.userData.speed = 0
   pilotDrone.userData.lastPosition = pilotDrone.position.clone()
+  pilotDrone.layers.enable(1)
   scene.add(pilotDrone)
   window.pilotDrone = pilotDrone
   let localY

@@ -48,7 +48,9 @@ import {
   GlitchPass,
   Water,
   Reflector,
-  CopyShader
+  CopyShader,
+  MaskPass,
+  ClearMaskPass
 } from './modules'
 import {
   WaterShader,
@@ -337,11 +339,22 @@ const wigglePass = new ShaderPass(WiggleShader)
 wigglePass.enabled = false
 composer.addPass(wigglePass)
 
+// usink MaskPass requires autoClear=false
+renderer.autoClear = false
+// add maskPass to exclude pilotDrone from motionPass
+const renderMask = new MaskPass(scene, camera, 2)
+renderMask.inverse = true
+composer.addPass(renderMask)
+
 // add a motion blur pass
 const motionPass = new ShaderPass(motionBlurShader, 'tColor')
 motionPass.material.uniforms.tDepth.value = waterTarget.depthTexture
 motionPass.material.uniforms.velocityFactor.value = 1
 composer.addPass(motionPass)
+
+// clear mask
+const clearMask = new ClearMaskPass()
+composer.addPass(clearMask)
 
 // define variables used by the motion blur pass
 let previousMatrixWorldInverse = new Matrix4()
