@@ -349,6 +349,7 @@ composer.addPass(renderMask)
 // add a motion blur pass
 const motionPass = new ShaderPass(motionBlurShader, 'tColor')
 motionPass.material.uniforms.tDepth.value = waterTarget.depthTexture
+motionPass.material.uniforms.cameraPosition.value = camera.position
 motionPass.material.uniforms.velocityFactor.value = 1
 composer.addPass(motionPass)
 
@@ -391,6 +392,8 @@ var mainLoop = (timestamp) => {
     // tricky part to compute the clip-to-world and world-to-clip matrices
     motionPass.material.uniforms.clipToWorldMatrix.value
       .getInverse(camera.matrixWorldInverse).multiply(tmpMatrix.getInverse(camera.projectionMatrix))
+    motionPass.material.uniforms.worldToClipMatrix.value
+      .copy(camera.projectionMatrix).multiply(camera.matrixWorldInverse)
     motionPass.material.uniforms.previousWorldToClipMatrix.value
       .copy(previousProjectionMatrix.multiply(previousMatrixWorldInverse))
     motionPass.material.uniforms.cameraMove.value.copy(camera.position).sub(previousCameraPosition)

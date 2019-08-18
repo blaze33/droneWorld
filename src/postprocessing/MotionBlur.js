@@ -20,6 +20,7 @@ const motionBlurFragmentShader = `
   uniform sampler2D tColor;
 
   uniform mat4 clipToWorldMatrix;
+  uniform mat4 worldToClipMatrix;
   uniform mat4 previousWorldToClipMatrix;
 
   uniform vec3 cameraMove;
@@ -37,26 +38,25 @@ const motionBlurFragmentShader = `
     vec4 worldPosition = clipToWorldMatrix * clipPosition;
     worldPosition /= worldPosition.w;
 
-    vec4 previousClipPosition = worldPosition;
+    vec4 previousWorldPosition = worldPosition;
+    previousWorldPosition.xyz -= cameraMove;
 
-    // Reduce motion blur due to camera translation especially at the screen center.
-    previousClipPosition.xyz -= cameraMove * (
-      1. - smoothstep(.3, 1., clamp(length(clipPosition.xy), 0., 1.))
-    );
-
-    previousClipPosition = previousWorldToClipMatrix * previousClipPosition;
+    vec4 previousClipPosition = previousWorldToClipMatrix * worldPosition;
     previousClipPosition /= previousClipPosition.w;
+    vec4 translatedClipPosition = worldToClipMatrix * previousWorldPosition;
+    translatedClipPosition /= translatedClipPosition.w;
 
     vec2 velocity = velocityFactor * (clipPosition - previousClipPosition).xy / delta * 16.67;
+    velocity *= clamp(length(worldPosition.xyz - cameraPosition) / 1000., 0., 1.);
+    velocity += velocityFactor * (clipPosition - translatedClipPosition).xy / delta * 16.67;
 
     vec4 finalColor = vec4(0.);
     vec2 offset = vec2(0.);
     float weight = 0.;
     const int samples = 20;
     for(int i = 0; i < samples; i++) {
-          offset = velocity * (float(i) / (float(samples) - 1.) - .5);
-          vec4 c = texture2D(tColor, vUv + offset);
-      finalColor += c;
+      offset = velocity * (float(i) / (float(samples) - 1.) - .5);
+      finalColor += texture2D(tColor, vUv + offset);
     }
     finalColor /= float(samples);
     gl_FragColor = vec4(finalColor.rgb, 1.);
@@ -65,7 +65,7 @@ const motionBlurFragmentShader = `
     // gl_FragColor = vec4(abs(velocity), 0., 1.);
 
     // debug: view depth buffer
-    // gl_FragColor = vec4(vec3(zOverW), 1.);
+    // gl_FragColor = vec4(vec3(clamp(length(worldPosition.xyz - cameraPosition) / 1000., 0., 1.)), 1.);
   }`
 
 export const motionBlurShader = {
@@ -78,9 +78,11 @@ export const motionBlurShader = {
     delta: { type: 'f', value: 16.67 },
 
     clipToWorldMatrix: { type: 'm4', value: new Matrix4() },
+    worldToClipMatrix: { type: 'm4', value: new Matrix4() },
     previousWorldToClipMatrix: { type: 'm4', value: new Matrix4() },
 
-    cameraMove: { type: 'v3', value: new Vector3() }
+    cameraMove: { type: 'v3', value: new Vector3() },
+    cameraPosition: { type: 'v3', value: new Vector3() }
   },
 
   vertexShader: motionBlurVertexShader,
