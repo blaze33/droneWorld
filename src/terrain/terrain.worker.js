@@ -1,7 +1,12 @@
 /* eslint-env worker */
 
+import UPNG from 'upng-js'
 import { BufferGeometry } from 'three/src/core/BufferGeometry'
 import { BufferAttribute } from 'three/src/core/BufferAttribute'
+import { PlaneBufferGeometry } from 'three/src/geometries/PlaneGeometry'
+import { crackFix } from './crackFix'
+
+const average = arr => arr.reduce((p, c) => p + c, 0) / arr.length
 
 const messages = []
 onmessage = message => messages.push(message)
@@ -39,14 +44,77 @@ const fetchPNG = (z, x, y) => {
     .then(arrayBuffer => new Uint8Array(arrayBuffer))
 }
 
-const buildTile = (png, size, segments, key) => {
-  console.time(key)
+const png2heightmap = (encodedPng) => {
+  const png = new Uint8Array(UPNG.toRGBA8(UPNG.decode(encodedPng))[0])
+  const heightmap = new Float32Array(256 * 256)
+  for (let i = 0; i < 256; i++) {
+    for (let j = 0; j < 256; j++) {
+      const ij = i + 256 * j
+      const rgba = ij * 4
+      heightmap[ij] = png[rgba] * 256.0 + png[rgba + 1] + png[rgba + 2] / 256.0 - 32768.0
+    }
+  }
+  return heightmap
+}
+
+const buildGeometryA = (png, size, segments, wasm) => {
+
+  performance.mark('png2height-start')
+  let heightmap = wasm ? dem2mesh.png2elevation(png) : png2heightmap(png)
+  performance.mark('png2height-end')
+
+  performance.measure('png-time', 'png2height-start', 'png2height-end')
+  performance.getEntriesByName('png-time')
+  console.log(
+    performance.getEntriesByName('png-time').length,
+    average(performance.getEntriesByName('png-time').map(p => p.duration))
+  )
+
+  const geometry = new PlaneBufferGeometry(size, size, segments + 2, segments + 2)
+  const nPosition = Math.sqrt(geometry.attributes.position.count)
+  const nHeightmap = Math.sqrt(heightmap.length)
+  const ratio = nHeightmap / (nPosition)
+  let x, y
+  for (let i = nPosition; i < geometry.attributes.position.count - nPosition; i++) {
+    if (
+      i % (nPosition) === 0 ||
+      i % (nPosition) === nPosition - 1
+    ) continue
+    x = Math.floor(i / (nPosition))
+    y = i % (nPosition)
+    geometry.attributes.position.setZ(
+      i,
+      heightmap[Math.round(Math.round(x * ratio) * nHeightmap + y * ratio)] * 0.075
+    )
+  }
+
+  // center geometry along xY for correct XY scaling in crackFix
+  const z0 = geometry.attributes.position.array[2]
+  geometry.center()
+  const z1 = geometry.attributes.position.array[2]
+  const deltaZ = z0 - z1
+  geometry.translate(0, 0, deltaZ)
+  // geometry.scale(1, 1, 0.75)
+  crackFix(geometry)
+
+  return geometry
+}
+
+const buildGeometryB = (png, size, segments) => {
   let geometry = new BufferGeometry()
   let position
   let index
   let uv
 
+  performance.mark('png2mesh-start');
   [position, index, uv] = dem2mesh.png2mesh(png, size, segments)
+  performance.mark('png2mesh-end')
+  performance.measure('wasm-time', 'png2mesh-start', 'png2mesh-end')
+  performance.getEntriesByName('wasm-time')
+  console.log(
+    performance.getEntriesByName('wasm-time').length,
+    average(performance.getEntriesByName('wasm-time').map(p => p.duration))
+  )
 
   geometry.addAttribute(
     'position',
@@ -61,11 +129,28 @@ const buildTile = (png, size, segments, key) => {
   )
   geometry.computeVertexNormals()
 
+  return geometry
+}
+
+const buildTile = (png, size, segments, key) => {
+  const buildMethods = {
+    'fullJS': (png, size, segments) => buildGeometryA(png, size, segments, false),
+    'wasmPNG': (png, size, segments) => buildGeometryA(png, size, segments, true),
+    'fullWASM': buildGeometryB
+  }
+  // const buildMethod = buildMethods['fullJS']
+  const buildMethod = buildMethods['wasmPNG']
+  // const buildMethod = buildMethods['fullWASM']
+
+  // console.time(key)
+
+  const geometry = buildMethod(png, size, segments)
+
   const positions = geometry.attributes.position.array.buffer
   const normals = geometry.attributes.normal.array.buffer
   const indices = geometry.index.array.buffer
   const uvs = geometry.attributes.uv.array.buffer
-  console.timeEnd(key)
+  // console.timeEnd(key)
   postMessage({
     key,
     positions,
