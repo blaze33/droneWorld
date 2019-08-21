@@ -12,8 +12,7 @@ use alloc::alloc::{Layout, alloc, dealloc};
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 extern crate serde_wasm_bindgen;
-extern crate png;
-// extern crate image;
+extern crate oxipng;
 extern crate meshopt;
 extern crate alloc;
 
@@ -22,36 +21,16 @@ extern crate alloc;
 extern "C" {
     #[wasm_bindgen(js_namespace = console)]
     fn log(v: String);
-
-    #[wasm_bindgen(js_namespace = console, js_name=log)]
-    fn log_js(v: &JsValue);
-
-    // #[wasm_bindgen(js_namespace = console, js_name=log)]
-    // fn log_vec(v: &);
 }
 
 pub fn png2elevation_rs(png_bytes: &[u8]) -> Vec<f32> {
-    // decode raw bytes and check we have a 256x256px image
-    let decoder = png::Decoder::new(png_bytes);
-    let (info, mut reader) = decoder.read_info().unwrap();
-    assert_eq!(info.buffer_size(), 256 * 256 * 3);
+    let png = oxipng::open_from_memory(png_bytes);
+    assert_eq!(png.raw.data.len(), 256 * (256 * 3 + 1));
 
-    // Allocate the output buffer.
-    let mut buf = vec![0; info.buffer_size()];
-    // Read the next frame. Currently this function should only called once.
-    reader.next_frame(&mut buf).unwrap();
-
-
-    // let buf = match image::load_from_memory(png_bytes) {
-    //     Ok(i) => i.to_rgb(),
-    //     Err(e) => {
-    //         log(e.to_string());
-    //         return JsValue::null();
-    //     }
-    // };
-
-    buf.chunks(3)
-        .map(|rgb| rgb[0] as f32 * 256.0 + rgb[1] as f32 + rgb[2] as f32 / 256.0 - 32768.0)
+    png.raw.data.chunks(256 * 3 + 1)
+        .flat_map(|line| line[1..].chunks(3)
+            .map(|rgb| rgb[0] as f32 * 256.0 + rgb[1] as f32 + rgb[2] as f32 / 256.0 - 32768.0)
+        )
         .collect()
 }
 
