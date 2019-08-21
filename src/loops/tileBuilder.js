@@ -57,25 +57,6 @@ const tileBuilder = (timestamp) => {
     let distance
 
     let visibleKeysArray = [
-      [zoom, x0, y0, segments0, 0, currentTileSize],
-      [zoom, x0, y0 + 1, segments0, 0, currentTileSize],
-      [zoom, x0 + 1, y0, segments0, 0, currentTileSize],
-      [zoom, x0 + 1, y0 + 1, segments0, 0, currentTileSize],
-
-      [zoom, x0 - 1, y0 - 1, segments1, 0, currentTileSize],
-      [zoom, x0 - 1, y0 - 0, segments1, 0, currentTileSize],
-      [zoom, x0 - 1, y0 + 1, segments1, 0, currentTileSize],
-      [zoom, x0 - 1, y0 + 2, segments1, 0, currentTileSize],
-
-      [zoom, x0 + 2, y0 - 1, segments1, 0, currentTileSize],
-      [zoom, x0 + 2, y0 - 0, segments1, 0, currentTileSize],
-      [zoom, x0 + 2, y0 + 1, segments1, 0, currentTileSize],
-      [zoom, x0 + 2, y0 + 2, segments1, 0, currentTileSize],
-
-      [zoom, x0, y0 - 1, segments1, 0, currentTileSize],
-      [zoom, x0, y0 + 2, segments1, 0, currentTileSize],
-      [zoom, x0 + 1, y0 - 1, segments1, 0, currentTileSize],
-      [zoom, x0 + 1, y0 + 2, segments1, 0, currentTileSize],
 
       [zoom, x0 - 2, y0 - 2, segments2, 0, currentTileSize],
       [zoom, x0 - 2, y0 - 1, segments2, 0, currentTileSize],
@@ -98,8 +79,27 @@ const tileBuilder = (timestamp) => {
       [zoom, x0 + 1, y0 - 2, segments2, 0, currentTileSize],
       [zoom, x0 + 1, y0 + 3, segments2, 0, currentTileSize],
       [zoom, x0 + 2, y0 - 2, segments2, 0, currentTileSize],
-      [zoom, x0 + 2, y0 + 3, segments2, 0, currentTileSize]
+      [zoom, x0 + 2, y0 + 3, segments2, 0, currentTileSize],
 
+      [zoom, x0 - 1, y0 - 1, segments1, 0, currentTileSize],
+      [zoom, x0 - 1, y0 - 0, segments1, 0, currentTileSize],
+      [zoom, x0 - 1, y0 + 1, segments1, 0, currentTileSize],
+      [zoom, x0 - 1, y0 + 2, segments1, 0, currentTileSize],
+
+      [zoom, x0 + 2, y0 - 1, segments1, 0, currentTileSize],
+      [zoom, x0 + 2, y0 - 0, segments1, 0, currentTileSize],
+      [zoom, x0 + 2, y0 + 1, segments1, 0, currentTileSize],
+      [zoom, x0 + 2, y0 + 2, segments1, 0, currentTileSize],
+
+      [zoom, x0, y0 - 1, segments1, 0, currentTileSize],
+      [zoom, x0, y0 + 2, segments1, 0, currentTileSize],
+      [zoom, x0 + 1, y0 - 1, segments1, 0, currentTileSize],
+      [zoom, x0 + 1, y0 + 2, segments1, 0, currentTileSize],
+
+      [zoom, x0, y0, segments0, 0, currentTileSize],
+      [zoom, x0, y0 + 1, segments0, 0, currentTileSize],
+      [zoom, x0 + 1, y0, segments0, 0, currentTileSize],
+      [zoom, x0 + 1, y0 + 1, segments0, 0, currentTileSize]
     ]
 
     // let camera = terrainTarget.native
@@ -114,7 +114,7 @@ const tileBuilder = (timestamp) => {
     const currentKeysString = currentKeysArray.map(k => k.toString())
 
     // compute tile under the camera
-    const potentialUnderKeys = visibleKeysString.slice(0, 4)
+    const potentialUnderKeys = visibleKeysString.slice(-5)
     const potentialUnderTiles = scene.children.filter(child => potentialUnderKeys.includes(child.key))
     const tileToCamera = (tile) => {
       return distanceVector.subVectors(tile.position, camera.position).length()
