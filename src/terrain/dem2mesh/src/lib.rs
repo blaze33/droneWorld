@@ -16,7 +16,6 @@ extern crate oxipng;
 extern crate meshopt;
 extern crate alloc;
 
-
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = console)]
@@ -29,7 +28,7 @@ pub fn png2elevation_rs(png_bytes: &[u8]) -> Vec<f32> {
 
     png.raw.data.chunks(256 * 3 + 1)
         .flat_map(|line| line[1..].chunks(3)
-            .map(|rgb| rgb[0] as f32 * 256.0 + rgb[1] as f32 + rgb[2] as f32 / 256.0 - 32768.0)
+            .map(|rgb| f32::from(rgb[0]) * 256.0 + f32::from(rgb[1]) + f32::from(rgb[2]) / 256.0 - 32768.0)
         )
         .collect()
 }
@@ -42,13 +41,15 @@ pub fn png2elevation(png_bytes: &[u8]) -> JsValue {
 
 static mut LAYOUT: Option<Layout> = None;
 
+#[allow(non_snake_case)]
 #[wasm_bindgen]
-pub extern fn _Znwm(size: usize) -> *mut std::ffi::c_void {
+pub extern fn _Znwm(_: usize) -> *mut std::ffi::c_void {
     panic!("error: set meshopt allocator")
 }
 
+#[allow(non_snake_case)]
 #[wasm_bindgen]
-pub extern fn _ZdlPv(ptr: *mut std::ffi::c_void) {
+pub extern fn _ZdlPv(_: *mut std::ffi::c_void) {
     panic!("error: set meshopt allocator");
 }
 
@@ -73,7 +74,7 @@ fn simplify(
     target_error: f32,
 ) -> Vec<u32> {
 
-    let positions = vertices.as_ptr() as *const u8;
+    let positions = vertices.as_ptr() as *const f32;
     let mut index_result: Vec<u32> = vec![0; indices.len()];
     // let mut index_result: Vec<u32> = Vec::with_capacity(indices.len());
     let index_count = unsafe {
@@ -81,7 +82,7 @@ fn simplify(
             index_result.as_mut_ptr() as *mut ::std::os::raw::c_uint,
             indices.as_ptr() as *const ::std::os::raw::c_uint,
             indices.len(),
-            positions as *const f32,
+            positions,
             vertices.len(),
             12,
             target_count,
