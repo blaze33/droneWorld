@@ -13,8 +13,6 @@ default = ["console_error_panic_hook", "wee_alloc"]
 [dependencies]
 wasm-bindgen = "^0.2.50"
 js-sys = "^0.3.27"
-# png = "0.15.0"
-# image = "^0.22.1"
 meshopt = { git = "https://github.com/blaze33/meshopt-rs.git", branch = "fixes" }
 oxipng = { git = "https://github.com/blaze33/oxipng.git", branch = "decode" }
 

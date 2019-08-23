@@ -1,21 +1,20 @@
-mod utils;
-mod plane;
-
-use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsValue;
-use alloc::alloc::{Layout, alloc, dealloc};
-
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-extern crate serde_wasm_bindgen;
+extern crate alloc;
 extern crate oxipng;
 extern crate meshopt;
-extern crate alloc;
+
+use alloc::alloc::{Layout, alloc, dealloc};
+use wasm_bindgen::prelude::*;
 use js_sys::{Float32Array, Uint32Array, Array};
+
+mod utils;
+mod plane;
+
 
 #[wasm_bindgen]
 extern "C" {
@@ -72,7 +71,6 @@ fn simplify(
 
     let positions = vertices.as_ptr() as *const f32;
     let mut index_result: Vec<u32> = vec![0; indices.len()];
-    // let mut index_result: Vec<u32> = Vec::with_capacity(indices.len());
     let index_count = unsafe {
         meshopt::ffi::meshopt_simplify(
             index_result.as_mut_ptr() as *mut ::std::os::raw::c_uint,
@@ -110,8 +108,6 @@ pub fn png2mesh(png_bytes: &[u8], size: f32, segments: u8) -> Array {
     let heightmap = png2elevation(png_bytes);
 
     let (position, index) = plane::build_tile_mesh(size, segments, heightmap);
-
-    // serde_wasm_bindgen::to_value(&(position, index)).unwrap()
 
     // TODO simplify mesh
     // first: set meshopt allocator
