@@ -15,6 +15,7 @@ extern crate serde_wasm_bindgen;
 extern crate oxipng;
 extern crate meshopt;
 extern crate alloc;
+use js_sys::{Float32Array, Uint32Array, Array};
 
 #[wasm_bindgen]
 extern "C" {
@@ -105,7 +106,7 @@ fn optimize(index: &[u32], position: &[f32]) -> Vec<f32> {
 }
 
 #[wasm_bindgen]
-pub fn png2mesh(png_bytes: &[u8], size: f32, segments: u8) -> JsValue {
+pub fn png2mesh(png_bytes: &[u8], size: f32, segments: u8) -> Array {
     let heightmap = png2elevation(png_bytes);
 
     let (position, index) = plane::build_tile_mesh(size, segments, heightmap);
@@ -136,7 +137,13 @@ pub fn png2mesh(png_bytes: &[u8], size: f32, segments: u8) -> JsValue {
         ]
     ).flatten().collect();
 
-    serde_wasm_bindgen::to_value(&(new_position, new_index, uv)).unwrap()
+    let result = Array::new();
+    unsafe {
+        result.push(&Float32Array::view(&new_position));
+        result.push(&Uint32Array::view(&new_index));
+        result.push(&Float32Array::view(&uv));
+    }
+    result
 }
 
 #[wasm_bindgen]
