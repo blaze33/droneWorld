@@ -66,10 +66,17 @@ const buildGeometryA = (png, size, segments, wasm) => {
 
   performance.measure('png-time', 'png2height-start', 'png2height-end')
   performance.getEntriesByName('png-time')
-  console.log(
-    performance.getEntriesByName('png-time').length,
-    average(performance.getEntriesByName('png-time').map(p => p.duration))
-  )
+  let entries = performance.getEntriesByName('png-time')
+  if (entries.length === 1) {
+    console.log(`First PNG decoded: ${Math.round(entries[0].duration)}ms`)
+  }
+  if (entries.length === 12) {
+    console.log(
+      `${entries.length} PNG decoded: `,
+      `${Math.round(average(entries.map(p => p.duration)))}ms on average`
+      )
+    console.log(`Last PNG decoded: ${Math.round(entries[11].duration)}ms`)
+  }
 
   const geometry = new PlaneBufferGeometry(size, size, segments + 2, segments + 2)
   const nPosition = Math.sqrt(geometry.attributes.position.count)
