@@ -1,23 +1,19 @@
 {
   "files": {
     "main.css": "./static/css/main.1458272a.chunk.css",
-    "main.js": "./static/js/main.e000a218.chunk.js",
-    "main.js.map": "./static/js/main.e000a218.chunk.js.map",
+    "main.js": "./static/js/main.035ebaea.chunk.js",
+    "main.js.map": "./static/js/main.035ebaea.chunk.js.map",
     "runtime~main.js": "./static/js/runtime~main.edb76626.js",
     "runtime~main.js.map": "./static/js/runtime~main.edb76626.js.map",
     "static/js/2.814f9d5d.chunk.js": "./static/js/2.814f9d5d.chunk.js",
     "static/js/2.814f9d5d.chunk.js.map": "./static/js/2.814f9d5d.chunk.js.map",
-    "1.static/js/terrain.worker.43b3d8b3.js": "./1.static/js/terrain.worker.43b3d8b3.js",
-    "1.static/js/terrain.worker.43b3d8b3.js.map": "./1.static/js/terrain.worker.43b3d8b3.js.map",
+    "1.terrain.worker.43b3d8b3.js": "./1.terrain.worker.43b3d8b3.js",
+    "1.terrain.worker.43b3d8b3.js.map": "./1.terrain.worker.43b3d8b3.js.map",
     "e80f17e95b23db27ea6c.module.wasm": "./e80f17e95b23db27ea6c.module.wasm",
     "index.html": "./index.html",
-    "precache-manifest.68e147f4d9016bc0ba1bbb4c690995d0.js": "./precache-manifest.68e147f4d9016bc0ba1bbb4c690995d0.js",
+    "precache-manifest.2ac7aad514cbec9ad3620477bef1b1a2.js": "./precache-manifest.2ac7aad514cbec9ad3620477bef1b1a2.js",
     "service-worker.js": "./service-worker.js",
     "static/css/main.1458272a.chunk.css.map": "./static/css/main.1458272a.chunk.css.map",
-    "static/js/terrain.worker.fda0be94.js": "./static/js/terrain.worker.fda0be94.js",
-    "static/js/terrain.worker.fda0be94.js.map": "./static/js/terrain.worker.fda0be94.js.map",
-    "static/js/voxel.worker.a2ea31ea.js": "./static/js/voxel.worker.a2ea31ea.js",
-    "static/js/voxel.worker.a2ea31ea.js.map": "./static/js/voxel.worker.a2ea31ea.js.map",
     "static/media/Explosion_002_Tile_8x8_256x256.png": "./static/media/Explosion_002_Tile_8x8_256x256.d28fc70f.png",
     "static/media/GrassGreenTexture_1024.jpg": "./static/media/GrassGreenTexture_1024.3f1df3f0.jpg",
     "static/media/GrassGreenTexture_1024_normal.jpg": "./static/media/GrassGreenTexture_1024_normal.ce43156e.jpg",
@@ -33,6 +29,10 @@
     "static/media/impact3.ogg": "./static/media/impact3.7a5b4e82.ogg",
     "static/media/impact4.ogg": "./static/media/impact4.43348926.ogg",
     "static/media/missile.ogg": "./static/media/missile.f0faf674.ogg",
-    "static/media/smokeparticle.png": "./static/media/smokeparticle.4939a8d2.png"
+    "static/media/smokeparticle.png": "./static/media/smokeparticle.4939a8d2.png",
+    "terrain.worker.6df07683.js": "./terrain.worker.6df07683.js",
+    "terrain.worker.6df07683.js.map": "./terrain.worker.6df07683.js.map",
+    "voxel.worker.a2ea31ea.js": "./voxel.worker.a2ea31ea.js",
+    "voxel.worker.a2ea31ea.js.map": "./voxel.worker.a2ea31ea.js.map"
   }
 }
