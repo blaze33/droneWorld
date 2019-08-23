@@ -1,31 +1,39 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "1f4a1ad4fac4f8a9013d0445687932d3",
+    "revision": "7fbd53ef56b4d659d6c8cffe73e1743a",
+    "url": "./1.static/js/terrain.worker.43b3d8b3.js"
+  },
+  {
+    "revision": "61fb55dcc0ec88e4ed4f6bc53cfd0558",
+    "url": "./e80f17e95b23db27ea6c.module.wasm"
+  },
+  {
+    "revision": "85ee6f1954dac743a59f07d5a6eb4b66",
     "url": "./index.html"
   },
   {
-    "revision": "30f0650079d39efa2c4c",
+    "revision": "7bd2240274732c132f0d",
     "url": "./static/css/main.1458272a.chunk.css"
   },
   {
-    "revision": "b6bec9ca1a0153e49aee",
-    "url": "./static/js/2.e2f0d92b.chunk.js"
+    "revision": "bbbae053aee103e782c7",
+    "url": "./static/js/2.814f9d5d.chunk.js"
   },
   {
-    "revision": "30f0650079d39efa2c4c",
-    "url": "./static/js/main.c038eafb.chunk.js"
+    "revision": "7bd2240274732c132f0d",
+    "url": "./static/js/main.e000a218.chunk.js"
   },
   {
     "revision": "9ffb70c93509eef4f423",
     "url": "./static/js/runtime~main.edb76626.js"
   },
   {
-    "revision": "4fbae182af6a45f1949b1e60b8f77f47",
-    "url": "./static/js/terrain.worker.f5d6880c.js"
+    "revision": "fd6b430612195e51eaae5e155180e90f",
+    "url": "./static/js/terrain.worker.fda0be94.js"
   },
   {
-    "revision": "788c21bbb5b2223060426f48d80b3aa9",
-    "url": "./static/js/voxel.worker.0fb86023.js"
+    "revision": "f95e8afa59addde532ca22d78e54891b",
+    "url": "./static/js/voxel.worker.a2ea31ea.js"
   },
   {
     "revision": "d28fc70f29b3c25bf99f3b63983cffa7",
