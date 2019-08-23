@@ -344,7 +344,7 @@ module.exports = function (webpackEnv) {
                 {
                   loader: 'worker-loader',
                   options: {
-                    name: isEnvProduction ? 'static/js/[name].[contenthash:8].js' : ''
+                    name: isEnvProduction ? '[name].[contenthash:8].js' : ''
                   }
                 },
                 { loader: 'babel-loader' }
