@@ -22,7 +22,8 @@ extern "C" {
     fn log(v: String);
 }
 
-pub fn png2elevation_rs(png_bytes: &[u8]) -> Vec<f32> {
+#[wasm_bindgen]
+pub fn png2elevation(png_bytes: &[u8]) -> Vec<f32> {
     let png = oxipng::open_from_memory(png_bytes);
     assert_eq!(png.raw.data.len(), 256 * (256 * 3 + 1));
 
@@ -31,12 +32,6 @@ pub fn png2elevation_rs(png_bytes: &[u8]) -> Vec<f32> {
             .map(|rgb| f32::from(rgb[0]) * 256.0 + f32::from(rgb[1]) + f32::from(rgb[2]) / 256.0 - 32768.0)
         )
         .collect()
-}
-
-#[wasm_bindgen]
-pub fn png2elevation(png_bytes: &[u8]) -> JsValue {
-    let elevation = png2elevation_rs(png_bytes);
-    serde_wasm_bindgen::to_value(&elevation).unwrap()
 }
 
 static mut LAYOUT: Option<Layout> = None;
@@ -111,7 +106,7 @@ fn optimize(index: &[u32], position: &[f32]) -> Vec<f32> {
 
 #[wasm_bindgen]
 pub fn png2mesh(png_bytes: &[u8], size: f32, segments: u8) -> JsValue {
-    let heightmap = png2elevation_rs(png_bytes);
+    let heightmap = png2elevation(png_bytes);
 
     let (position, index) = plane::build_tile_mesh(size, segments, heightmap);
 
