@@ -59,8 +59,9 @@ const png2heightmap = (encodedPng) => {
 
 const buildGeometryA = (png, size, segments, wasm) => {
 
+  const buildMethod = wasm ? dem2mesh.png2elevation : png2heightmap
   performance.mark('png2height-start')
-  let heightmap = wasm ? dem2mesh.png2elevation(png) : png2heightmap(png)
+  let heightmap = buildMethod(png)
   performance.mark('png2height-end')
 
   performance.measure('png-time', 'png2height-start', 'png2height-end')
