@@ -193,9 +193,10 @@ body {
 }
 
 .twitter-follow-button {
-    height: 27px;
+    display: inline-block;
+    height: 20px;
     box-sizing: border-box;
-    padding: 4px 8px 4px 6px;
+    padding: 0px 8px 1px 6px;
     background-color: #1b95e0;
     color: #fff;
     border-radius: 3px;
