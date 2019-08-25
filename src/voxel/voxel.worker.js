@@ -1,8 +1,12 @@
 /* eslint-env worker */
 
 import SimplexNoise from 'simplex-noise'
-import { Geometry } from 'three/src/core/Geometry'
-import { MeshNormalMaterial } from 'three/src/materials/MeshNormalMaterial'
+import {
+  Geometry,
+  MeshNormalMaterial
+} from 'three'
+// import { Geometry } from 'three/src/core/Geometry'
+// import { MeshNormalMaterial } from 'three/src/materials/MeshNormalMaterial'
 import { MarchingCubes } from 'three/examples/jsm/objects/MarchingCubes.js'
 import { SimplifyModifier } from 'three/examples/jsm/modifiers/SimplifyModifier.js'
 import { voxelSize } from './constants'
