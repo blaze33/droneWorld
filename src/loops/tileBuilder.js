@@ -138,6 +138,7 @@ const tileBuilder = (timestamp) => {
     })
 
     // switch tiles visibility with regard to their distance to the camera
+    const hiddenTiles = []
     scene.children.filter(child => child.key)
       .forEach(tile => {
         distance = distanceVector.subVectors(
@@ -148,9 +149,12 @@ const tileBuilder = (timestamp) => {
         if (distance < cutOffDistance && visibleKeysString.includes(tile.key)) {
           tile.visible = true
         } else {
-          window.setTimeout(() => { tile.visible = false }, 750)
+          hiddenTiles.push(tile)
         }
       })
+    window.setTimeout(() => {
+      hiddenTiles.forEach(tile => tile.visible = false)
+    }, 750)
 
     // delete some distant tiles
     scene.children.filter(child => child.key)
