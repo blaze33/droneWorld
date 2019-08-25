@@ -106,7 +106,7 @@ const spawnDrone = (circle = true, phase = 0) => {
     }
     drone.velocity = drone.position.clone().sub(drone.lastPosition).multiplyScalar(1000 / delta)
     drone.lastPosition = drone.position.clone()
-    if (!drone.destroyed && drone.userData.life <= 50) {
+    if (!drone.destroyed && drone.userData.life <= 50 && !drone.smoking) {
       PubSub.publish('x.drones.smoke.start', drone)
     }
     if (!drone.destroyed && drone.userData.life <= 0) {
