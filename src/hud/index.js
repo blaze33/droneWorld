@@ -275,6 +275,7 @@ const hudLoop = (timestamp) => {
   )
   camera.rollAngle = rollAngle
   pitch = camera.up.dot(camera.getWorldDirection(camVec))
+  camera.pitch = pitch
   rollAngleDegree = rollAngle / Math.PI * 180
   horizonStyle = {
     transform: `translateX(-50%) translateY(${pitch * window.innerHeight / 2}px) rotate(${rollAngleDegree}deg)`

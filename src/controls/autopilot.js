@@ -27,15 +27,22 @@ class AutoPilot {
         .reduce(
           (a, b) => a.userData.distance < b.userData.distance ? a : b
         )
+      console.log('Acquired target ' + this.target.name)
     }
 
-    if (!this.target) return
+    if (!this.target) {
+      console.log('No target acquired')
+      this.controls.moveState.forward = 0
+      this.controls.mousemove({pageX: 0, pageY: 0})
+      return
+    }
 
     const move = { x: 0, y: 0 }
     if (this.target.hudPosition.z > 1) {
       let uturnX = Math.sign(this.target.userData.hudPositionCentered.x) * 100
       move.x += uturnX
       move.y += uturnX * Math.abs(Math.sin(this.ship.rollAngle))
+      move.y += 250 * this.ship.pitch
     } else {
       move.x += clamp(-100, this.target.userData.hudPositionCentered.x, 100)
       move.y += clamp(-100, this.target.userData.hudPositionCentered.y, 100)
