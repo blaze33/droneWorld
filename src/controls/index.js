@@ -66,7 +66,7 @@ const initControls = (msg, data) => {
   const autoPilot = new AutoPilot(camera, controls.module, false)
   keyboardJS.bind('p', e => autoPilot.toggle())
 
-  PubSub.publish('x.loops.unshift', (timestamp, delta) => {
+  PubSub.publishSync('x.loops.unshift', (timestamp, delta) => {
     autoPilot.update(timestamp, delta)
     controls.module.update(delta)
   })
@@ -99,7 +99,9 @@ const initControls = (msg, data) => {
     }
   })
 
-  keyboardJS.bind('space', e => PubSub.publish('x.toggle.play'))
+  keyboardJS.bind('space', e => {
+    PubSub.publishSync('x.toggle.play')
+  })
 
   const bullet = new Mesh(
     new SphereBufferGeometry(1, 5, 5),
@@ -109,8 +111,8 @@ const initControls = (msg, data) => {
     if (!pilotDrone) return
 
     if (e.button === 0) { // left click
-      PubSub.publish('x.drones.gun.start', pilotDrone)
-      PubSub.publish('x.camera.shake.start', 5)
+      PubSub.publishSync('x.drones.gun.start', pilotDrone)
+      PubSub.publishSync('x.camera.shake.start', 5)
       pilotDrone.gunClock.start()
     } else if (e.button === 2) { // right click
       const target = selectNearestTargetInSight()
@@ -119,7 +121,7 @@ const initControls = (msg, data) => {
       const fire = bullet.clone()
       fire.position.copy(pilotDrone.position)
       scene.add(fire)
-      PubSub.publish('x.drones.missile.start', fire)
+      PubSub.publishSync('x.drones.missile.start', fire)
 
       const BulletContructor = function () {
         this.alive = true
@@ -130,8 +132,8 @@ const initControls = (msg, data) => {
           if (vec.length() < 10) {
             this.alive = false
             triggerExplosion(target)
-            PubSub.publish('x.drones.missile.stop', fire)
-            PubSub.publish('x.drones.explosion', target)
+            PubSub.publishSync('x.drones.missile.stop', fire)
+            PubSub.publishSync('x.drones.explosion', target)
             target.userData.life -= 25
             hudElement.forceUpdate()
           }
@@ -141,14 +143,14 @@ const initControls = (msg, data) => {
       }
 
       const callback = new BulletContructor()
-      PubSub.publish('x.loops.push', callback)
+      PubSub.publishSync('x.loops.push', callback)
     }
   }
   renderer.domElement.addEventListener('mousedown', fireBullet, false)
   renderer.domElement.addEventListener('mouseup', (e) => {
     if (e.button === 0) {
-      PubSub.publish('x.drones.gun.stop', pilotDrone)
-      PubSub.publish('x.camera.shake.stop')
+      PubSub.publishSync('x.drones.gun.stop', pilotDrone)
+      PubSub.publishSync('x.camera.shake.stop')
       pilotDrone.gunClock.stop()
     }
   }, false)
