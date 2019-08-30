@@ -162,7 +162,6 @@
       "browser": true
     },
     "ignore": [
-      "src/modules/",
       "build/",
       "src/terrain/dem2mesh/pkg/"
     ]
