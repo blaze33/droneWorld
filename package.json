@@ -163,7 +163,8 @@
     },
     "ignore": [
       "src/modules/",
-      "build/"
+      "build/",
+      "src/terrain/dem2mesh/pkg/"
     ]
   }
 }
