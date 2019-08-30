@@ -9,11 +9,11 @@ var MaskPass2 = function (scene, camera, mask) {
   this.material = new MeshBasicMaterial()
 }
 
-MaskPass2.prototype = Object.create(MaskPass.prototype)
+MaskPass2.prototype = MaskPass.prototype
 MaskPass2.prototype.constructor = MaskPass2
 
-const maskRender = MaskPass2.prototype.constructor.render
-MaskPass2.prototype.constructor.render = function (renderer, writeBuffer, readBuffer /*, deltaTime, maskActive */) {
+const maskRender = MaskPass2.prototype.render
+MaskPass2.prototype.render = function (renderer, writeBuffer, readBuffer /*, deltaTime, maskActive */) {
   this.initialMask = this.camera.layers.mask
   this.camera.layers.mask = this.appliedMask
   this.scene.overrideMaterial = this.material
