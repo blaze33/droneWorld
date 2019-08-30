@@ -1,7 +1,7 @@
 import {
-    Quaternion,
-    Vector2,
-    Vector3
+  Quaternion,
+  Vector2,
+  Vector3
 } from 'three'
 
 /**
@@ -14,7 +14,7 @@ export default function FlyControls (object, domElement, nipple, pointer) {
   this.domElement = (domElement !== undefined) ? domElement : document
   if (domElement) this.domElement.setAttribute('tabindex', -1)
 
-    // API
+  // API
 
   this.movementSpeed = 0.1
   this.rollSpeed = 0.001
@@ -61,12 +61,12 @@ export default function FlyControls (object, domElement, nipple, pointer) {
       })
 
       movements.on('close', function () {
-                // no more movements from this pointer-lock session.
+        // no more movements from this pointer-lock session.
       })
     })
   }
 
-    // disable default target object behavior
+  // disable default target object behavior
 
   this.nipplemove = function (event, data) {
     const mockEvent = {
@@ -78,7 +78,7 @@ export default function FlyControls (object, domElement, nipple, pointer) {
     this.updateMovementVector()
   }
 
-    // internals
+  // internals
 
   this.tmpQuaternion = new Quaternion()
 
@@ -104,7 +104,7 @@ export default function FlyControls (object, domElement, nipple, pointer) {
       return
     }
 
-        // event.preventDefault();
+    // event.preventDefault();
 
     switch (event.keyCode) {
       case 16: /* shift */ this.movementSpeedMultiplier = 0.1; break
@@ -191,7 +191,7 @@ export default function FlyControls (object, domElement, nipple, pointer) {
     this.tmpQuaternion.set(this.rotationVector.x * rotMult, this.rotationVector.y * rotMult, this.rotationVector.z * rotMult, 1).normalize()
     this.object.quaternion.multiply(this.tmpQuaternion)
 
-        // expose the rotation vector for convenience
+    // expose the rotation vector for convenience
     this.object.rotation.setFromQuaternion(this.object.quaternion, this.object.rotation.order)
 
     this.updateRotationVector()
@@ -205,7 +205,7 @@ export default function FlyControls (object, domElement, nipple, pointer) {
     this.moveVector.y = (-this.moveState.down + this.moveState.up)
     this.moveVector.z = (-forward + this.moveState.back)
 
-        // console.log( 'move:', [ this.moveVector.x, this.moveVector.y, this.moveVector.z ] );
+    // console.log( 'move:', [ this.moveVector.x, this.moveVector.y, this.moveVector.z ] );
   }
 
   this.updateRotationVector = function () {
@@ -213,7 +213,7 @@ export default function FlyControls (object, domElement, nipple, pointer) {
     this.rotationVector.y = (-this.moveState.yawRight + this.moveState.yawLeft)
     this.rotationVector.z = (-this.moveState.rollRight + this.moveState.rollLeft)
 
-        // console.log( 'rotate:', [ this.rotationVector.x, this.rotationVector.y, this.rotationVector.z ] );
+    // console.log( 'rotate:', [ this.rotationVector.x, this.rotationVector.y, this.rotationVector.z ] );
   }
 
   this.getContainerDimensions = function () {

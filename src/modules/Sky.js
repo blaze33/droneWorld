@@ -225,4 +225,4 @@ Sky.SkyShader = {
 
 }
 
-export {Sky}
+export { Sky }
