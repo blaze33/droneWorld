@@ -8,20 +8,20 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "./e80f17e95b23db27ea6c.module.wasm"
   },
   {
-    "revision": "e8aada9f28affe2cb738a189000a47c1",
+    "revision": "13c97f2ca40d51f967490a837d4f0779",
     "url": "./index.html"
   },
   {
-    "revision": "5286e00255d18519c9a0",
+    "revision": "0e72426b04d5b80aad2a",
     "url": "./static/css/main.f341e561.chunk.css"
   },
   {
-    "revision": "ff472eca72d7fb0c6c14",
-    "url": "./static/js/2.89017297.chunk.js"
+    "revision": "225eeebf73e087888e6a",
+    "url": "./static/js/2.f3d7456d.chunk.js"
   },
   {
-    "revision": "5286e00255d18519c9a0",
-    "url": "./static/js/main.33619dc8.chunk.js"
+    "revision": "0e72426b04d5b80aad2a",
+    "url": "./static/js/main.6dd8e662.chunk.js"
   },
   {
     "revision": "9ffb70c93509eef4f423",
