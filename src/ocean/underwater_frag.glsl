@@ -2,6 +2,8 @@
 #include <packing>
 #include <fog_pars_fragment>
 
+#define whiteCompliment(a) ( 1.0 - saturate( a ) )
+
 uniform sampler2D tDiffuse;
 uniform sampler2D tDepth;
 uniform sampler2D tReflectionMap;

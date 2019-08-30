@@ -68,6 +68,7 @@ const MaterialBasic = (options, uniforms) => {
     defines: {
       STANDARD: '',
       USE_MAP: '',
+      USE_UV: '',
       // USE_ENVMAP: '',
       USE_NORMALMAP: ''
       // TONE_MAPPING: ''
