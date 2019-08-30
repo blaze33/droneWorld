@@ -44,7 +44,7 @@ const tileBuilder = (timestamp) => {
     const x0 = Math.round(targetPosition.x / currentTileSize)
     const y0 = -Math.round(targetPosition.y / currentTileSize)
 
-    const segments0 = cameraPosition.z > 2000 ? 127 : 255
+    const segments0 = cameraPosition.z > 2000 ? 127 : 127
     const segments1 = cameraPosition.z > 2000 ? 31 : 63
     // const segments0 = 32
     // const segments1 = 15
