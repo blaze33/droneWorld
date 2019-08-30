@@ -33,11 +33,11 @@ export default function FlyControls (object, domElement, nipple, pointer) {
 
   this.acceleration = 100
   this.velocity = new Vector3(0, 0, 0)
+  this.zone = 400
 
   this.pointer = pointer
   if (this.pointer) {
     const pointerElement = document.getElementById('pointer')
-    this.zone = 400
     this.pointer.on('attain', movements => {
       const dims = this.getContainerDimensions().size
       pointerElement.style.left = dims[0] / 2 + 'px'
@@ -164,13 +164,9 @@ export default function FlyControls (object, domElement, nipple, pointer) {
   }
 
   this.mousemove = function (event) {
-    var container = this.getContainerDimensions()
-    var halfWidth = container.size[ 0 ] / 2
-    var halfHeight = container.size[ 1 ] / 2
-
-    this.moveState.yawLeft = -event.pageX / halfWidth
+    this.moveState.yawLeft = -event.pageX / this.zone
     this.moveState.rollLeft = this.moveState.yawLeft / 2 - this.object.rollAngle / 5
-    this.moveState.pitchDown = event.pageY / halfHeight
+    this.moveState.pitchDown = event.pageY / this.zone
   }
 
   this.deltaVelocity = null

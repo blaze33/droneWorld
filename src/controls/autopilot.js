@@ -38,14 +38,15 @@ class AutoPilot {
     }
 
     const move = { x: 0, y: 0 }
+    const maxMove = 150
     if (this.target.hudPosition.z > 1) {
-      let uturnX = Math.sign(this.target.userData.hudPositionCentered.x) * 100
+      let uturnX = Math.sign(this.target.userData.hudPositionCentered.x) * maxMove
       move.x += uturnX
       move.y += uturnX * Math.abs(Math.sin(this.ship.rollAngle))
       move.y += 250 * this.ship.pitch
     } else {
-      move.x += clamp(-100, this.target.userData.hudPositionCentered.x, 100)
-      move.y += clamp(-100, this.target.userData.hudPositionCentered.y, 100)
+      move.x += clamp(-maxMove, this.target.userData.hudPositionCentered.x, maxMove)
+      move.y += clamp(-maxMove, this.target.userData.hudPositionCentered.y, maxMove)
     }
     this.controls.mousemove({
       pageX: move.x,
