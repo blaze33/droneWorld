@@ -27,7 +27,7 @@ const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpack
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter')
 const Dotenv = require('dotenv-webpack')
 const HtmlWebpackPartialsPlugin = require('html-webpack-partials-plugin')
-const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
+const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin')
 
 const postcssNormalize = require('postcss-normalize')
 

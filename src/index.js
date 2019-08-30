@@ -21,7 +21,7 @@ import {
   PlaneBufferGeometry,
   TextureLoader,
   RepeatWrapping,
-  LOD,
+  LOD
 } from 'three'
 import dat from 'dat.gui/build/dat.gui.js'
 import Stats from 'stats.js'
@@ -368,7 +368,7 @@ const glitch = new GlitchPass()
 glitch.enabled = false
 composer.addPass(glitch)
 
-//add output pass
+// add output pass
 const outputPass = new ShaderPass(CopyShader)
 composer.addPass(outputPass)
 // ###################################

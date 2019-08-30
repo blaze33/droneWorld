@@ -1,7 +1,7 @@
 import {
   Mesh,
   BufferAttribute,
-  BufferGeometry,
+  BufferGeometry
   // WireframeGeometry,
   // LineSegments
 } from 'three'

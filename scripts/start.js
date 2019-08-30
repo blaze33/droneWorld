@@ -26,7 +26,7 @@ const {
   prepareProxy,
   prepareUrls
 } = require('react-dev-utils/WebpackDevServerUtils')
-const openBrowser = require('react-dev-utils/openBrowser')
+// const openBrowser = require('react-dev-utils/openBrowser')
 const paths = require('../config/paths')
 const configFactory = require('../config/webpack.config')
 const createDevServerConfig = require('../config/webpackDevServer.config')

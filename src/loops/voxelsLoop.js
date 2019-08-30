@@ -1,7 +1,7 @@
 import {
   Vector3,
   Matrix4,
-  Frustum,
+  Frustum
 } from 'three'
 import { camera, scene } from '../index'
 import { buildVoxels, emptyKeys } from '../voxel'

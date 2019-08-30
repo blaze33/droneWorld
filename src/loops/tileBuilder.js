@@ -153,7 +153,7 @@ const tileBuilder = (timestamp) => {
         }
       })
     window.setTimeout(() => {
-      hiddenTiles.forEach(tile => tile.visible = false)
+      hiddenTiles.forEach(tile => { tile.visible = false })
     }, 750)
 
     // delete some distant tiles

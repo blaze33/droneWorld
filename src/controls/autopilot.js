@@ -33,7 +33,7 @@ class AutoPilot {
     if (!this.target) {
       console.log('No target acquired')
       this.controls.moveState.forward = 0
-      this.controls.mousemove({pageX: 0, pageY: 0})
+      this.controls.mousemove({ pageX: 0, pageY: 0 })
       return
     }
 
