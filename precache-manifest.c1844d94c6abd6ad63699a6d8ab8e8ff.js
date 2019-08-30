@@ -8,20 +8,20 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "./e80f17e95b23db27ea6c.module.wasm"
   },
   {
-    "revision": "1072737ca5164b201b865eddad7c9542",
+    "revision": "e8aada9f28affe2cb738a189000a47c1",
     "url": "./index.html"
   },
   {
-    "revision": "8d19167c24656d65bc8e",
+    "revision": "5286e00255d18519c9a0",
     "url": "./static/css/main.f341e561.chunk.css"
   },
   {
-    "revision": "c589b54d73fd978c2c5a",
-    "url": "./static/js/2.dcc3b57e.chunk.js"
+    "revision": "ff472eca72d7fb0c6c14",
+    "url": "./static/js/2.89017297.chunk.js"
   },
   {
-    "revision": "8d19167c24656d65bc8e",
-    "url": "./static/js/main.e19064a8.chunk.js"
+    "revision": "5286e00255d18519c9a0",
+    "url": "./static/js/main.33619dc8.chunk.js"
   },
   {
     "revision": "9ffb70c93509eef4f423",
@@ -92,11 +92,11 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "./static/media/smokeparticle.4939a8d2.png"
   },
   {
-    "revision": "9a7d05a3aa42436cef69477c801fe589",
-    "url": "./terrain.worker.8d81d42e.js"
+    "revision": "4225b28d2cf5bf5412ff5994dfe2ce98",
+    "url": "./terrain.worker.ae283bc2.js"
   },
   {
-    "revision": "1a3023060dedcf918ebfb75bd3f47dd6",
-    "url": "./voxel.worker.3c57f29a.js"
+    "revision": "0b993e536a53b9ed4895a75c2c57679c",
+    "url": "./voxel.worker.0c1e368a.js"
   }
 ]);
