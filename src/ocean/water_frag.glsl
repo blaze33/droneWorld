@@ -99,7 +99,7 @@ void main() {
 
   // water depth
 
-  float zOverW = texture2D(tDepth, coord.xy).x;
+  float zOverW = texture2D(tDepth, uv).x;
   // clipPosition is the viewport position at this pixel in the range -1 to 1.
   vec4 clipPosition = vec4(coord.xy * 2. - 1., zOverW * 2. - 1., 1.);
   vec4 worldPosition = clipToWorldMatrix * clipPosition;
