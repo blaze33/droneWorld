@@ -42,6 +42,8 @@ const buildVoxelsFromWorker = (event) => {
   const box = new BoxHelper(mesh, 0xffff00)
   mesh.name = 'terrainVoxel'
   box.name = 'terrainVoxelHelper'
+  mesh.layers.enable(3)
+  box.layers.enable(3)
   scene.add(box)
   scene.add(mesh)
 }

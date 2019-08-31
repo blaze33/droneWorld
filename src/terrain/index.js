@@ -86,6 +86,7 @@ const buildTileFromWorker = event => {
   plane.name = 'terrainTile'
   plane.castShadow = true
   plane.receiveShadow = true
+  plane.layers.enable(3)
   setTilePosition(plane, event.data.key)
   scene.add(plane)
   renderer.shadowMap.needsUpdate = true

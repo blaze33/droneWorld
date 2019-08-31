@@ -167,6 +167,10 @@ const drone = new Mesh(
 )
 drone.visible = false
 scene.add(drone)
+let pilotDrone = null
+PubSub.subscribe('x.drones.pilotDrone.loaded', (msg, data) => {
+  pilotDrone = data.pilotDrone
+})
 
 const sunPosition = new Vector3()
 window.sunPosition = sunPosition
@@ -270,6 +274,7 @@ let loops = [
       underwaterPass.enabled = true
       wigglePass.enabled = true
       water.visible = false
+      if (pilotDrone) pilotDrone.layers.enable(3)
       underwaterReflector.onBeforeRender(renderer, scene, camera)
       underwaterPass.material.uniforms.time.value = timestamp / 1000
       wigglePass.material.uniforms.time.value = timestamp / 1000
@@ -278,6 +283,7 @@ let loops = [
       underwaterPass.enabled = false
       wigglePass.enabled = false
       water.visible = true
+      if (pilotDrone) camera.layers.disable(3)
       controls.setAcceleration(100)
     }
   }
@@ -400,10 +406,10 @@ var mainLoop = (timestamp) => {
 
     // render to depth target
     scene.overrideMaterial = depthMaterial
-    water.visible = false
+    camera.layers.set(3)
     renderer.setRenderTarget(waterTarget)
     renderer.render(scene, camera)
-    water.visible = true
+    camera.layers.set(0)
     scene.overrideMaterial = null
 
     // water uniforms
