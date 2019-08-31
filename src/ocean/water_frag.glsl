@@ -110,7 +110,7 @@ void main() {
 
   float depthDensity = 0.01;
   float depthFactor = whiteCompliment( exp2( - depthDensity * depthDensity * viewWaterDepth * viewWaterDepth * LOG2 ) );
-  refractColor.rgb = mix( refractColor.rgb, depthColor, depthFactor );
+  refractColor.rgb = mix( refractColor.rgb, depthColor, 0.25 + depthFactor );
   // refractColor.rgb = DepthRefraction(waterDepth, viewWaterDepth, refractColor.rgb);
 
   // multiply water color with the mix of both textures
