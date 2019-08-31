@@ -39,14 +39,14 @@ const buildVoxelsFromWorker = (event) => {
     voxelSize * event.data.k + voxelOffset.z
   )
   mesh.userData.key = key
-  let box = new BoxHelper(mesh, 0xffff00)
+  const box = new BoxHelper(mesh, 0xffff00)
   mesh.name = 'terrainVoxel'
   box.name = 'terrainVoxelHelper'
   scene.add(box)
   scene.add(mesh)
 }
 
-let workerPool = []
+const workerPool = []
 const workerPoolSize = navigator.hardwareConcurrency - 1 || 3
 for (let i = 0; i < workerPoolSize; i++) {
   const worker = new Worker()

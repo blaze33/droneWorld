@@ -44,7 +44,7 @@ export default function FlyControls (object, domElement, nipple, pointer) {
       pointerElement.style.top = dims[1] / 2 + 'px'
 
       // movements is a readable stream
-      let pointerVector = new Vector2(0, 0)
+      const pointerVector = new Vector2(0, 0)
       movements.on('data', move => {
         pointerVector.add(new Vector2(move.dx, move.dy))
         if (pointerVector.length() > this.zone) {
@@ -219,13 +219,13 @@ export default function FlyControls (object, domElement, nipple, pointer) {
   this.getContainerDimensions = function () {
     if (this.domElement !== document) {
       return {
-        size: [ this.domElement.offsetWidth, this.domElement.offsetHeight ],
-        offset: [ this.domElement.offsetLeft, this.domElement.offsetTop ]
+        size: [this.domElement.offsetWidth, this.domElement.offsetHeight],
+        offset: [this.domElement.offsetLeft, this.domElement.offsetTop]
       }
     } else {
       return {
-        size: [ window.innerWidth, window.innerHeight ],
-        offset: [ 0, 0 ]
+        size: [window.innerWidth, window.innerHeight],
+        offset: [0, 0]
       }
     }
   }

@@ -326,7 +326,7 @@ groups.forEach(group => { group.mesh.frustumCulled = false })
 
 window.smokeGroup = smokeGroup
 
-let camVec = new Vector3()
+const camVec = new Vector3()
 
 const triggerSingleEmitter = (group, target, follow = false, velocityFunction, offset = false) => {
   const emitter = group.getFromPool()
@@ -474,7 +474,7 @@ const triggerSmallExplosion = (target) => {
   triggerSingleEmitter(sparkGroup, target)
 }
 
-let tmpVec1 = new Vector3()
+const tmpVec1 = new Vector3()
 let targetVector = new Vector3()
 PubSub.subscribe('x.drones.gun.start', (msg, drone) => {
   const target = selectNearestGunTarget()

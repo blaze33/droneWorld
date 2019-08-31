@@ -20,7 +20,7 @@ const generateVoxels = (i, j, k, zMax) => {
   let noGeometry = true
   let noiseValue
   let geometry
-  let dim = 32
+  const dim = 32
   const positions = new Float32Array(dim * dim * dim)
   const effect = new MarchingCubes(dim, new MeshNormalMaterial(), false, false)
   effect.isolation = 0
@@ -56,7 +56,7 @@ const generateVoxels = (i, j, k, zMax) => {
         let density = 0
         density += noiseValue * 0.5
 
-        let zinfluence = 0.5 - z / (zMax * (dim - 3))
+        const zinfluence = 0.5 - z / (zMax * (dim - 3))
         density += zinfluence
 
         positions[n] = density
@@ -90,7 +90,7 @@ const generateVoxels = (i, j, k, zMax) => {
   }
 
   geometry.computeBoundingBox()
-  let scaleFactor = voxelSize / 1.8125
+  const scaleFactor = voxelSize / 1.8125
   geometry.scale(scaleFactor, scaleFactor, scaleFactor)
 
   geometry = new Geometry().fromBufferGeometry(geometry)

@@ -97,7 +97,7 @@ const buildTileFromWorker = event => {
   // scene.add(line)
 }
 
-let workerPool = []
+const workerPool = []
 const workerPoolSize = navigator.hardwareConcurrency - 1 || 3
 for (let i = 0; i < workerPoolSize; i++) {
   const worker = new Worker()

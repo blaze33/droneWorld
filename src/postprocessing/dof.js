@@ -68,11 +68,11 @@ const initDoF = (scene, renderer, camera, gui) => {
   if (gui) {
     var matChanger = function () {
       for (var e in effectController) {
-        if (e in shaderPass.uniforms) { shaderPass.uniforms[ e ].value = effectController[ e ] }
+        if (e in shaderPass.uniforms) { shaderPass.uniforms[e].value = effectController[e] }
       }
 
-      shaderPass.uniforms[ 'znear' ].value = camera.near
-      shaderPass.uniforms[ 'zfar' ].value = camera.far
+      shaderPass.uniforms.znear.value = camera.near
+      shaderPass.uniforms.zfar.value = camera.far
       camera.setFocalLength(effectController.focalLength)
     }
 

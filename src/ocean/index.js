@@ -12,17 +12,17 @@ const WaterShader = {
 
   uniforms: {
 
-    'color': { type: 'c', value: null },
-    'reflectivity': { type: 'f', value: 0 },
-    'surface': { type: 'f', value: 0 },
-    'tReflectionMap': { type: 't', value: null },
-    'tRefractionMap': { type: 't', value: null },
-    'tNormalMap0': { type: 't', value: null },
-    'tNormalMap1': { type: 't', value: null },
-    'tDepth': { type: 't', value: null },
-    'textureMatrix': { type: 'm4', value: null },
-    'clipToWorldMatrix': { type: 'm4', value: null },
-    'config': { type: 'v4', value: new Vector4() }
+    color: { type: 'c', value: null },
+    reflectivity: { type: 'f', value: 0 },
+    surface: { type: 'f', value: 0 },
+    tReflectionMap: { type: 't', value: null },
+    tRefractionMap: { type: 't', value: null },
+    tNormalMap0: { type: 't', value: null },
+    tNormalMap1: { type: 't', value: null },
+    tDepth: { type: 't', value: null },
+    textureMatrix: { type: 'm4', value: null },
+    clipToWorldMatrix: { type: 'm4', value: null },
+    config: { type: 'v4', value: new Vector4() }
   },
   vertexShader: waterVertexShader,
   fragmentShader: waterFragmentShader

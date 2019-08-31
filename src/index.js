@@ -70,7 +70,7 @@ if (options.PBR) {
 }
 
 const scene = new Scene()
-let camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1e6)
+const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1e6)
 
 camera.up = new Vector3(0, 0, 1)
 // camera.position.set(-500, 0, 700)
@@ -241,7 +241,7 @@ particleGroups.forEach(group => scene.add(group.mesh))
 
 // const shadowMapViewer = new ShadowMapViewer(dirLight)
 let shakeCamera = false
-let shakeAmplitude = 1
+const shakeAmplitude = 1
 PubSub.subscribe('x.camera.shake.start', (msg, value = 1) => { glitch.enabled = true; shakeCamera = true })
 PubSub.subscribe('x.camera.shake.stop', () => { glitch.enabled = false; shakeCamera = false })
 
@@ -325,8 +325,8 @@ underwaterPass.material.uniforms.cameraPosition.value = camera.position
 underwaterPass.material.uniforms.sunPosition.value = sunPosition
 underwaterPass.material.uniforms.tReflectionMap.value = underwaterReflector.getRenderTarget().texture
 underwaterPass.material.uniforms.tReflectionDepth.value = underwaterReflector.getRenderTarget().depthTexture
-let tNormalMap0 = underwaterPass.material.uniforms.tNormalMap0
-let tNormalMap1 = underwaterPass.material.uniforms.tNormalMap1
+const tNormalMap0 = underwaterPass.material.uniforms.tNormalMap0
+const tNormalMap1 = underwaterPass.material.uniforms.tNormalMap1
 tNormalMap0.value = textureLoader.load(require('./textures/Water_1_M_Normal.jpg'))
 tNormalMap1.value = textureLoader.load(require('./textures/Water_2_M_Normal.jpg'))
 tNormalMap0.value.wrapS = tNormalMap0.value.wrapT = RepeatWrapping
@@ -358,10 +358,10 @@ const clearMask = new ClearMaskPass()
 composer.addPass(clearMask)
 
 // define variables used by the motion blur pass
-let previousMatrixWorldInverse = new Matrix4()
-let previousProjectionMatrix = new Matrix4()
-let previousCameraPosition = new Vector3()
-let tmpMatrix = new Matrix4()
+const previousMatrixWorldInverse = new Matrix4()
+const previousProjectionMatrix = new Matrix4()
+const previousCameraPosition = new Vector3()
+const tmpMatrix = new Matrix4()
 
 // add a glitch pass
 const glitch = new GlitchPass()
@@ -379,7 +379,7 @@ PubSub.subscribe('x.toggle.play', () => { play = !play })
 let lastTimestamp = 0
 var mainLoop = (timestamp) => {
   requestAnimationFrame(mainLoop)
-  let delta = timestamp - lastTimestamp
+  const delta = timestamp - lastTimestamp
   lastTimestamp = timestamp
 
   if (play) {

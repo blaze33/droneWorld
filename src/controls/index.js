@@ -16,7 +16,7 @@ import {
 import { selectNearestTargetInSight, hudElement } from '../hud'
 import AutoPilot from './autopilot'
 
-let controls = {
+const controls = {
   module: null,
   setAcceleration (value) {
     if (this.module && value !== this.module.acceleration) {
@@ -25,8 +25,8 @@ let controls = {
     }
   }
 }
-let isMobile = mobileAndTabletcheck()
-let controlsInitialized = false
+const isMobile = mobileAndTabletcheck()
+const controlsInitialized = false
 const initControls = (msg, data) => {
   if (controlsInitialized) return
   if (isMobile) {
@@ -157,7 +157,7 @@ const initControls = (msg, data) => {
 }
 PubSub.subscribe('x.drones.pilotDrone.loaded', initControls)
 
-let tmpVec = new Vector3()
+const tmpVec = new Vector3()
 PubSub.subscribe('x.drones.collision.terrain.pilotDrone', (msg, terrainNormal) => {
   controls.setAcceleration(0)
   tmpVec.copy(controls.module.velocity).applyQuaternion(camera.quaternion)

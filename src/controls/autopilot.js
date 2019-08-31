@@ -40,7 +40,7 @@ class AutoPilot {
     const move = { x: 0, y: 0 }
     const maxMove = 150
     if (this.target.hudPosition.z > 1) {
-      let uturnX = Math.sign(this.target.userData.hudPositionCentered.x) * maxMove
+      const uturnX = Math.sign(this.target.userData.hudPositionCentered.x) * maxMove
       move.x += uturnX
       move.y += uturnX * Math.abs(Math.sin(this.ship.rollAngle))
       move.y += 250 * this.ship.pitch

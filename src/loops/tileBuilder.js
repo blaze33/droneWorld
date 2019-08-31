@@ -8,8 +8,8 @@ import { buildPlane } from '../terrain'
 const tileSize = 800
 const maxTilesInMemory = 128
 let lastCameraPosition = new Vector3(0, 0, 0)
-let tiles = {}
-let pngs = {}
+const tiles = {}
+const pngs = {}
 let currentKeysArray = []
 window.tiles = tiles
 window.pngs = pngs
@@ -51,12 +51,12 @@ const tileBuilder = (timestamp) => {
     const segments2 = 15
 
     const cutOffDistance = currentTileSize * 3
-    let distanceVector = new Vector3()
-    let cameraXY = new Vector3()
-    let objectXY = new Vector3()
+    const distanceVector = new Vector3()
+    const cameraXY = new Vector3()
+    const objectXY = new Vector3()
     let distance
 
-    let visibleKeysArray = [
+    const visibleKeysArray = [
 
       [zoom, x0 - 2, y0 - 2, segments2, 0, currentTileSize],
       [zoom, x0 - 2, y0 - 1, segments2, 0, currentTileSize],

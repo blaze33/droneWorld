@@ -90,7 +90,7 @@ const spawnDrone = (circle = true, phase = 0) => {
   drone.userData.life = 100
   scene.add(drone)
   drone.lastPosition = drone.position.clone()
-  let camVec = new Vector3()
+  const camVec = new Vector3()
   const droneLoop = (timestamp, delta) => {
     if (!drone) return
     const radius = 300

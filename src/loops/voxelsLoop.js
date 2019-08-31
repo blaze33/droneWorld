@@ -17,11 +17,11 @@ const voxelBuilder = (timestamp) => {
 
   if (cameraPosition.distanceTo(lastCameraPosition) > 10) {
     lastCameraPosition = cameraPosition.clone()
-    let i0 = Math.floor(cameraPosition.x / voxelSize + 0.5)
-    let j0 = Math.floor(cameraPosition.y / voxelSize + 0.5)
+    const i0 = Math.floor(cameraPosition.x / voxelSize + 0.5)
+    const j0 = Math.floor(cameraPosition.y / voxelSize + 0.5)
     console.log('camera centered on tile ', i0, j0)
-    let visibleKeys = []
-    let size = voxelNumber
+    const visibleKeys = []
+    const size = voxelNumber
     var frustum = new Frustum()
     frustum.setFromMatrix(new Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse))
     for (let i = 0; i < size; i++) {
@@ -41,16 +41,16 @@ const voxelBuilder = (timestamp) => {
       }
     })
 
-    let sub = new Vector3()
-    let cameraXY = new Vector3()
-    let objectXY = new Vector3()
+    const sub = new Vector3()
+    const cameraXY = new Vector3()
+    const objectXY = new Vector3()
     let distance
     scene.children.filter(child => child.userData.key).forEach(voxelBlock => {
       distance = sub.subVectors(
         cameraXY.set(camera.position.x, camera.position.y, 0),
         objectXY.set(voxelBlock.position.x, voxelBlock.position.y, 0)
       ).length()
-      let cutOffDistance = voxelSize * Math.ceil(voxelNumber / 2) * 1.1
+      const cutOffDistance = voxelSize * Math.ceil(voxelNumber / 2) * 1.1
       voxelBlock.visible = distance < cutOffDistance
     })
   }

@@ -58,15 +58,14 @@ const png2heightmap = (encodedPng) => {
 }
 
 const buildGeometryA = (png, size, segments, wasm) => {
-
   const buildMethod = wasm ? dem2mesh.png2elevation : png2heightmap
   performance.mark('png2height-start')
-  let heightmap = buildMethod(png)
+  const heightmap = buildMethod(png)
   performance.mark('png2height-end')
 
   performance.measure('png-time', 'png2height-start', 'png2height-end')
   performance.getEntriesByName('png-time')
-  let entries = performance.getEntriesByName('png-time')
+  const entries = performance.getEntriesByName('png-time')
   if (entries.length === 1) {
     console.log(`First PNG decoded: ${Math.round(entries[0].duration)}ms`)
   }
@@ -74,7 +73,7 @@ const buildGeometryA = (png, size, segments, wasm) => {
     console.log(
       `${entries.length} PNG decoded: `,
       `${Math.round(average(entries.map(p => p.duration)))}ms on average`
-      )
+    )
     console.log(`Last PNG decoded: ${Math.round(entries[11].duration)}ms`)
   }
 
@@ -109,7 +108,7 @@ const buildGeometryA = (png, size, segments, wasm) => {
 }
 
 const buildGeometryB = (png, size, segments) => {
-  let geometry = new BufferGeometry()
+  const geometry = new BufferGeometry()
 
   performance.mark('png2mesh-start')
   const [position, index, uv] = dem2mesh.png2mesh(png, size, segments)
@@ -139,12 +138,12 @@ const buildGeometryB = (png, size, segments) => {
 
 const buildTile = (png, size, segments, key) => {
   const buildMethods = {
-    'fullJS': (png, size, segments) => buildGeometryA(png, size, segments, false),
-    'wasmPNG': (png, size, segments) => buildGeometryA(png, size, segments, true),
-    'fullWASM': buildGeometryB
+    fullJS: (png, size, segments) => buildGeometryA(png, size, segments, false),
+    wasmPNG: (png, size, segments) => buildGeometryA(png, size, segments, true),
+    fullWASM: buildGeometryB
   }
   // const buildMethod = buildMethods['fullJS']
-  const buildMethod = buildMethods['wasmPNG']
+  const buildMethod = buildMethods.wasmPNG
   // const buildMethod = buildMethods['fullWASM']
 
   // console.time(key)
