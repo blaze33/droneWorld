@@ -110,12 +110,9 @@ const buildGeometryA = (png, size, segments, wasm) => {
 
 const buildGeometryB = (png, size, segments) => {
   let geometry = new BufferGeometry()
-  let position
-  let index
-  let uv
 
-  performance.mark('png2mesh-start');
-  [position, index, uv] = dem2mesh.png2mesh(png, size, segments)
+  performance.mark('png2mesh-start')
+  const [position, index, uv] = dem2mesh.png2mesh(png, size, segments)
   performance.mark('png2mesh-end')
   performance.measure('wasm-time', 'png2mesh-start', 'png2mesh-end')
   performance.getEntriesByName('wasm-time')
