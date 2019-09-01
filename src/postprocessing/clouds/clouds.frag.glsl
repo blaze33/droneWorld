@@ -9,6 +9,9 @@ uniform vec3 sun;
 uniform float cameraNear;
 uniform float cameraFar;
 
+float LOW_CLOUDS = 500.;
+float HIGH_CLOUDS = 1000.;
+
 mat3 m = mat3(
 	 0.00,  0.80,  0.60,
 	-0.80,  0.36, -0.48,
@@ -45,7 +48,10 @@ float fbm( vec3 p )
 }
 
 float map(vec3 p){
-	float cloudLevel = 100. * (smoothstep(800., 900., p.z) - smoothstep(500., 600., p.z)) + 50.;
+	float cloudLevel = 100. * (
+		  smoothstep(HIGH_CLOUDS - 100., HIGH_CLOUDS, p.z)
+		- smoothstep(LOW_CLOUDS, LOW_CLOUDS + 100., p.z)
+	) + 50.;
 	return cloudLevel + ((fbm(p*0.03)-0.1) + sin(p.x*0.024 + sin(p.y*.001)*7.)*0.22+0.15 + sin(p.y*0.008)*0.05) / 0.007;
 	// return p.z - 300. + ((fbm(p*0.03)-0.1) + sin(p.x*0.014 + sin(p.y*.001)*7.)*0.4+0.15 + sin(p.y*0.008)*0.1) / 0.007;
 	// return p.z + ((fbm(p*0.03)-0.1) + sin(p.x*0.024 + sin(p.y*.001)*7.)*0.22+0.15 + sin(p.y*0.008)*0.05) / 0.007;
