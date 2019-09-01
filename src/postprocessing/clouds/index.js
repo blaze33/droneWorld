@@ -179,14 +179,14 @@ vec4 march(in vec3 ro, in vec3 rd, in vec3 bgc, in vec3 world)
     // gl_FragColor = vec4(vec3(zOverW), 1.);
     // gl_FragColor = vec4((worldPosition.xyz - cameraPosition)/100., 1.);
     // gl_FragColor = vec4(vec3(fbm(cameraPosition + dir)), 1.);
-    
+
     // gl_FragColor = vec4(vec3(rz)/700., 1.);
     // gl_FragColor = vec4(vec3(length(worldPosition.xyz - cameraPosition))/1500., 1.);
     // gl_FragColor = res;
     // gl_FragColor = vec4(col, 1.);
     gl_FragColor = vec4(color, 1.);
     // gl_FragColor = mix(texture2D(tColor, vUv), vec4(color, 1.), clamp(rz/zOverW, 0., 1.));
-    
+
     // gl_FragColor = texture2D(tColor, vUv) + color;
     // gl_FragColor = mix(texture2D(tColor, vUv), vec4(.9), 1. - color.x);
   }
