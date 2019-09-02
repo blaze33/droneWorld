@@ -1,3 +1,5 @@
+#include <common>
+
 varying vec2 vUv;
 
 uniform sampler2D tDepth;
@@ -11,6 +13,7 @@ uniform float cameraFar;
 
 float LOW_CLOUDS = 500.;
 float HIGH_CLOUDS = 1000.;
+float CLOUDS_STEP = 100.;
 
 mat3 m = mat3(
 	 0.00,  0.80,  0.60,
@@ -49,10 +52,16 @@ float fbm( vec3 p )
 
 float map(vec3 p){
 	float cloudLevel = 100. * (
-		  smoothstep(HIGH_CLOUDS - 100., HIGH_CLOUDS, p.z)
-		- smoothstep(LOW_CLOUDS, LOW_CLOUDS + 100., p.z)
+		  smoothstep(HIGH_CLOUDS - CLOUDS_STEP, HIGH_CLOUDS, p.z)
+		- smoothstep(LOW_CLOUDS, LOW_CLOUDS + CLOUDS_STEP, p.z)
 	) + 50.;
-	return cloudLevel + ((fbm(p*0.03)-0.1) + sin(p.x*0.024 + sin(p.y*.001)*7.)*0.22+0.15 + sin(p.y*0.008)*0.05) / 0.007;
+	// return cloudLevel + (fbm(p*0.03)) / 0.007;
+	return cloudLevel + (fbm(p*0.03) - 0.1) / 0.007 * (fbm(p*0.003 - 0.5) * 2.);
+	// return cloudLevel + (
+	// 	  (fbm(p*0.03)-0.1)
+	// 	+ sin(p.x*0.024 + sin(p.y*.001)*7.)*0.22+0.15
+	// 	+ sin(p.y*0.008)*0.05
+	// ) / 0.007;
 	// return p.z - 300. + ((fbm(p*0.03)-0.1) + sin(p.x*0.014 + sin(p.y*.001)*7.)*0.4+0.15 + sin(p.y*0.008)*0.1) / 0.007;
 	// return p.z + ((fbm(p*0.03)-0.1) + sin(p.x*0.024 + sin(p.y*.001)*7.)*0.22+0.15 + sin(p.y*0.008)*0.05) / 0.007;
 }
@@ -90,30 +99,60 @@ float dikomarch(in vec3 ro, in vec3 rd, in vec3 world)
 
 vec4 march(in vec3 ro, in vec3 rd, in vec3 bgc, in vec3 world)
 {
-  float d = 0., t = 0.;
-  vec4 rz = vec4( 0.0 );
-  float l = length(ro - world);
-  float td=.0, w;
+  float d = 0.;
+  vec4 rz = vec4( 0.0 ), col;
+  float td=.0, w, den;
+	vec3 cloudColor = vec3(.8,.75,.85);
+	vec3 pos;
 
-  for( int i=0; i<250; i++ )
+	vec3 hitPointLow = linePlaneIntersect(ro, rd, vec3(0., 0., LOW_CLOUDS + CLOUDS_STEP / 2.), vec3(0., 0., -1.));
+	vec3 hitPointHigh = linePlaneIntersect(ro, rd, vec3(0., 0., HIGH_CLOUDS - CLOUDS_STEP / 2.), vec3(0., 0., -1.));
+	float lowCloudDirection = dot(hitPointLow - ro, rd);
+	float highCloudDirection = dot(hitPointHigh - ro, rd);
+  float hitDistanceLow = lowCloudDirection > 0. ? length(hitPointLow - ro) : 1e7;
+  float hitDistanceHigh = highCloudDirection > 0. ? length(hitPointHigh - ro) : 1e7;
+	bool inClouds = (ro.z > LOW_CLOUDS + CLOUDS_STEP / 2.) && (ro.z < HIGH_CLOUDS - CLOUDS_STEP / 2.);
+	bool lowCloudLook = hitDistanceLow < hitDistanceHigh;
+	float hitDistance = lowCloudLook ? hitDistanceLow : hitDistanceHigh;
+
+	if (hitDistance == 1e7) {return vec4(0.);}
+
+	float cloudDepth = inClouds ? hitDistance : (
+		abs(hitDistanceHigh - hitDistanceLow)
+	);
+	float cloudDistance = inClouds ? 0. : min(hitDistanceHigh, hitDistanceLow);
+
+	float l = min(cloudDistance + cloudDepth, length(ro - world));
+	float t = inClouds ? 0. : cloudDistance;
+	float t0 = t;
+
+  for( int i=0; i<64; i++ )
   {
     if(rz.a > 0.99 || t>l) break;
 
-    vec3 pos = ro + t*rd;
+    pos = ro + t*rd;
     d = map(pos);
     if (d<0.) {
-      float den = clamp(-d/200., 0., 1.);
-
-      vec4 col = vec4(mix( vec3(.8,.75,.85), vec3(.0), den ), den);
-
-      col.a *= .9;
+      den = clamp(-d/200., 0., 1.);
+      col = vec4(mix( cloudColor, vec3(.0), den ), den * 0.9);
       col.rgb *= col.a;
       rz = rz + col*(1.0 - rz.a);
     }
 
-    t += max(1., abs(d) * .49);
+		t += max(abs(d), 5.);
+    // t += max(1., abs(d) * .49);
+    // t += clamp(abs(1. / min(d, .01)),1., 10.);
+    // t += min(cloudDepth / 500., 50.);
   }
 
+	float viewCloudDepth = max(l - cloudDistance, 0.);
+	float depthFactor = whiteCompliment( exp2( - 1e-8 * viewCloudDepth * viewCloudDepth * LOG2 ) );
+  rz = mix( rz, vec4(cloudColor * 0.9, 0.9), depthFactor );
+	// rz.rgb = vec3(depthFactor);
+
+
+  // return clamp(vec4(cloudDepth / 2000.), 0., 1.);
+  // return clamp(vec4(cloudDistance / 2000.), 0., 1.);
   return clamp(rz, 0., 1.);
 }
 
@@ -140,33 +179,11 @@ void main() {
 	vec3 color = texture2D(tColor, vUv).rgb;
 	vec3 dir = normalize(worldPosition.xyz - cameraPosition);
 
-	// float rz = dikomarch(cameraPosition, dir, worldPosition.xyz);
-	// float rz = march(cameraPosition, dir, worldPosition.xyz);
-	// color = vec3(rz/700.);
-	// if (rz < 7000.)
-	// {
-		vec4 res = march(cameraPosition, dir, color, worldPosition.xyz);
-		color = color*(1.0-res.w) + res.xyz;
-	// }
-	// color = dir;
+	vec4 res = march(cameraPosition, dir, color, worldPosition.xyz);
+	color = color*(1.0-res.w) + res.xyz;
 
-	// color.w = 1.;
-	// debug: view depth buffer
-	// gl_FragColor = texture2D(tColor, vUv);
-	// gl_FragColor = vec4(clipPosition.xyz, 1.);
-	// gl_FragColor = vec4(normalize(cameraPosition), 1.);
-	// gl_FragColor = vec4(vec3(map(worldPosition.xyz)), 1.);
-	// gl_FragColor = vec4(vec3(zOverW), 1.);
-	// gl_FragColor = vec4((worldPosition.xyz - cameraPosition)/100., 1.);
-	// gl_FragColor = vec4(vec3(fbm(cameraPosition + dir)), 1.);
-
-	// gl_FragColor = vec4(vec3(rz)/700., 1.);
-	// gl_FragColor = vec4(vec3(length(worldPosition.xyz - cameraPosition))/1500., 1.);
-	// gl_FragColor = res;
-	// gl_FragColor = vec4(col, 1.);
 	gl_FragColor = vec4(color, 1.);
-	// gl_FragColor = mix(texture2D(tColor, vUv), vec4(color, 1.), clamp(rz/zOverW, 0., 1.));
+	// gl_FragColor = vec4(vec3(noise(worldPosition.xyz)), 1.);
+	// gl_FragColor = vec4(vec3(snoise(worldPosition.xyz)), 1.);
 
-	// gl_FragColor = texture2D(tColor, vUv) + color;
-	// gl_FragColor = mix(texture2D(tColor, vUv), vec4(.9), 1. - color.x);
 }
