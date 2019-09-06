@@ -51,12 +51,12 @@ float fbm( vec3 p )
 }
 
 float map(vec3 p){
-	float cloudLevel = 100. * (
+	float cloudLevel = (
 		  smoothstep(HIGH_CLOUDS - CLOUDS_STEP, HIGH_CLOUDS, p.z)
 		- smoothstep(LOW_CLOUDS, LOW_CLOUDS + CLOUDS_STEP, p.z)
-	) + 50.;
+	);
 	// return cloudLevel + (fbm(p*0.03)) / 0.007;
-	return cloudLevel + (fbm(p*0.03) - 0.1) / 0.007 * (fbm(p*0.003 - 0.5) * 2.);
+	return cloudLevel * (fbm(p*0.03) * 33. + fbm(p*0.01) * 100. - 66.);
 	// return cloudLevel + (
 	// 	  (fbm(p*0.03)-0.1)
 	// 	+ sin(p.x*0.024 + sin(p.y*.001)*7.)*0.22+0.15
@@ -105,13 +105,13 @@ vec4 march(in vec3 ro, in vec3 rd, in vec3 bgc, in vec3 world)
 	vec3 cloudColor = vec3(.8,.75,.85);
 	vec3 pos;
 
-	vec3 hitPointLow = linePlaneIntersect(ro, rd, vec3(0., 0., LOW_CLOUDS + CLOUDS_STEP / 2.), vec3(0., 0., -1.));
-	vec3 hitPointHigh = linePlaneIntersect(ro, rd, vec3(0., 0., HIGH_CLOUDS - CLOUDS_STEP / 2.), vec3(0., 0., -1.));
+	vec3 hitPointLow = linePlaneIntersect(ro, rd, vec3(0., 0., LOW_CLOUDS), vec3(0., 0., -1.));
+	vec3 hitPointHigh = linePlaneIntersect(ro, rd, vec3(0., 0., HIGH_CLOUDS), vec3(0., 0., -1.));
 	float lowCloudDirection = dot(hitPointLow - ro, rd);
 	float highCloudDirection = dot(hitPointHigh - ro, rd);
   float hitDistanceLow = lowCloudDirection > 0. ? length(hitPointLow - ro) : 1e7;
   float hitDistanceHigh = highCloudDirection > 0. ? length(hitPointHigh - ro) : 1e7;
-	bool inClouds = (ro.z > LOW_CLOUDS + CLOUDS_STEP / 2.) && (ro.z < HIGH_CLOUDS - CLOUDS_STEP / 2.);
+	bool inClouds = (ro.z > LOW_CLOUDS) && (ro.z < HIGH_CLOUDS);
 	bool lowCloudLook = hitDistanceLow < hitDistanceHigh;
 	float hitDistance = lowCloudLook ? hitDistanceLow : hitDistanceHigh;
 
@@ -123,31 +123,32 @@ vec4 march(in vec3 ro, in vec3 rd, in vec3 bgc, in vec3 world)
 	float cloudDistance = inClouds ? 0. : min(hitDistanceHigh, hitDistanceLow);
 
 	float l = min(cloudDistance + cloudDepth, length(ro - world));
-	float t = inClouds ? 0. : cloudDistance;
-	float t0 = t;
+	float t = cloudDistance;
 
-  for( int i=0; i<64; i++ )
+  for( int i=0; i<100; i++ )
   {
     if(rz.a > 0.99 || t>l) break;
 
     pos = ro + t*rd;
     d = map(pos);
     if (d<0.) {
-      den = clamp(-d/200., 0., 1.);
-      col = vec4(mix( cloudColor, vec3(.0), den ), den * 0.9);
+      den = clamp(-d / 66., 0., 1.);
+      // col = vec4(mix(bgc, cloudColor, den ), den * 0.9);
+      col = vec4(vec3(1.), den * 0.9);
       col.rgb *= col.a;
       rz = rz + col*(1.0 - rz.a);
     }
 
-		t += max(abs(d), 5.);
-    // t += max(1., abs(d) * .49);
+		t += max(15., abs(d));
+		// t += 2.;
+    // t += max(2., d / 2.);
     // t += clamp(abs(1. / min(d, .01)),1., 10.);
     // t += min(cloudDepth / 500., 50.);
   }
 
-	float viewCloudDepth = max(l - cloudDistance, 0.);
-	float depthFactor = whiteCompliment( exp2( - 1e-8 * viewCloudDepth * viewCloudDepth * LOG2 ) );
-  rz = mix( rz, vec4(cloudColor * 0.9, 0.9), depthFactor );
+	// float viewCloudDepth = max(l - cloudDistance, 0.);
+	// float depthFactor = whiteCompliment( exp2( - 1e-8 * viewCloudDepth * viewCloudDepth * LOG2 ) );
+  // rz = mix( rz, vec4(cloudColor * 0.9, 0.9), depthFactor );
 	// rz.rgb = vec3(depthFactor);
 
 
@@ -183,6 +184,7 @@ void main() {
 	color = color*(1.0-res.w) + res.xyz;
 
 	gl_FragColor = vec4(color, 1.);
+	// gl_FragColor = vec4(vec3(fbm(worldPosition.xyz * .03) * fbm(worldPosition.xyz * .003)), 1.);
 	// gl_FragColor = vec4(vec3(noise(worldPosition.xyz)), 1.);
 	// gl_FragColor = vec4(vec3(snoise(worldPosition.xyz)), 1.);
 
