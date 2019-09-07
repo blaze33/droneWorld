@@ -14,7 +14,7 @@ vec3 hash33(vec3 p3)
 }
 
 const int   STAR_VOXEL_STEPS = 8;
-const float STAR_VOXEL_STEP_SIZE = 3.;
+const float STAR_VOXEL_STEP_SIZE = 100.;
 const float time = 1.;
 
 float distanceRayPoint(vec3 ro, vec3 rd, vec3 p, out float h) {
@@ -23,8 +23,8 @@ float distanceRayPoint(vec3 ro, vec3 rd, vec3 p, out float h) {
 }
 vec3 getDotColour(float t)
 {
-  return vec3(t*.57,t*.3,t*.05);
   return vec3(t*.9,t*.9,t*.9);
+  return vec3(t*.57,t*.3,t*.05);
   return vec3(t*.3,t*.6,t*.5);
 }
 
@@ -40,7 +40,6 @@ vec4 detritus(in vec3 ro, in vec3 rd, in float tmax) {
        mm, ri = 1./rd,
        rs = sign(rd),
        dis = (pos - ros + 0.5 + rs * 0.5) * ri;
-
   float dint;
   vec3 offset, id;
   vec4 col = vec4(0);
@@ -48,15 +47,21 @@ vec4 detritus(in vec3 ro, in vec3 rd, in float tmax) {
 
   for(int i = 0; i < STAR_VOXEL_STEPS; i++) {
     id = hash33(pos);
-    float size  = hash11(float(i))*.02 + .005;
+    float size  = hash11(float(i)) * 0.2 + .3;
     offset = clamp(id + .2 * cos(id + id.x * time), size, 1. - size);
     d = distanceRayPoint(ros, rd, pos + offset, dint);
 
     if (dint > 0. && dint * STAR_VOXEL_STEP_SIZE < tmax) {
-      col = vec4(getDotColour(id.x), .8) * smoothstep(size, 0.0, d);
-      col.a *= smoothstep(float(STAR_VOXEL_STEPS), 0., dint);
-      col.rgb *= col.a / dint;
-      sum += (1. - sum.a) * col;
+      // ########## method 1
+      // col = vec4(getDotColour(id.x), .8) * smoothstep(size, 0.0, d);
+      // col.a *= smoothstep(float(STAR_VOXEL_STEPS), 0., dint);
+      // col.rgb *= col.a / dint;
+      // sum += (1. - sum.a) * col;
+      // ########## method 2
+      col = vec4(vec3(1.), smoothstep(size, 0.0, d) * 0.9);
+      // col.a *= smoothstep(float(STAR_VOXEL_STEPS), 0., dint);
+      col.rgb *= col.a;
+      sum += col * (1.0 - sum.a);
       if (sum.a>.99) break;
     }
 
@@ -65,5 +70,6 @@ vec4 detritus(in vec3 ro, in vec3 rd, in float tmax) {
     pos += mm * rs;
   }
 
+  // return vec4(vec3(d), 1.);
   return sum * .75;
 }

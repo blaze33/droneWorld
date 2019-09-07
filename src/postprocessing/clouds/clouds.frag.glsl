@@ -131,6 +131,7 @@ vec4 march(in vec3 ro, in vec3 rd, in vec3 bgc, in vec3 world)
 	);
 	float cloudDistance = inClouds ? 0. : min(hitDistanceHigh, hitDistanceLow);
 
+	float l0 = min(cloudDistance, length(ro - world));
 	float l = min(cloudDistance + cloudDepth, length(ro - world));
 	float t = cloudDistance;
 
@@ -165,9 +166,9 @@ vec4 march(in vec3 ro, in vec3 rd, in vec3 bgc, in vec3 world)
   // return clamp(vec4(cloudDistance / 2000.), 0., 1.);
   #if 0
     vec4 star = detritus(
-      ro + cloudDistance * rd,
+      ro + l0 * rd,
       rd,
-      l
+      l - l0
     );
     rz.rgb = rz.rgb * (1.0 - star.a)+star.rgb;
   #endif
