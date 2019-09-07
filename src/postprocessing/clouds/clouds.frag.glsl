@@ -16,6 +16,7 @@ float HIGH_CLOUDS = 1000.;
 float CLOUDS_STEP = 100.;
 
 @import ./vorley_noise;
+@import ./star_field;
 
 mat3 m = mat3(
 	 0.00,  0.80,  0.60,
@@ -104,6 +105,7 @@ float dikomarch(in vec3 ro, in vec3 rd, in vec3 world)
 	return d;
 }
 
+
 vec4 march(in vec3 ro, in vec3 rd, in vec3 bgc, in vec3 world)
 {
   float d = 0.;
@@ -161,6 +163,15 @@ vec4 march(in vec3 ro, in vec3 rd, in vec3 bgc, in vec3 world)
 
   // return clamp(vec4(cloudDepth / 2000.), 0., 1.);
   // return clamp(vec4(cloudDistance / 2000.), 0., 1.);
+  #if 0
+    vec4 star = detritus(
+      ro + cloudDistance * rd,
+      rd,
+      l
+    );
+    rz.rgb = rz.rgb * (1.0 - star.a)+star.rgb;
+  #endif
+
   return clamp(rz, 0., 1.);
 }
 
