@@ -15,6 +15,8 @@ float LOW_CLOUDS = 500.;
 float HIGH_CLOUDS = 1000.;
 float CLOUDS_STEP = 100.;
 
+@import ./vorley_noise;
+
 mat3 m = mat3(
 	 0.00,  0.80,  0.60,
 	-0.80,  0.36, -0.48,
@@ -52,11 +54,16 @@ float fbm( vec3 p )
 
 float map(vec3 p){
 	float cloudLevel = (
-		  smoothstep(HIGH_CLOUDS - CLOUDS_STEP, HIGH_CLOUDS, p.z)
-		- smoothstep(LOW_CLOUDS, LOW_CLOUDS + CLOUDS_STEP, p.z)
+		  smoothstep(LOW_CLOUDS, LOW_CLOUDS + CLOUDS_STEP, p.z)
+		- smoothstep(HIGH_CLOUDS - CLOUDS_STEP, HIGH_CLOUDS, p.z)
 	);
 	// return cloudLevel + (fbm(p*0.03)) / 0.007;
-	return cloudLevel * (fbm(p*0.03) * 33. + fbm(p*0.01) * 100. - 66.);
+
+  float F1 = worley_2(p * 0.01, 1.0, false).x;
+  float F2 = worley_2(p * 0.003, 1.0, false).x;
+
+	return cloudLevel * (82. - fbm(p*0.03) * 33. - clamp((1. - F1) * .8, 0., 1.) * 33. - clamp((1. - F2) * .8, 0., 1.) * 100.);
+	// return cloudLevel * (fbm(p*0.03) * 33. + fbm(p*0.01) * 100. - 66.);
 	// return cloudLevel + (
 	// 	  (fbm(p*0.03)-0.1)
 	// 	+ sin(p.x*0.024 + sin(p.y*.001)*7.)*0.22+0.15
