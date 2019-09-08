@@ -60,10 +60,15 @@ float map(vec3 p){
 	);
 	// return cloudLevel + (fbm(p*0.03)) / 0.007;
 
-  float F1 = worley_2(p * 0.01, 1.0, false).x;
-  float F2 = worley_2(p * 0.003, 1.0, false).x;
+   float F1 = worley_2(p * 0.01, 1.0, false).x;
+   float F2 = worley_2(p * 0.003, 1.0, false).x;
 
-	return cloudLevel * (82. - fbm(p*0.03) * 33. - clamp((1. - F1) * .8, 0., 1.) * 33. - clamp((1. - F2) * .8, 0., 1.) * 100.);
+	return cloudLevel * (
+		82. - fbm(p*0.03) * 33.
+		- clamp((1. - F1) * .8, 0., 1.) * 33.
+		- clamp((1. - F2) * .8, 0., 1.) * 100.
+	) / 66.;
+
 	// return cloudLevel * (fbm(p*0.03) * 33. + fbm(p*0.01) * 100. - 66.);
 	// return cloudLevel + (
 	// 	  (fbm(p*0.03)-0.1)
@@ -110,7 +115,7 @@ vec4 march(in vec3 ro, in vec3 rd, in vec3 bgc, in vec3 world)
 {
   float d = 0.;
   vec4 rz = vec4( 0.0 ), col;
-  float td=.0, w, den;
+  float td=.0, w, den0, den1;
 	vec3 cloudColor = vec3(.8,.75,.85);
 	vec3 pos;
 
@@ -134,22 +139,27 @@ vec4 march(in vec3 ro, in vec3 rd, in vec3 bgc, in vec3 world)
 	float l0 = min(cloudDistance, length(ro - world));
 	float l = min(cloudDistance + cloudDepth, length(ro - world));
 	float t = cloudDistance;
+	const int STEPS = 64;
+	float tmax = (l - l0) / float(STEPS);
+	den0 = 0.;
 
-  for( int i=0; i<100; i++ )
+  for( int i=0; i<STEPS; i++ )
   {
     if(rz.a > 0.99 || t>l) break;
 
     pos = ro + t*rd;
     d = map(pos);
     if (d<0.) {
-      den = clamp(-d / 66., 0., 1.);
+      den1 = clamp(-d, 0., 1.);
       // col = vec4(mix(bgc, cloudColor, den ), den * 0.9);
-      col = vec4(vec3(1.), den * 0.9);
+      col = vec4(vec3(1.), (den0 + den1) / 2. * td / 30. * 0.9);
+	  den0 = den1;
       col.rgb *= col.a;
       rz = rz + col*(1.0 - rz.a);
     }
-
-		t += max(15., abs(d));
+		td = min((abs(d) + 1.5) * 10., tmax);
+		t += td;
+		// t += max(15., abs(d * 100.));
 		// t += 2.;
     // t += max(2., d / 2.);
     // t += clamp(abs(1. / min(d, .01)),1., 10.);
