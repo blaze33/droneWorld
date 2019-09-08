@@ -4,6 +4,7 @@ varying vec2 vUv;
 
 uniform sampler2D tDepth;
 uniform sampler2D tColor;
+uniform sampler2D tNoise;
 
 uniform mat4 clipToWorldMatrix;
 uniform vec3 sun;
@@ -15,14 +16,16 @@ float LOW_CLOUDS = 500.;
 float HIGH_CLOUDS = 1000.;
 float CLOUDS_STEP = 100.;
 
-@import ./vorley_noise;
-@import ./star_field;
-
 mat3 m = mat3(
 	 0.00,  0.80,  0.60,
 	-0.80,  0.36, -0.48,
   -0.60, -0.48,  0.64
 );
+
+@import ./vorley_noise;
+@import ./star_field;
+@import ./texture_noise;
+
 float hash( float n )
 {
   return fract(sin(n)*43758.5453);
@@ -59,15 +62,16 @@ float map(vec3 p){
 		- smoothstep(HIGH_CLOUDS - CLOUDS_STEP, HIGH_CLOUDS, p.z)
 	);
 	// return cloudLevel + (fbm(p*0.03)) / 0.007;
+	return 0.1 + cloudLevel * fbm3D(p / 5000.);
 
-   float F1 = worley_2(p * 0.01, 1.0, false).x;
-   float F2 = worley_2(p * 0.003, 1.0, false).x;
+    // float F1 = worley_2(p * 0.01, 1.0, false).x;
+    // float F2 = worley_2(p * 0.003, 1.0, false).x;
 
-	return cloudLevel * (
-		82. - fbm(p*0.03) * 33.
-		- clamp((1. - F1) * .8, 0., 1.) * 33.
-		- clamp((1. - F2) * .8, 0., 1.) * 100.
-	) / 66.;
+	// return cloudLevel * (
+	// 	82. - fbm(p*0.03) * 33.
+	// 	- clamp((1. - F1) * .8, 0., 1.) * 33.
+	// 	- clamp((1. - F2) * .8, 0., 1.) * 100.
+	// ) / 66.;
 
 	// return cloudLevel * (fbm(p*0.03) * 33. + fbm(p*0.01) * 100. - 66.);
 	// return cloudLevel + (
@@ -113,6 +117,10 @@ float dikomarch(in vec3 ro, in vec3 rd, in vec3 world)
 
 vec4 march(in vec3 ro, in vec3 rd, in vec3 bgc, in vec3 world)
 {
+
+	// return vec4(vec3(noise3D_b(world / 5120.)), 1.);
+	// return vec4(vec3(fbm3D(world / 5120.)), 1.);
+
   float d = 0.;
   vec4 rz = vec4( 0.0 ), col;
   float td=.0, w, den0, den1;

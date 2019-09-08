@@ -374,6 +374,9 @@ composer.addPass(glitch)
 // volumetric clouds pass
 const clouds = new ShaderPass(CloudsShader, 'tColor')
 clouds.material.uniforms.tDepth.value = waterTarget.depthTexture
+const tNoise = textureLoader.load(require('./textures/random_512_bw2.png'))
+tNoise.wrapS = tNoise.wrapT = RepeatWrapping
+clouds.material.uniforms.tNoise.value = tNoise
 clouds.renderToScreen = true
 composer.addPass(clouds)
 // ###################################

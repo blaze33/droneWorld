@@ -8,6 +8,7 @@ const CloudsShader = {
   uniforms: {
     tDepth: { type: 't', value: null },
     tColor: { type: 't', value: null },
+    tNoise: { type: 't', value: null },
 
     cameraNear: { type: 'f', value: 1 },
     cameraFar: { type: 'f', value: 1e6 },
