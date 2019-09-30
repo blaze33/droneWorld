@@ -67,11 +67,13 @@ const buildPilotDrone = () => {
       lastTimestamp = timestamp
       raycaster.set(pilotDrone.position.clone().add(offsetVector), downVector)
       terrainTiles = raycaster.intersectObjects(
-        camera.userData.terrainTileUnder ? [camera.userData.terrainTileUnder] : []
+        camera.userData.terrainTileUnder && camera.userData.terrainTileUnder.geometry ? [camera.userData.terrainTileUnder] : []
       )
       if (terrainTiles.length > 0) {
         pilotDrone.userData.altitude = terrainTiles[0].distance - offsetVector.length()
         pilotDrone.userData.groundNormal = terrainTiles[0].face.normal
+      } else {
+        pilotDrone.userData.altitude = NaN
       }
       if (pilotDrone.userData.altitude < 5) {
         PubSub.publish('x.drones.explode.pilotDrone', pilotDrone)
