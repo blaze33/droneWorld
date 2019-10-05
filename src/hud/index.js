@@ -24,7 +24,7 @@ const hudData = {
 class HUD extends Component {
   constructor (props) {
     super(props)
-    this.state = { gunHeat: 0, lockLevel: 0, pilot: null }
+    this.state = { gunHeat: 0, lockLevel: 0 }
   }
 
   componentDidMount () {
@@ -64,8 +64,7 @@ class HUD extends Component {
       ...newState,
       gunHeat,
       lockLevel,
-      lock: lockLevel === 1,
-      pilot: pilotDrone ? pilotDrone.userData : null
+      lock: lockLevel === 1
     })
   }
 
@@ -81,10 +80,10 @@ class HUD extends Component {
         <div id='pointer' />
         <div id='focal' style={this.state.focalStyle} />
         <div id='horizon' style={this.state.horizonStyle} />
-        { this.state.pilot ? (
+        { pilotDrone ? (
           <div id='messages'>
-            <div>{this.state.pilot.altitude.toFixed(0)} m</div>
-            <div>{this.state.pilot.speed.toFixed(0)} m/s</div>
+            <div>{pilotDrone.userData.altitude.toFixed(0)} m</div>
+            <div>{pilotDrone.userData.speed.toFixed(0)} m/s</div>
           </div>
         ) : null
         }
