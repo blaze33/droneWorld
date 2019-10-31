@@ -152,7 +152,7 @@
     "source-map-explorer": "^2.0.1",
     "standard": "^14.1.0",
     "stats.js": "^0.17.0",
-    "three": "^0.109.0",
+    "three": "^0.110.0",
     "upng-js": "^2.1.0",
     "webpack-glsl-loader": "^1.0.1",
     "worker-loader": "blaze33/worker-loader#574be467bd146e8dd1d9d3d103c16f95f04c2f42"
