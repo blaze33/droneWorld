@@ -73,9 +73,9 @@ const buildTileFromWorker = event => {
   }[event.data.bpe.indices]
   const index = new IndexArrayClass(event.data.indices)
 
-  geometry.addAttribute('position', new BufferAttribute(positions, 3))
-  geometry.addAttribute('normal', new BufferAttribute(normals, 3))
-  geometry.addAttribute('uv', new BufferAttribute(uvs, 2))
+  geometry.setAttribute('position', new BufferAttribute(positions, 3))
+  geometry.setAttribute('normal', new BufferAttribute(normals, 3))
+  geometry.setAttribute('uv', new BufferAttribute(uvs, 2))
   geometry.setIndex(new BufferAttribute(index, 1))
   geometry.computeBoundingSphere()
   geometry.computeBoundingBox()

@@ -27,8 +27,8 @@ const buildVoxelsFromWorker = (event) => {
   const indices = new Uint16Array(event.data.index1)
 
   const geometry = new BufferGeometry()
-  geometry.addAttribute('position', new BufferAttribute(positions, 3))
-  geometry.addAttribute('normal', new BufferAttribute(normals, 3))
+  geometry.setAttribute('position', new BufferAttribute(positions, 3))
+  geometry.setAttribute('normal', new BufferAttribute(normals, 3))
   geometry.setIndex(new BufferAttribute(indices, 1))
   const mesh = new Mesh(geometry, materialBasic)
   // const mesh = new Mesh(geometry, new MeshNormalMaterial({wireframe: true}))

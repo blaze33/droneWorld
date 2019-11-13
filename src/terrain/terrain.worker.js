@@ -120,14 +120,14 @@ const buildGeometryB = (png, size, segments) => {
     average(performance.getEntriesByName('wasm-time').map(p => p.duration))
   )
 
-  geometry.addAttribute(
+  geometry.setAttribute(
     'position',
     new BufferAttribute(Float32Array.from(position), 3)
   )
   geometry.setIndex(
     new BufferAttribute(Uint16Array.from(index), 1)
   )
-  geometry.addAttribute(
+  geometry.setAttribute(
     'uv',
     new BufferAttribute(Float32Array.from(uv), 2)
   )
