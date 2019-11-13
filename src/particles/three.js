@@ -12,5 +12,7 @@ export {
   AdditiveBlending,
   ShaderMaterial,
   BufferGeometry,
-  Points
+  Points,
+  StaticDrawUsage,
+  DynamicDrawUsage
 } from 'three'
