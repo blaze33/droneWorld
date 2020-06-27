@@ -80,15 +80,15 @@ class HUD extends Component {
         <div id='pointer' />
         <div id='focal' style={this.state.focalStyle} />
         <div id='horizon' style={this.state.horizonStyle} />
-        { pilotDrone ? (
+        {pilotDrone ? (
           <div id='messages'>
             <div>{pilotDrone.userData.altitude.toFixed(0)} m</div>
             <div>{pilotDrone.userData.speed.toFixed(0)} m/s</div>
           </div>
-        ) : null
-        }
+        ) : null}
         <svg className='vector'>
-          <Crosshair size='30' x={screenCenter.x} y={screenCenter.y}
+          <Crosshair
+            size='30' x={screenCenter.x} y={screenCenter.y}
             fill='transparent'
             stroke='#0f0'
             strokeWidth='17'
@@ -134,9 +134,11 @@ class HUD extends Component {
                     l ${target.direction.x} ${target.direction.y}`}
                   strokeWidth='1'
                   stroke={target === this.state.gunTarget ? '#0f0' : 'orange'}
-                  fill='transparent' />
+                  fill='transparent'
+                />
                 {target === this.state.gunTarget ? (
-                  <Crosshair size='30'
+                  <Crosshair
+                    size='30'
                     x={target.hudPosition.x + target.direction.x}
                     y={target.hudPosition.y + target.direction.y}
                     fill='#0f0'

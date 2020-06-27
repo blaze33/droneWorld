@@ -50,7 +50,6 @@ import {
   GlitchPass,
   Water,
   Reflector,
-  CopyShader,
   MaskPass,
   ClearMaskPass
 } from './modules'

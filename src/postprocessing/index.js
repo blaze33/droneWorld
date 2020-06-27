@@ -4,7 +4,7 @@ import lensFlare from './lensflares'
 import { motionBlurShader } from './MotionBlur'
 import CloudsShader from './Clouds'
 
-import {GammaCorrectionShader} from './GammaCorrectionShader'
+import { GammaCorrectionShader } from './GammaCorrectionShader'
 
 export {
   initDoF,
