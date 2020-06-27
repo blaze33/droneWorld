@@ -7,7 +7,7 @@ import {
   Matrix4,
   WebGLRenderer,
   PCFSoftShadowMap,
-  Uncharted2ToneMapping,
+  ACESFilmicToneMapping,
   Color,
   FogExp2,
   Mesh,
@@ -99,7 +99,7 @@ renderer.shadowMap.bias = 0.001
 renderer.shadowMap.type = PCFSoftShadowMap
 renderer.shadowMap.autoUpdate = true
 renderer.physicallyCorrectLights = true
-renderer.toneMapping = Uncharted2ToneMapping
+renderer.toneMapping = ACESFilmicToneMapping
 
 renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
