@@ -33,6 +33,7 @@ varying vec3 vToEye;
 // vec3 depthColor = vec3(0.0039, 0.00196, 0.145);
 vec3 depthColor = vec3(0.0117, 0.0117, 0.325);
 
+#define LOG2 1.442695
 #define TAU 6.28318530718
 #define MAX_ITER 5
 vec3 caustic(vec2 uv) {

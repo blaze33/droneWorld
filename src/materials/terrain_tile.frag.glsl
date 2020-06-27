@@ -109,7 +109,7 @@ vec4 physicalColor(sampler2D map, sampler2D normalMap, float roughness, float me
 	);
 	// texelColor = texelColorXY;
 
-	texelColor = mapTexelToLinear( texelColor );
+	// texelColor = mapTexelToLinear( texelColor );
 	diffuseColor *= texelColor;
 	// return diffuseColor;
 
