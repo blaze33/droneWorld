@@ -11,7 +11,7 @@ const hemishpereLight = new HemisphereLight(0xffffbb, 0x080820, 0.1)
 hemishpereLight.position.set(0, 0, 1)
 hemishpereLight.up.set(0, 0, 1)
 hemishpereLight.needsUpdate = true
-const ambientLight = new AmbientLight(0x404040, 0.1) // soft white light
+const ambientLight = new AmbientLight(0x404040, 2.5) // soft white light
 
 const updateDirLightPosition = () => {
   dirLight.position.copy(dirLight.sunPosition)
