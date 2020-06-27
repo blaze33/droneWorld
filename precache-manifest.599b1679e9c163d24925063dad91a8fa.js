@@ -1,31 +1,31 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "c2495689cb6e807e0607abcc8cec6da8",
-    "url": "./1.terrain.worker.380e8085.js"
+    "revision": "d1392863b3db09bd8569d62b59f21366",
+    "url": "./1.terrain.worker.31c10d02.js"
   },
   {
-    "revision": "ef680fe273e09d7c115f16e948fa5e5a",
-    "url": "./e0853e586e73c0f7b209.module.wasm"
+    "revision": "d064d28572dc2f72f86875fc7d2af8dd",
+    "url": "./811e856d8ba478fac82a.module.wasm"
   },
   {
-    "revision": "e70ec989c14c21f41cc5bcb6b30c43bb",
+    "revision": "e16b4cf1dd572bb617da59c5689757d1",
     "url": "./index.html"
   },
   {
-    "revision": "bb9d1ceb5113751d05fe",
-    "url": "./static/css/main.f341e561.chunk.css"
+    "revision": "799673441bb2c426eb52",
+    "url": "./static/css/main.fb4e1f23.chunk.css"
   },
   {
-    "revision": "2188d1eaa0244687479e",
-    "url": "./static/js/2.cb9cef6e.chunk.js"
+    "revision": "6555877c8b2dc8c8f4eb",
+    "url": "./static/js/2.f7209f4c.chunk.js"
   },
   {
-    "revision": "bb9d1ceb5113751d05fe",
-    "url": "./static/js/main.7218ad45.chunk.js"
+    "revision": "799673441bb2c426eb52",
+    "url": "./static/js/main.8c04f6b9.chunk.js"
   },
   {
-    "revision": "050be5980665e1a41a37",
-    "url": "./static/js/runtime~main.4db759f6.js"
+    "revision": "a46eb678d512b49f7df5",
+    "url": "./static/js/runtime~main.b38cfd81.js"
   },
   {
     "revision": "d28fc70f29b3c25bf99f3b63983cffa7",
@@ -92,11 +92,11 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "./static/media/smokeparticle.4939a8d2.png"
   },
   {
-    "revision": "ace38deff011542c4d20afecad844605",
-    "url": "./terrain.worker.69f5cd1b.js"
+    "revision": "aaf99337215643699d8e000669892e36",
+    "url": "./terrain.worker.bfcda43c.js"
   },
   {
-    "revision": "f7f55d08a1629fed86b67c690e2c6af0",
-    "url": "./voxel.worker.55376585.js"
+    "revision": "d9b6e9fb5e10b8055f6db3f5837af414",
+    "url": "./voxel.worker.3a17e1f3.js"
   }
 ]);
