@@ -109,7 +109,7 @@ void main() {
   float viewWaterDepth = length(surfacePosition - worldPosition.xyz);
 
   float depthDensity = 0.01;
-  float depthFactor = whiteCompliment( exp2( - depthDensity * depthDensity * viewWaterDepth * viewWaterDepth * LOG2 ) );
+  float depthFactor = whiteCompliment( exp2( - depthDensity * depthDensity * viewWaterDepth * viewWaterDepth * 1.442695 ) );
   refractColor.rgb = mix( refractColor.rgb, depthColor, 0.25 + depthFactor );
   // refractColor.rgb = DepthRefraction(waterDepth, viewWaterDepth, refractColor.rgb);
 
