@@ -23,7 +23,7 @@ const voxelBuilder = (timestamp) => {
     const visibleKeys = []
     const size = voxelNumber
     var frustum = new Frustum()
-    frustum.setFromMatrix(new Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse))
+    frustum.setFromProjectionMatrix(new Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse))
     for (let i = 0; i < size; i++) {
       for (let j = 0; j < size; j++) {
         for (let k = 0; k < voxelLayers; k++) {
