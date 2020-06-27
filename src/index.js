@@ -21,7 +21,8 @@ import {
   PlaneBufferGeometry,
   TextureLoader,
   RepeatWrapping,
-  LOD
+  LOD,
+  LinearEncoding
 } from 'three'
 import dat from 'dat.gui/build/dat.gui.js'
 import Stats from 'stats.js'
@@ -33,7 +34,8 @@ import { initLights, dirLight } from './lights'
 import { terrainLoop } from './loops/terrainLoop'
 import {
   lensFlare,
-  motionBlurShader
+  motionBlurShader,
+  GammaCorrectionShader
 } from './postprocessing'
 import { particleGroups } from './particles'
 import PubSub from './events'
@@ -92,8 +94,7 @@ var renderer = new WebGLRenderer({
   logarithmicDepthBuffer: false
 })
 
-renderer.gammaInput = true
-renderer.gammaOutput = true
+renderer.outputEncoding = LinearEncoding
 renderer.shadowMap.enabled = options.shadows
 renderer.shadowMap.bias = 0.001
 renderer.shadowMap.type = PCFSoftShadowMap
@@ -202,7 +203,8 @@ const water = new Water(
     clipBias: 0.00001,
     reflectivity: 0.2,
     shader: WaterShader,
-    flowSpeed: 0.1
+    flowSpeed: 0.1,
+    encoding: LinearEncoding
   }
 )
 window.water = water
@@ -225,7 +227,8 @@ scene.add(water)
 const underwaterReflector = new Reflector(waterGeometry, {
   textureWidth: 512,
   textureHeight: 512,
-  clipBias: 0.00001
+  clipBias: 0.00001,
+  encoding: LinearEncoding
   // shader: WaterRefractionShader
 })
 underwaterReflector.rotation.y = Math.PI
@@ -316,6 +319,7 @@ document.body.appendChild(stats.dom)
 // EFFECTS
 // define a render target with a depthbuffer
 const target = new WebGLRenderTarget(window.innerWidth, window.innerHeight)
+target.texture.encoding = LinearEncoding
 const composer = new EffectComposer(renderer, target)
 
 // initial render pass
@@ -375,7 +379,7 @@ glitch.enabled = false
 composer.addPass(glitch)
 
 // add output pass
-const outputPass = new ShaderPass(CopyShader)
+const outputPass = new ShaderPass(GammaCorrectionShader)
 composer.addPass(outputPass)
 // ###################################
 
